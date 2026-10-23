@@ -410,8 +410,78 @@ body.in-game #scene { display: block; }
 }
 .flyer { position: fixed; left: 0; top: 0; z-index: 60; font-size: 2rem; pointer-events: none; }
 
+/* ---------- Effects layers ---------- */
+#fx { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 4; pointer-events: none; }
+.cheer {
+  position: absolute; left: 50%; top: 42%; z-index: 3; pointer-events: none; white-space: nowrap;
+  font-size: clamp(2.6rem, 13vw, 4rem); font-weight: 900; color: #FFE14D;
+  -webkit-text-stroke: 4px var(--ink); paint-order: stroke fill; text-shadow: 0 6px 0 var(--ink);
+  transform: translate(-50%, -50%);
+}
+.cheer[hidden] { display: none; }
+.cheer.go { animation: cheer 1.1s cubic-bezier(.2, 1.6, .4, 1) both; }
+@keyframes cheer {
+  0% { transform: translate(-50%, -50%) scale(.2) rotate(-12deg); opacity: 0; }
+  30% { transform: translate(-50%, -50%) scale(1.15) rotate(4deg); opacity: 1; }
+  45% { transform: translate(-50%, -50%) scale(.95) rotate(-2deg); }
+  80% { transform: translate(-50%, -50%) scale(1) rotate(0); opacity: 1; }
+  100% { transform: translate(-50%, -70%) scale(.9); opacity: 0; }
+}
+/* Earned stars fly into their slots with a pop and a bounce */
+.big-stars svg.on { animation: starIn .55s cubic-bezier(.3, 1.8, .5, 1) both; }
+.big-stars svg.on:nth-child(1) { animation-delay: .35s; }
+.big-stars svg.on:nth-child(2) { animation-delay: .6s; }
+.big-stars svg.on:nth-child(3) { animation-delay: .85s; }
+@keyframes starIn { 0% { transform: translateY(-90px) scale(2.4) rotate(-90deg); opacity: 0; } 60% { opacity: 1; } 100% { transform: none; } }
+
+/* ---------- Key levels on the map ---------- */
+.key-reward {
+  position: absolute; z-index: 1; transform: translate(-50%, -50%); pointer-events: none;
+  display: flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 999px;
+  background: rgba(255, 247, 227, .92); border: 3px solid var(--ink); box-shadow: 0 3px 0 var(--ink);
+}
+.key-reward .chest-ico { width: 30px; height: 25px; }
+.key-reward.won { background: linear-gradient(180deg, #FFF6C8, #FFD54A); }
+
+/* ---------- Key level prize on "Well done!" ---------- */
+.key-prize { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.key-prize[hidden] { display: none; }
+.chest { width: 84px; height: 78px; overflow: visible; }
+.chest-lid { transform-box: fill-box; transform-origin: 10% 100%; }
+.key-prize.play .chest { animation: chestShake .6s ease-in-out .5s both; }
+.key-prize.play .chest-lid { animation: lidPop .5s cubic-bezier(.3, 1.6, .5, 1) 1.1s both; }
+@keyframes chestShake { 0%, 100% { transform: none; } 20%, 60% { transform: rotate(-7deg); } 40%, 80% { transform: rotate(7deg); } }
+@keyframes lidPop { to { transform: translateY(-10px) rotate(-38deg); } }
+.prize-items { display: flex; gap: 10px; font-size: 1.9rem; min-height: 2.3rem; }
+.prize-items span { display: inline-block; }
+.key-prize.play .prize-items span { animation: itemOut .6s cubic-bezier(.3, 1.7, .5, 1) both; animation-delay: calc(1.3s + var(--i) * .15s); }
+@keyframes itemOut { 0% { transform: translateY(-50px) scale(.2); opacity: 0; } 100% { transform: none; opacity: 1; } }
+.new-friend { display: flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 18px; background: linear-gradient(180deg, #FFF6FB, #FFD1EC); border: 3px solid var(--ink); }
+.new-friend .tag { font-weight: 900; color: var(--berry); white-space: nowrap; }
+.new-friend b { font-weight: 900; white-space: nowrap; }
+.key-prize.play .new-friend { animation: itemOut .6s cubic-bezier(.3, 1.7, .5, 1) 1.9s both; }
+
+/* ---------- Animal collection ---------- */
+.zoo-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; margin: 0 -16px; padding: 0 16px 24px; touch-action: pan-y; }
+.zoo-title {
+  margin: 14px 0 8px; font-size: 1.15rem; font-weight: 900;
+  display: inline-block; padding: 4px 14px; border-radius: 999px; color: #fff;
+  background: var(--wc, var(--berry)); border: 3px solid var(--ink); text-shadow: 0 2px 0 rgba(46, 33, 82, .5);
+}
+.zoo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 10px; }
+.zoo-card {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px;
+  min-height: 100px; padding: 10px 6px 8px; border-radius: 20px; text-align: center;
+  background: var(--gloss-cream); border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink);
+}
+.zoo-card b { font-size: .85rem; font-weight: 900; line-height: 1.1; }
+.zoo-card.locked { background: linear-gradient(180deg, #E9E3F5, #CFC4E3); }
+.zoo-key { position: absolute; top: -10px; right: -8px; width: 32px; height: 32px; }
+.zoo-key .key-ico { width: 32px; height: 32px; }
+
 @media (prefers-reduced-motion: reduce) {
   .booster.aiming, .pop, .nope { animation: none; }
+  .cheer.go, .big-stars svg.on, .key-prize.play .chest, .key-prize.play .chest-lid, .key-prize.play .prize-items span, .key-prize.play .new-friend { animation: none; }
   .node.current { animation: none; }
   .dir-intro svg { animation: none; }
   .btn, .icon-btn { transition: none; }
@@ -476,6 +546,9 @@ body.in-game #scene { display: block; }
     <h2 class="sr-only">Level map</h2>
     <span class="chip" id="mapStars"></span>
     <span class="chip coin-chip" id="mapCoins"></span>
+    <button class="icon-btn zoo-btn" id="mapZoo" aria-label="Animal collection">
+      <svg viewBox="0 0 24 24"><ellipse cx="12" cy="15.5" rx="4.6" ry="3.8"/><circle cx="6" cy="10" r="1.9"/><circle cx="9.5" cy="6.5" r="1.9"/><circle cx="14.5" cy="6.5" r="1.9"/><circle cx="18" cy="10" r="1.9"/></svg>
+    </button>
     <button class="icon-btn shop-btn" id="mapShop" aria-label="Shop">
       <svg viewBox="0 0 24 24"><path d="M4 9h16l-1.4 10.2a2 2 0 0 1-2 1.8H7.4a2 2 0 0 1-2-1.8z"/><path d="M8.5 9V7a3.5 3.5 0 0 1 7 0v2"/></svg>
     </button>
@@ -521,6 +594,17 @@ body.in-game #scene { display: block; }
   </div>
 </section>
 
+<!-- ============ ANIMAL COLLECTION ============ -->
+<section class="screen" id="zoo">
+  <header class="bar">
+    <button class="icon-btn" data-go="map" aria-label="Back">
+      <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <h2>Animals</h2>
+  </header>
+  <div class="zoo-body" id="zooBody"></div>
+</section>
+
 <!-- ============ SHOP ============ -->
 <section class="screen" id="shop">
   <header class="bar">
@@ -563,8 +647,10 @@ body.in-game #scene { display: block; }
   <div class="play" id="play">
     <div class="frame" id="frame"><canvas id="board"></canvas></div>
     <div class="dir-intro" id="dirIntro" hidden aria-hidden="true"><svg viewBox="0 0 120 96"><path d="M10 34h58V14l44 34-44 34V62H10z" fill="url(#arrowGloss)" stroke="#2E2152" stroke-width="6" stroke-linejoin="round"/><path d="M18 40h56V30" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".7"/></svg></div>
+    <div class="cheer" id="cheer" hidden aria-live="polite"></div>
   </div>
   <div class="boosters" id="boosters" hidden></div>
+  <canvas id="fx" aria-hidden="true"></canvas>
   <div class="rows" id="rows" role="img" aria-label="Rows cleared"></div>
 
   <div class="overlay" id="pauseOverlay" hidden>
@@ -586,6 +672,14 @@ body.in-game #scene { display: block; }
       <div class="big-stars" id="winStars"></div>
       <p class="panel-score"><span id="winScore">0</span></p>
       <p class="coins-won" id="winCoins" hidden>+<span>0</span> <i class="coin" aria-hidden="true"></i></p>
+      <div class="key-prize" id="winPrize" hidden>
+        <svg class="chest" viewBox="0 0 64 60" aria-hidden="true">
+          <g class="chest-base"><rect x="6" y="28" width="52" height="28" rx="5" fill="#C9772B" stroke="#2E2152" stroke-width="3.5"/><path d="M18 28v28M46 28v28" stroke="#FFC21A" stroke-width="5"/><rect x="27" y="28" width="10" height="11" rx="2.5" fill="#FFE14D" stroke="#2E2152" stroke-width="3"/></g>
+          <g class="chest-lid"><path d="M6 30c0-13 9-19 26-19s26 6 26 19z" fill="#E08E3A" stroke="#2E2152" stroke-width="3.5" stroke-linejoin="round"/><path d="M18 13v17M46 13v17" stroke="#FFC21A" stroke-width="5"/></g>
+        </svg>
+        <div class="prize-items" id="prizeItems"></div>
+        <div class="new-friend"><span class="tag">New friend!</span><div id="friendArt"></div><b id="friendName"></b></div>
+      </div>
       <p class="world-lock" id="winLock" hidden></p>
       <button class="btn primary big" id="nextLevelBtn">Next level</button>
       <div class="row">
@@ -670,6 +764,9 @@ const CONFIG = {
   // 50× more and the shop would stop mattering. Key levels keep their +20%.
   coinRate: 0.1,
   coinLevelStep: 0.04,
+  keyCoinMultiplier: 3,     // key levels: 3× coins on first completion...
+  chestItems: 3,            // ...plus a treasure chest with this many boosters and a special animal
+  specialChance: 0.1,       // how often an unlocked special animal shows up instead of a regular one
   slowMoMs: 30000,          // Slow-mo booster: half speed for 30 s
   secondChanceRows: 5,      // Second chance clears this many bottom rows
 };
@@ -687,6 +784,7 @@ const Store = (() => {
   const defaults = () => ({
     lastLevel: 1, highScore: 0, stars: {}, best: {}, settings: { control: 'drag' },
     coins: 0, items: {}, seen: {}, starterBought: false, // seen: boosters ever owned (shown in the game)
+    specials: {}, version: 2, // specials: special animals unlocked by key levels, e.g. { K1: true }
   });
   let data = load();
 
@@ -695,7 +793,10 @@ const Store = (() => {
       const raw = localStorage.getItem(KEY);
       if (raw) {
         const d = JSON.parse(raw), def = defaults();
-        return { ...def, ...d, settings: { ...def.settings, ...(d.settings || {}) } };
+        // Version 1 saves: levels 5, 10, … 50 were key levels on the main path;
+        // they are regular levels now. Their stars simply stay where they are,
+        // so nobody loses progress, and the new side key levels start fresh.
+        return { ...def, ...d, version: def.version, settings: { ...def.settings, ...(d.settings || {}) } };
       }
     } catch (e) { /* storage unavailable – play without saving */ }
     return defaults();
@@ -722,6 +823,8 @@ const Store = (() => {
     useItem(id) { if (!(data.items[id] > 0)) return false; data.items[id]--; save(); return true; },
     count: id => data.items[id] || 0,
     setStarterBought() { data.starterBought = true; save(); },
+    unlockSpecial(keyId) { data.specials[keyId] = true; save(); },
+    hasSpecial: keyId => !!data.specials[keyId],
     setLastLevel(level) { data.lastLevel = level; save(); },
     setControl(mode) { data.settings.control = mode; save(); },
     reset() { const control = data.settings.control; data = defaults(); data.settings.control = control; save(); },
@@ -740,27 +843,36 @@ const WORLDS = [
   { name: 'Candy Sky', frame: ['#FFB8EA', '#D063DD', '#7A2FA8'], board: ['#4A2A7A', '#24124A'] },
 ];
 CONFIG.levelCount = WORLDS.length * CONFIG.worldSize;
+// Level ids: regular levels are numbers 1, 2, 3 … (the main path). Key levels
+// are optional side levels 'K1' … 'K10'; K1 branches off level 5, K2 off 10, …
 const Levels = {
-  world: L => Math.floor((L - 1) / CONFIG.worldSize),
-  isKey: L => L % CONFIG.keyEvery === 0,
-  // Key levels alternate: 5 falls right, 10 left, 15 right, ...
-  direction(L) { return this.isKey(L) ? ((L / CONFIG.keyEvery) % 2 ? 'right' : 'left') : 'down'; },
-  setup(L) {
-    return this.isKey(L)
-      ? { cols: CONFIG.keyBoard, rows: CONFIG.keyBoard, gravity: this.direction(L), key: true }
+  isKey: id => typeof id === 'string',
+  keyIndex: id => +id.slice(1),
+  parent(id) { return this.isKey(id) ? this.keyIndex(id) * CONFIG.keyEvery : id; }, // the regular level a key level branches from
+  keyAfter: L => (L % CONFIG.keyEvery === 0 ? 'K' + L / CONFIG.keyEvery : null),     // the key level branching off regular level L
+  keyCount: () => Math.floor(CONFIG.levelCount / CONFIG.keyEvery),
+  world(id) { return Math.floor((this.parent(id) - 1) / CONFIG.worldSize); },
+  num(id) { return this.parent(id); }, // the level number used for score and coins
+  // Key levels alternate: K1 falls right, K2 left, K3 right, ...
+  direction(id) { return this.isKey(id) ? (this.keyIndex(id) % 2 ? 'right' : 'left') : 'down'; },
+  setup(id) {
+    return this.isKey(id)
+      ? { cols: CONFIG.keyBoard, rows: CONFIG.keyBoard, gravity: this.direction(id), key: true }
       : { cols: CONFIG.cols, rows: CONFIG.rows, gravity: 'down', key: false };
   },
   rawRegular: L => CONFIG.baseInterval * Math.pow(CONFIG.speedFactor, L - 1),
-  // ms per step, never faster than the speed cap. Works for any level number,
-  // so more worlds can be added later.
-  interval(L) {
-    const ms = this.isKey(L) ? this.rawRegular(L + 1) * CONFIG.keyVsRegular : this.rawRegular(L);
+  // ms per step, never faster than the speed cap. Key levels are 10% faster
+  // than the regular level they branch from. Works for any level number.
+  interval(id) {
+    const ms = this.isKey(id) ? this.rawRegular(this.parent(id)) * CONFIG.keyVsRegular : this.rawRegular(id);
     return Math.max(CONFIG.minInterval, ms);
   },
-  levelsOf: w => Array.from({ length: CONFIG.worldSize }, (_, i) => w * CONFIG.worldSize + i + 1),
-  stars: L => Store.get().stars[L] || 0,
+  levelsOf: w => Array.from({ length: CONFIG.worldSize }, (_, i) => w * CONFIG.worldSize + i + 1), // regular levels only
+  keysOf(w) { return this.levelsOf(w).map(L => this.keyAfter(L)).filter(Boolean); },
+  stars: id => Store.get().stars[id] || 0,
   worldStars(w) { return this.levelsOf(w).reduce((a, L) => a + this.stars(L), 0); },
-  // Progress toward opening world w: stars (up to 2 per level) in the world before it.
+  // Progress toward opening world w: stars (up to 2 per REGULAR level) in the
+  // world before it. Key levels are optional and never needed.
   unlockProgress(w) {
     const need = CONFIG.worldUnlockStars;
     return { have: this.levelsOf(w - 1).reduce((a, L) => a + Math.min(need, this.stars(L)), 0), need: need * CONFIG.worldSize };
@@ -770,11 +882,12 @@ const Levels = {
     const p = this.unlockProgress(w);
     return p.have >= p.need;
   },
-  unlocked(L) {
-    const w = this.world(L);
-    if (!this.worldUnlocked(w)) return false;
-    return (L - 1) % CONFIG.worldSize === 0 || this.stars(L - 1) >= 1;
+  unlocked(id) {
+    if (!this.worldUnlocked(this.world(id))) return false;
+    if (this.isKey(id)) return this.stars(this.parent(id)) >= 1; // opens once its regular level is finished
+    return (id - 1) % CONFIG.worldSize === 0 || this.stars(id - 1) >= 1;
   },
+  label(id) { return this.isKey(id) ? id : String(id); },
 };
 
 /* ---------- 3c. Coins & boosters ---------- */
@@ -791,9 +904,14 @@ const BOOSTERS = {
 };
 const IN_LEVEL_BOOSTERS = ['bomb', 'swap', 'slow', 'magic', 'sweep']; // the 6th is on the "Oops" screen
 const Economy = {
-  coinsFor(level, base) {
-    const key = Levels.isKey(level) ? CONFIG.keyScoreBonus : 1;
-    return Math.round(base * CONFIG.coinRate * (1 + CONFIG.coinLevelStep * (level - 1)) * key);
+  coinsFor(id, base) { // key levels pay 3× the coins of the level they branch from
+    const L = Levels.num(id), key = Levels.isKey(id) ? CONFIG.keyCoinMultiplier : 1;
+    return Math.round(base * CONFIG.coinRate * (1 + CONFIG.coinLevelStep * (L - 1)) * key);
+  },
+  // A key level's treasure chest: a few different boosters, one of each.
+  chest() {
+    const pool = Object.keys(BOOSTERS).sort(() => Math.random() - .5);
+    return Object.fromEntries(pool.slice(0, CONFIG.chestItems).map(id => [id, 1]));
   },
 };
 
@@ -849,6 +967,90 @@ const GEMS = {
   S: { shape: 'square', color: '#3DDC5A' },
   Z: { shape: 'circle', color: '#FF3B6B' },
   M: { shape: 'star', color: '#FFD21F' },
+};
+
+// ----- Animal casts -----
+// Each world has 7 animals, one per shape; the shape never changes, only the
+// look. A recipe lists colors and features for the animal painter in Art.
+const CASTS = [
+  { // 1. Sunny Meadow – the original hand-drawn animals
+    I: { name: 'Snake', color: '#17CC5A', custom: true },
+    O: { name: 'Panda', color: '#FF9ECB', custom: true },
+    T: { name: 'Turtle', color: '#00CCDD', custom: true },
+    L: { name: 'Giraffe', color: '#FFB000', custom: true },
+    J: { name: 'Elephant', color: '#3B7BFF', custom: true },
+    S: { name: 'Caterpillar', color: '#A6E812', custom: true },
+    Z: { name: 'Crab', color: '#FF3B4E', custom: true },
+  },
+  { // 2. Animal Kingdom
+    I: { name: 'Cheetah', color: '#FFB72B', belly: '#FFF0C8', pattern: { type: 'spots', color: '#3A2410' }, ears: 'small', tears: true, tail: 'ringed', tailColor: '#3A2410', tailTip: '#FFB72B' },
+    O: { name: 'Lion', color: '#FFC861', top: 'mane', maneColor: '#D9641E', headColor: '#FFD98A', ears: 'round', earColor: '#F2A93B', snout: '#FFF2D6' },
+    T: { name: 'Hippo', color: '#B48AE0', belly: '#E7D3F8', ears: 'small', snout: '#D9BFF2', cheek: 'rgba(255, 100, 170, .6)' },
+    L: { name: 'Flamingo', color: '#FF6FAE', belly: '#FFC2DB', wings: { color: '#FF4F98' }, beak: '#2E2152', feet: '#FF4F98', top: 'crest', topColor: '#FF4F98' },
+    J: { name: 'Rhino', color: '#94A3B8', belly: '#D2D9E3', ears: 'pointy', earColor: '#94A3B8', top: 'nosehorn', tail: 'tuft' },
+    S: { name: 'Zebra', color: '#FFFFFF', pattern: { type: 'stripes', color: '#2E2152', withHead: false }, ears: 'horse', earColor: '#FFFFFF', top: 'mohawk', snout: '#A7AFBF', tail: 'tuft', tailColor: '#2E2152' },
+    Z: { name: 'Monkey', color: '#B5713C', belly: '#F2CBA0', faceColor: '#F2CBA0', ears: 'round', earColor: '#B5713C', earInner: '#F2CBA0', tail: 'curl' },
+  },
+  { // 3. Ocean Reef
+    I: { name: 'Whale', color: '#3D6BFF', belly: '#C4D6FF', top: 'spout', tail: 'fin', fin: '#2A4FD6', cheek: 'rgba(255, 120, 170, .6)' },
+    O: { name: 'Octopus', color: '#B45CFF', headColor: '#C98BFF', tentacles: '#9A3CF0', pattern: { type: 'dots', color: '#E3C2FF' } },
+    T: { name: 'Starfish', color: '#FF8A3D', pattern: { type: 'dots', color: '#FFD49A', withHead: true } },
+    L: { name: 'Seahorse', color: '#FFCE1F', belly: '#FFF1A6', pattern: { type: 'scales', color: '#E59A00' }, top: 'crest', topColor: '#FF8A1F', beak: '#E59A00', tail: 'curl', tailColor: '#E59A00' },
+    J: { name: 'Dolphin', color: '#5ACBF5', belly: '#E8F8FF', fin: '#2FA6D8', tail: 'fin', tailColor: '#2FA6D8', snout: '#BCE9FA' },
+    S: { name: 'Clownfish', color: '#FF6A1A', pattern: { type: 'bands', color: '#FFFFFF', color2: '#2E2152' }, fin: '#FF8A3D', tail: 'fin', tailColor: '#E8500A' },
+    Z: { name: 'Jellyfish', color: '#FF8FD0', pattern: { type: 'dots', color: '#FFD6F0' }, tentacles: '#FF4FB0', cheek: 'rgba(255, 60, 150, .7)' },
+  },
+  { // 4. Snowy Mountains
+    I: { name: 'Seal', color: '#9BA9C4', belly: '#DEE6F3', pattern: { type: 'spots', color: '#7D8DAA' }, whiskers: true, snout: '#C9D3E3', tail: 'fin', tailColor: '#7D8DAA' },
+    O: { name: 'Polar bear', color: '#E9F1FF', headColor: '#FFFFFF', ears: 'round', earColor: '#F4F8FF', earInner: '#C9D6EA', snout: '#E1E8F3' },
+    T: { name: 'Snowy owl', color: '#EDF3FB', pattern: { type: 'spots', color: '#7A8AA8' }, top: 'tufts', earColor: '#C9D6EA', beak: '#FFB000', wings: { color: '#D4DFEE' } },
+    L: { name: 'Reindeer', color: '#B5703F', belly: '#F2D6B8', top: 'antlers', ears: 'small', earColor: '#B5703F', nose: '#FF3B4E', tail: 'fluffy', tailColor: '#F2D6B8' },
+    J: { name: 'Fox', color: '#FF8A1F', belly: '#FFF4E2', ears: 'pointy', earColor: '#FF8A1F', earTip: '#2E2152', faceColor: '#FFF4E2', tail: 'fluffy', tailColor: '#FF8A1F' },
+    S: { name: 'Bunny', color: '#C8B6F2', belly: '#FFFFFF', ears: 'long', earColor: '#C8B6F2', earInner: '#FFB3D9', nose: '#FF7AB6', tail: 'fluffy', tailColor: '#FFFFFF' },
+    Z: { name: 'Penguin', color: '#2E3C6E', belly: '#FFFFFF', faceColor: '#FFFFFF', beak: '#FF9F1C', feet: '#FF9F1C', wings: { color: '#1E2A54' } },
+  },
+  { // 5. Candy Sky
+    I: { name: 'Dragon', color: '#2FD57E', belly: '#FFE14D', pattern: { type: 'spikes', color: '#FF5E8A' }, top: 'spikes', topColor: '#FF5E8A', tail: 'spade', tailColor: '#FF5E8A' },
+    O: { name: 'Unicorn', color: '#FFE6F5', headColor: '#FFFFFF', top: 'horn', ears: 'pointy', earColor: '#FFFFFF', earInner: '#FFB8E1', cheek: 'rgba(255, 120, 200, .7)', unicorn: true },
+    T: { name: 'Butterfly', color: '#7A5CFF', wings: { big: true, color: '#FF8DC7', color2: '#FFE14D' }, top: 'antenna', topColor: '#FFE14D' },
+    L: { name: 'Bluebird', color: '#45B8FF', belly: '#FFE07A', wings: { color: '#2E8FE0' }, beak: '#FF9F1C', top: 'crest', topColor: '#2E8FE0' },
+    J: { name: 'Bat', color: '#6A4CA0', belly: '#9C82CC', ears: 'pointy', earColor: '#6A4CA0', earInner: '#FF9FD0', wings: { color: '#4A3280' }, fangs: true },
+    S: { name: 'Bee', color: '#FFD21F', pattern: { type: 'bands', color: '#2E2152' }, wings: { color: 'rgba(230, 247, 255, .95)' }, top: 'antenna', topColor: '#2E2152', tail: 'stinger' },
+    Z: { name: 'Moon owl', color: '#3E449A', pattern: { type: 'stars', color: '#FFE780' }, top: 'tufts', earColor: '#2C3178', faceColor: '#8F96E8', beak: '#FFB000' },
+  },
+];
+// Special animals: one per key level (K1 … K10). Once unlocked they sometimes
+// appear instead of a regular animal of the same shape, in any world.
+const SPECIALS = [
+  { key: 'K1', t: 'O', name: 'Koala', color: '#AAB6C6', headColor: '#C3CCD8', ears: 'fluffy', earColor: '#AAB6C6', earInner: '#FFFFFF', bigNose: true },
+  { key: 'K2', t: 'T', name: 'Peacock', color: '#1E7FE0', pattern: { type: 'eyes', color: '#1E7FE0', color2: '#3DDC84' }, top: 'crest', topColor: '#1EC8D8', beak: '#FFB000' },
+  { key: 'K3', t: 'I', name: 'Red panda', color: '#D9542B', belly: '#5A2A1A', faceColor: '#FFF4E6', ears: 'pointy', earColor: '#D9542B', earInner: '#FFFFFF', tail: 'ringed', tailColor: '#8A2E12', tailTip: '#F08A5A' },
+  { key: 'K4', t: 'L', name: 'Chameleon', color: '#4CD964', pattern: { type: 'rainbow' }, top: 'crest', topColor: '#FFB000', tail: 'curl', tailColor: '#2FAE4A' },
+  { key: 'K5', t: 'J', name: 'Sloth', color: '#B8987A', belly: '#D9C3A8', faceColor: '#F3E4CC', eyePatches: '#6B4E36', tail: 'fluffy', tailColor: '#9A7A5C' },
+  { key: 'K6', t: 'I', name: 'Narwhal', color: '#8DB6E8', belly: '#E3F0FF', pattern: { type: 'spots', color: '#6F98CC' }, top: 'tusk', tail: 'fin', tailColor: '#6F98CC' },
+  { key: 'K7', t: 'S', name: 'Axolotl', color: '#FFA8CF', belly: '#FFE0EE', pattern: { type: 'dots', color: '#FF7AB6' }, top: 'gills', topColor: '#FF4F98', tail: 'fin', tailColor: '#FF7AB6' },
+  { key: 'K8', t: 'Z', name: 'Toucan', color: '#2E2A3E', belly: '#FFE14D', faceColor: '#FFFFFF', bigBeak: '#FF8A1F', wings: { color: '#1C1928' } },
+  { key: 'K9', t: 'T', name: 'Hedgehog', color: '#C58A52', pattern: { type: 'quills', color: '#7A4A22' }, faceColor: '#F5DCBC', bigNose: true, ears: 'small', earColor: '#F5DCBC' },
+  { key: 'K10', t: 'L', name: 'Platypus', color: '#9A6B45', belly: '#C9A27C', duckBill: '#3E3A4A', feet: '#3E3A4A', tail: 'paddle', tailColor: '#6E4A2E' },
+];
+// SKINS: every look by id – 'w1.I' (world 2's I animal), 'sp.K3', …;
+// world 1 uses the short ids 'meadow.I'. Also the Magic block.
+const SKINS = {};
+CASTS.forEach((cast, w) => {
+  for (const [t, a] of Object.entries(cast)) SKINS[w ? `w${w}.${t}` : `meadow.${t}`] = { ...a, t, world: w };
+});
+SPECIALS.forEach(a => { SKINS['sp.' + a.key] = { ...a, special: true }; });
+SKINS['meadow.M'] = { t: 'M', name: 'Magic block', color: '#FFD21F', custom: true };
+const Cast = {
+  regular: (t, w) => (t === 'M' ? 'meadow.M' : (w % CASTS.length) ? `w${w % CASTS.length}.${t}` : `meadow.${t}`),
+  special: keyId => 'sp.' + keyId,
+  specialFor: keyId => SPECIALS.find(s => s.key === keyId),
+  // The look for a new piece: usually the world's animal, sometimes an unlocked special.
+  pick(t, w) {
+    const mine = SPECIALS.filter(s => s.t === t && Store.hasSpecial(s.key));
+    if (mine.length && Math.random() < CONFIG.specialChance) return { skin: 'sp.' + mine[Math.floor(Math.random() * mine.length)].key, special: true };
+    return { skin: this.regular(t, w), special: false };
+  },
 };
 
 // SHAPES[type][rotation] = cells after rotating clockwise `rotation` times.
@@ -1094,8 +1296,164 @@ const Art = (() => {
     },
   };
 
-  function render(t, r, size, dpr, mood) {
-    const n = PIECES[t].n;
+  // ----- The animal painter -----
+  // Every world animal and special animal (see SKINS) is described by a small
+  // recipe – colors, belly, pattern, ears, head extras, tail, wings – and
+  // painted here on top of the glossy tiles. The first world's animals keep
+  // their hand-made DRAW functions above.
+  const HEAD = { I: [3, 1], T: [1, 0], L: [2, 0], J: [0, 0], S: [2, 0], Z: [0, 0] };
+  const TAIL = { I: [0, 1], T: [2, 1], L: [0, 1], J: [2, 1], S: [0, 1], Z: [2, 1] };
+  const near = ([ax, ay], [bx, by]) => Math.abs(ax - bx) + Math.abs(ay - by) === 1;
+
+  function patternOn(g, cells, p) {
+    const { type, color, color2 } = p;
+    cells.forEach(([x, y], i) => {
+      const cx = x + .5, cy = y + .5, flip = i % 2 ? -1 : 1;
+      g.fillStyle = color; g.strokeStyle = color;
+      if (type === 'spots') {
+        for (const [dx, dy, r] of [[-.2, -.18, .1], [.17, -.04, .08], [-.04, .16, .07], [.22, .24, .05]]) { ell(g, cx + dx * flip, cy + dy, r, r * .8, .5); g.fill(); }
+      } else if (type === 'stripes') {
+        g.lineWidth = .085; g.lineCap = 'round';
+        for (const dx of [-.24, 0, .24]) { g.beginPath(); g.moveTo(cx + dx, y + .1); g.quadraticCurveTo(cx + dx + .08 * flip, cy - .05, cx + dx, y + .58); g.stroke(); }
+      } else if (type === 'bands') {
+        g.fillRect(x + .05, cy - .13, .9, .2);
+        if (color2) { g.lineWidth = .04; g.strokeStyle = color2; g.strokeRect(x + .05, cy - .13, .9, .2); }
+      } else if (type === 'dots') {
+        for (const [dx, dy] of [[-.22, -.2], [.18, -.22], [0, .02], [-.2, .2], [.22, .16]]) { circle(g, cx + dx * flip, cy + dy, .055); g.fill(); }
+      } else if (type === 'scales') {
+        g.lineWidth = .04;
+        for (const dy of [-.2, 0, .2]) for (const dx of [-.2, .05, .3]) { g.beginPath(); g.arc(cx + dx - (dy ? 0 : .12), cy + dy, .1, 0, Math.PI); g.stroke(); }
+      } else if (type === 'stars') {
+        for (const [dx, dy, r] of [[-.2, -.18, .09], [.2, 0, .07], [-.05, .2, .06]]) { starShape(g, cx + dx * flip, cy + dy, r); g.fill(); }
+      } else if (type === 'eyes') { // peacock feather eyes
+        for (const [dx, dy] of [[-.18, -.08], [.2, .1]]) {
+          ell(g, cx + dx * flip, cy + dy, .15, .19); fill(g, color2);
+          ell(g, cx + dx * flip, cy + dy + .02, .09, .12); fill(g, color);
+          circle(g, cx + dx * flip, cy + dy + .03, .045); fill(g, INK);
+        }
+      } else if (type === 'quills') {
+        for (const dx of [-.3, -.1, .1, .3]) { g.beginPath(); g.moveTo(cx + dx - .08, y + .45); g.lineTo(cx + dx + .02, y + .1); g.lineTo(cx + dx + .1, y + .45); g.closePath(); g.fill(); }
+      } else if (type === 'rainbow') {
+        const cs = ['#FF5E8A', '#FFB000', '#3DDC5A', '#1FD0F0', '#8A4DFF'];
+        g.fillStyle = cs[i % cs.length]; ell(g, cx, cy - .05, .3, .22); g.fill();
+      } else if (type === 'spikes') { // dragon back spikes along the top edge
+        for (const dx of [-.25, .05, .35]) { g.beginPath(); g.moveTo(cx + dx - .1, y + .2); g.lineTo(cx + dx, y + .04); g.lineTo(cx + dx + .1, y + .2); g.closePath(); g.fill(); }
+      }
+    });
+  }
+  function wingOn(g, x, y, w) {
+    if (w.big) { // butterfly-style wings
+      ell(g, x + .5, y + .4, .4, .34); fill(g, w.color); g.lineWidth = .05; g.strokeStyle = INK; g.stroke();
+      circle(g, x + .5, y + .38, .13); fill(g, w.color2 || '#FFE14D');
+      circle(g, x + .5, y + .38, .06); fill(g, '#fff');
+      return;
+    }
+    ell(g, x + .5, y + .44, .3, .19, -.25); fill(g, w.color);
+    g.lineWidth = .04; g.strokeStyle = shade(w.color, -.3); g.stroke();
+    g.beginPath(); g.moveTo(x + .3, y + .46); g.lineTo(x + .62, y + .38); g.moveTo(x + .34, y + .55); g.lineTo(x + .66, y + .47); g.stroke();
+  }
+  function tailOn(g, [tx, ty], [ox, oy], a) {
+    const x = tx + .5 + ox * .34, y = ty + .5 + oy * .34, c = a.tailColor || shade(a.color, -.3);
+    const px = -oy, py = ox; // perpendicular
+    g.fillStyle = c; g.strokeStyle = c; g.lineCap = 'round';
+    switch (a.tail) {
+      case 'tuft': g.lineWidth = .06; g.beginPath(); g.moveTo(x - ox * .2, y - oy * .2); g.lineTo(x + ox * .06, y + oy * .06); g.stroke(); circle(g, x + ox * .08, y + oy * .08, .07); g.fill(); break;
+      case 'fluffy': ell(g, x, y, .16, .16); g.fill(); circle(g, x + ox * .08, y + oy * .08, .07); fill(g, a.tailTip || '#fff'); break;
+      case 'fin': g.beginPath(); g.moveTo(x - ox * .12, y - oy * .12); g.lineTo(x + ox * .1 + px * .22, y + oy * .1 + py * .22); g.lineTo(x + ox * .02, y + oy * .02); g.lineTo(x + ox * .1 - px * .22, y + oy * .1 - py * .22); g.closePath(); g.fill(); break;
+      case 'curl': g.lineWidth = .07; g.beginPath(); g.arc(x, y, .1, 0, Math.PI * 1.6); g.stroke(); break;
+      case 'ringed': for (let i = 0; i < 3; i++) { circle(g, x - ox * .1 * i, y - oy * .1 * i, .09); fill(g, i % 2 ? c : a.tailTip || '#fff'); } break;
+      case 'stinger': g.beginPath(); g.moveTo(x - ox * .06 + px * .08, y - oy * .06 + py * .08); g.lineTo(x + ox * .14, y + oy * .14); g.lineTo(x - ox * .06 - px * .08, y - oy * .06 - py * .08); g.closePath(); fill(g, INK); break;
+      case 'spade': circle(g, x, y, .08); g.fill(); g.beginPath(); g.moveTo(x + ox * .2, y + oy * .2); g.lineTo(x + px * .1, y + py * .1); g.lineTo(x - px * .1, y - py * .1); g.closePath(); g.fill(); break;
+      case 'paddle': ell(g, x, y, .14, .1, Math.atan2(oy, ox)); g.fill(); break;
+    }
+  }
+  function tentaclesOn(g, cells, color, bottom) {
+    g.strokeStyle = color; g.lineWidth = .07; g.lineCap = 'round';
+    for (const [x, y] of cells) for (const dx of [.25, .5, .75]) {
+      const y0 = y + (bottom ? .62 : .7);
+      g.beginPath(); g.moveTo(x + dx, y0); g.quadraticCurveTo(x + dx + .08, y0 + .1, x + dx - .02, y0 + .24); g.stroke();
+    }
+  }
+  // The head, upright, centered on (0, 0), about one cell big.
+  function headOn(g, a) {
+    const ink = (w = .04) => { g.lineWidth = w; g.strokeStyle = INK; g.stroke(); };
+    const top = a.top || '';
+    if (top === 'mane') { // a ring of mane around the face
+      for (let i = 0; i < 12; i++) { const ang = i * Math.PI / 6; ell(g, Math.cos(ang) * .3, Math.sin(ang) * .3, .14, .1, ang); fill(g, a.maneColor); }
+    }
+    if (a.unicorn) ['#FF8DC7', '#FFD36E', '#8FE3B0', '#9EC5FF'].forEach((c, i) => { ell(g, -.3 + i * .04, -.18 + i * .1, .1, .16, .5); fill(g, c); });
+    const ear = a.ears, ec = a.earColor || a.color, ei = a.earInner || shade(ec, .45);
+    if (ear === 'round' || ear === 'small' || ear === 'fluffy') {
+      const r = ear === 'small' ? .07 : ear === 'fluffy' ? .16 : .12, ex = ear === 'fluffy' ? .33 : .27;
+      for (const s of [-1, 1]) { circle(g, s * ex, -.3, r); fill(g, ec); ink(.035); circle(g, s * ex, -.29, r * .5); fill(g, ei); }
+    } else if (ear === 'pointy' || ear === 'horse') {
+      const w = ear === 'horse' ? .07 : .11;
+      for (const s of [-1, 1]) {
+        g.beginPath(); g.moveTo(s * (.14), -.26); g.lineTo(s * (.24), -.46); g.lineTo(s * (.14 + w * 2.2), -.22); g.closePath(); fill(g, ec); ink(.035);
+        g.beginPath(); g.moveTo(s * (.18), -.27); g.lineTo(s * (.24), -.38); g.lineTo(s * (.28), -.25); g.closePath(); fill(g, a.earTip || ei);
+      }
+    } else if (ear === 'long') {
+      for (const s of [-1, 1]) { ell(g, s * .13, -.32, .08, .17, s * .15); fill(g, ec); ink(.035); ell(g, s * .13, -.31, .04, .11, s * .15); fill(g, ei); }
+    }
+    if (top === 'mohawk') { g.fillStyle = INK; for (let i = 0; i < 4; i++) { ell(g, -.08 + i * .05, -.36 + i * .015, .05, .09, .3); g.fill(); } }
+    if (top === 'antlers') { g.strokeStyle = a.topColor || '#D9B47A'; g.lineWidth = .05; g.lineCap = 'round'; for (const s of [-1, 1]) { g.beginPath(); g.moveTo(s * .14, -.26); g.lineTo(s * .26, -.45); g.moveTo(s * .2, -.36); g.lineTo(s * .36, -.36); g.moveTo(s * .23, -.41); g.lineTo(s * .17, -.48); g.stroke(); } }
+    if (top === 'tufts') for (const s of [-1, 1]) { g.beginPath(); g.moveTo(s * .16, -.24); g.lineTo(s * .34, -.44); g.lineTo(s * .36, -.2); g.closePath(); fill(g, a.earColor || shade(a.color, -.25)); ink(.035); }
+    if (top === 'antenna') { g.strokeStyle = INK; g.lineWidth = .035; for (const s of [-1, 1]) { g.beginPath(); g.moveTo(s * .08, -.26); g.quadraticCurveTo(s * .14, -.4, s * .22, -.42); g.stroke(); circle(g, s * .22, -.42, .05); fill(g, a.topColor || '#FF2E88'); } }
+    if (top === 'crest') for (const d of [-.08, 0, .08]) { ell(g, d, -.36, .04, .1, d * 3); fill(g, a.topColor || shade(a.color, -.2)); }
+    if (top === 'spikes') for (const d of [-.16, 0, .16]) { g.beginPath(); g.moveTo(d - .06, -.27); g.lineTo(d, -.44); g.lineTo(d + .06, -.27); g.closePath(); fill(g, a.topColor); ink(.03); }
+    if (top === 'spout') for (const [dx, dy] of [[-.1, -.4], [.06, -.44], [.16, -.36]]) { ell(g, dx, dy, .035, .05); fill(g, '#BFF0FF'); }
+    if (top === 'gills') for (const s of [-1, 1]) for (const dy of [-.18, -.04, .1]) { ell(g, s * .38, dy, .1, .04, s * (dy * 2)); fill(g, a.topColor); }
+    if (a.faceColor) { ell(g, 0, .04, .34, .3); fill(g, a.faceColor); }
+    if (a.eyePatches) for (const s of [-1, 1]) { ell(g, s * .19, -.04, .13, .11, s * .4); fill(g, a.eyePatches); }
+    if (a.snout) { ell(g, 0, .17, .16, .1); fill(g, a.snout); for (const s of [-1, 1]) { circle(g, s * .05, .15, .022); fill(g, INK); } }
+    face(g, .8, { cheek: a.cheek });
+    if (a.nose) { circle(g, 0, .1, .055); fill(g, a.nose); }
+    if (a.bigNose) { ell(g, 0, .1, .08, .1); fill(g, INK); }
+    if (a.beak) { g.beginPath(); g.moveTo(-.07, .07); g.lineTo(.07, .07); g.lineTo(0, .21); g.closePath(); fill(g, a.beak); ink(.025); }
+    if (a.bigBeak) { ell(g, .02, .14, .2, .07, .15); fill(g, a.bigBeak); ink(.03); ell(g, .14, .15, .07, .05, .15); fill(g, INK); }
+    if (a.duckBill) { ell(g, 0, .17, .19, .08); fill(g, a.duckBill); ink(.03); }
+    if (a.whiskers) { g.strokeStyle = INK; g.lineWidth = .02; for (const s of [-1, 1]) { g.beginPath(); g.moveTo(s * .2, .14); g.lineTo(s * .42, .1); g.moveTo(s * .2, .17); g.lineTo(s * .42, .2); g.stroke(); } }
+    if (a.tears) { g.strokeStyle = INK; g.lineWidth = .03; for (const s of [-1, 1]) { g.beginPath(); g.moveTo(s * .13, 0); g.lineTo(s * .17, .16); g.stroke(); } }
+    if (a.fangs) for (const s of [-1, 1]) { g.beginPath(); g.moveTo(s * .03, .15); g.lineTo(s * .07, .15); g.lineTo(s * .05, .21); g.closePath(); fill(g, '#fff'); }
+    if (top === 'horn' || top === 'tusk') { // unicorn horn / narwhal tusk
+      g.beginPath(); g.moveTo(-.06, -.26); g.lineTo(0, -.49); g.lineTo(.06, -.26); g.closePath();
+      fill(g, top === 'horn' ? '#FFD21F' : '#FFF8E6'); ink(.03);
+      g.beginPath(); g.moveTo(-.04, -.32); g.lineTo(.04, -.35); g.moveTo(-.03, -.39); g.lineTo(.03, -.41); g.stroke();
+    }
+    if (top === 'nosehorn') { g.beginPath(); g.moveTo(-.07, .2); g.lineTo(.0, -.0); g.lineTo(.07, .2); g.closePath(); fill(g, '#FFF4DA'); ink(.03); }
+  }
+  function paintAnimal(g, base, t, a) {
+    tiles(g, base, t, a.color);
+    if (t === 'O') { // big face over all four cells
+      if (a.pattern) patternOn(g, PIECES.O.cells, a.pattern); // shows around the big head
+      if (a.tentacles) tentaclesOn(g, [[0, 1], [1, 1]], a.tentacles, true);
+      g.save(); g.translate(1, .98); g.scale(1.9, 1.9);
+      circle(g, 0, .02, .4); fill(g, a.headColor || shade(a.color, .35)); g.lineWidth = .03; g.strokeStyle = INK; g.stroke();
+      headOn(g, a);
+      g.restore();
+      return;
+    }
+    const head = HEAD[t], tail = TAIL[t];
+    const body = PIECES[t].cells.filter(c => c[0] !== head[0] || c[1] !== head[1]);
+    if (a.belly) belly(g, body, a.belly);
+    if (a.pattern) patternOn(g, a.pattern.withHead ? PIECES[t].cells : body, a.pattern);
+    if (a.wings) {
+      const cells = a.wings.big ? body.filter(c => c[0] !== tail[0] || c[1] !== tail[1] || t === 'T').filter(c => !near(c, head) || t !== 'T') : [body.find(c => near(c, head))];
+      for (const [x, y] of cells) wingOn(g, x, y, a.wings);
+    }
+    if (a.fin) { const [x, y] = body.find(c => near(c, head)); g.beginPath(); g.moveTo(x + .28, y + .3); g.lineTo(x + .5, y + .06); g.lineTo(x + .72, y + .3); g.closePath(); fill(g, a.fin); g.lineWidth = .04; g.strokeStyle = INK; g.stroke(); }
+    if (a.tentacles) tentaclesOn(g, body, a.tentacles);
+    if (a.feet) for (const [x, y] of body) for (const dx of [.3, .7]) { ell(g, x + dx, y + .9, .09, .05); fill(g, a.feet); }
+    if (a.tail) {
+      const nb = body.find(c => (c[0] !== tail[0] || c[1] !== tail[1]) && near(c, tail)) || head;
+      tailOn(g, tail, [tail[0] - nb[0], tail[1] - nb[1]], a);
+    }
+    upright(g, base, head[0] + .5, head[1] + .5, () => headOn(g, a));
+  }
+
+  const skinOf = id => (SKINS[id] ? id : 'meadow.' + id); // 'I' → 'meadow.I'
+  function render(skin, r, size, dpr, mood) {
+    const s = SKINS[skin], t = s.t, n = PIECES[t].n;
     const c = document.createElement('canvas');
     c.width = c.height = Math.max(1, Math.round(n * size * dpr));
     const g = c.getContext('2d');
@@ -1107,21 +1465,22 @@ const Art = (() => {
     for (const [x, y] of PIECES[t].cells) g.rect(x, y, 1, 1);
     g.clip();
     MOOD = mood;
-    DRAW[t](g, base);
+    if (s.custom) DRAW[t](g, base); else paintAnimal(g, base, t, s);
     MOOD = '';
     shine(g, base, t);
     return c;
   }
-  function get(t, r, size, mood = '') {
+  function get(skin, r, size, mood = '') {
+    skin = skinOf(skin);
     const dpr = Math.min(window.devicePixelRatio || 1, 3);
-    const key = `${t}${r}@${size}x${dpr}${mood}`;
+    const key = `${skin}${r}@${size}x${dpr}${mood}`;
     let c = cache.get(key);
-    if (!c) { c = render(t, r, size, dpr, mood); cache.set(key, c); }
+    if (!c) { c = render(skin, r, size, dpr, mood); cache.set(key, c); }
     return c;
   }
   // Draw one cell (lx, ly) of a piece image at canvas position (px, py).
-  function drawCell(ctx, t, r, lx, ly, px, py, size, mood) {
-    const c = get(t, r, size, mood), d = c.width / PIECES[t].n;
+  function drawCell(ctx, skin, r, lx, ly, px, py, size, mood) {
+    const c = get(skin, r, size, mood), d = c.width / PIECES[SKINS[skinOf(skin)].t].n;
     ctx.drawImage(c, lx * d, ly * d, d, d, px, py, size, size);
   }
   function bounds(t) {
@@ -1129,19 +1488,23 @@ const Art = (() => {
     return { x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs) + 1, h: Math.max(...ys) - Math.min(...ys) + 1 };
   }
   // Draw a whole piece (spawn orientation) centered in a W×H area.
-  function drawCentered(ctx, t, size, W, H) {
-    const c = get(t, 0, size), d = c.width / PIECES[t].n, b = bounds(t);
+  function drawCentered(ctx, skin, size, W, H) {
+    skin = skinOf(skin);
+    const t = SKINS[skin].t, c = get(skin, 0, size), d = c.width / PIECES[t].n, b = bounds(t);
     const w = b.w * size, h = b.h * size;
     ctx.drawImage(c, b.x * d, b.y * d, b.w * d, b.h * d, (W - w) / 2, (H - h) / 2, w, h);
   }
-  // A standalone canvas element with the piece, for menus.
-  function pieceCanvas(t, size) {
-    const b = bounds(t), dpr = Math.min(window.devicePixelRatio || 1, 3);
+  // A standalone canvas element with the piece, for menus. A silhouette is a
+  // dark shape only (locked special animals).
+  function pieceCanvas(skin, size, silhouette) {
+    skin = skinOf(skin);
+    const b = bounds(SKINS[skin].t), dpr = Math.min(window.devicePixelRatio || 1, 3);
     const el = document.createElement('canvas');
     el.width = Math.round(b.w * size * dpr); el.height = Math.round(b.h * size * dpr);
     el.style.width = b.w * size + 'px'; el.style.height = b.h * size + 'px';
     const ctx = el.getContext('2d'); ctx.scale(dpr, dpr);
-    drawCentered(ctx, t, size, b.w * size, b.h * size);
+    drawCentered(ctx, skin, size, b.w * size, b.h * size);
+    if (silhouette) { ctx.globalCompositeOperation = 'source-in'; ctx.fillStyle = '#3A2C6B'; ctx.fillRect(0, 0, b.w * size, b.h * size); }
     return el;
   }
   // One glossy gem (circle, square or triangle) filling a cell, always upright.
@@ -1176,7 +1539,7 @@ const Art = (() => {
     return c;
   }
   // The main color of a piece: animal color, or gem color on key levels.
-  const colorOf = (t, key) => (key ? GEMS[t].color : PIECES[t].color);
+  const colorOf = (t, key, skin) => (key ? GEMS[t].color : skin ? SKINS[skinOf(skin)].color : PIECES[t].color);
   return { get, drawCell, drawCentered, pieceCanvas, gem, colorOf, clear: () => cache.clear() };
 })();
 
@@ -1188,7 +1551,7 @@ const Game = (() => {
   const S = {
     board: null, piece: null, next: null, bag: [], pieceId: 0,
     cols: CONFIG.cols, rows: CONFIG.rows, gravity: 'down', key: false,
-    level: 1, score: 0, base: 0, lines: 0, interval: 1000,
+    level: 1, num: 1, world: 0, score: 0, base: 0, lines: 0, interval: 1000,
     fallT: 0, lockT: 0, lockResets: 0, status: 'idle', // idle | playing | paused | won | over
     clearing: null, // { rows, t } while full rows flash before clearing
     fast: false,   // fast fall on while the player holds it
@@ -1224,14 +1587,15 @@ const Game = (() => {
     if (S.magicNext) { t = 'M'; S.magicNext = false; } // the queued piece waits until after the magic block
     else { t = S.next; S.next = fromBag(); }
     const minY = Math.min(...SHAPES[t][0].map(c => c[1]));
-    S.piece = { t, r: 0, x: Math.floor((S.cols - PIECES[t].n) / 2), y: -minY };
+    const look = t === 'M' ? { skin: 'meadow.M', special: false } : Cast.pick(t, S.world);
+    S.piece = { t, r: 0, x: Math.floor((S.cols - PIECES[t].n) / 2), y: -minY, skin: look.skin };
     S.pieceId++;
     S.fallT = 0; S.lockT = 0; S.lockResets = 0; S.fast = false; // each new piece starts at normal speed
     if (collides(t, 0, S.piece.x, S.piece.y)) { end('over'); return; }
-    Events.emit('spawn', { type: t, next: S.next });
+    Events.emit('spawn', { type: t, next: S.next, special: look.special });
   }
   function start(level) {
-    Object.assign(S, Levels.setup(level), {
+    Object.assign(S, Levels.setup(level), { world: Levels.world(level), num: Levels.num(level),
       bag: [], level, score: 0, base: 0, lines: 0,
       interval: Levels.interval(level), status: 'playing', frozen: false, clearing: null,
       slowT: 0, magicNext: false, chanceUsed: false,
@@ -1278,7 +1642,7 @@ const Game = (() => {
     if (S.status !== 'playing' || !S.piece) return false;
     const p = S.piece, from = p.y, to = ghostY();
     p.y = to;
-    Events.emit('hardDrop', { type: p.t, r: p.r, x: p.x, from, to });
+    Events.emit('hardDrop', { type: p.t, r: p.r, x: p.x, from, to, skin: p.skin });
     lock();
     return true;
   }
@@ -1289,7 +1653,7 @@ const Game = (() => {
     for (const [lx, ly] of SHAPES[p.t][p.r]) {
       const bx = p.x + lx, by = p.y + ly;
       if (by < 0) { toppedOut = true; continue; }
-      S.board[by][bx] = { t: p.t, r: p.r, lx, ly };
+      S.board[by][bx] = { t: p.t, r: p.r, lx, ly, skin: p.skin };
       cells.push([bx, by]);
     }
     S.piece = null;
@@ -1323,7 +1687,7 @@ const Game = (() => {
     }
     const points = CONFIG.lineScores[Math.min(rows.length, 4)];
     S.base += points;
-    S.score += Math.round(points * S.level * (S.key ? CONFIG.keyScoreBonus : 1));
+    S.score += Math.round(points * S.num * (S.key ? CONFIG.keyScoreBonus : 1));
     S.lines += rows.length;
     Events.emit('lines', { count: rows.length, total: S.lines, score: S.score });
     if (S.lines >= CONFIG.rowsPerLevel) { end('won'); return; }
@@ -1378,11 +1742,11 @@ const Game = (() => {
     const cells = [];
     for (let y = cy - 1; y <= cy + 1; y++) for (let x = cx - 1; x <= cx + 1; x++) {
       if (y < 0 || y >= S.rows || x < 0 || x >= S.cols || !S.board[y][x]) continue;
-      cells.push([x, y, S.board[y][x].t]);
+      cells.push([x, y, S.board[y][x].t, S.board[y][x].skin]);
       S.board[y][x] = null;
     }
     if (!cells.length) return false;
-    Events.emit('blast', { cells });
+    Events.emit('blast', { cells, cx, cy });
     return true;
   }
   function swap() { // replace the current piece with a different one
@@ -1394,17 +1758,19 @@ const Game = (() => {
     const spots = [[p.x, p.y], [p.x, Math.max(p.y, -minY)], [Math.floor((S.cols - PIECES[t].n) / 2), -minY]];
     const spot = spots.find(([x, y]) => !collides(t, 0, x, y));
     if (!spot) return false;
-    S.piece = { t, r: 0, x: spot[0], y: spot[1] };
+    const old = SHAPES[p.t][p.r].map(([lx, ly]) => [p.x + lx, p.y + ly]);
+    S.piece = { t, r: 0, x: spot[0], y: spot[1], skin: Cast.pick(t, S.world).skin };
     S.pieceId++; S.lockT = 0; S.fast = false;
-    Events.emit('swap', { type: t });
+    Events.emit('swap', { type: t, cells: old });
     return true;
   }
-  function slowMo() { if (!canBoost()) return false; S.slowT = CONFIG.slowMoMs; return true; }
-  function magic() { if (!canBoost() || S.magicNext) return false; S.magicNext = true; return true; }
+  function slowMo() { if (!canBoost()) return false; S.slowT = CONFIG.slowMoMs; Events.emit('slowMo', {}); return true; }
+  function magic() { if (!canBoost() || S.magicNext) return false; S.magicNext = true; Events.emit('magic', {}); return true; }
   function sweep() { // clear the bottom row (the far-side column on sideways levels)
     const y = S.rows - 1;
     if (!canBoost() || !S.board[y].some(Boolean)) return false;
     S.clearing = { rows: [y], t: 0, free: true };
+    Events.emit('sweep', { row: y });
     Events.emit('rowsFull', { rows: [y] });
     return true;
   }
@@ -1424,18 +1790,48 @@ const Game = (() => {
 })();
 
 /* ---------- 7. Effects ---------- */
-// Short (under half a second) visual effects. They only listen to game
-// events and never change the rules, so the game never waits for them.
-// Everything is in the logical frame, so it turns with sideways boards.
+// Visual effects only: they listen to game events and never change the rules,
+// so the controls never wait for them. Two layers:
+//  - the board layer (logical frame, turns with sideways boards): landing,
+//    line flashes, booster effects, the happy dance;
+//  - the screen layer (a full-screen canvas): the level-complete party.
+// Particles come from fixed pools that are reused (no garbage, capped counts)
+// so older iPhones stay smooth. Every effect also emits Events 'fx' { name }
+// – the place to attach sounds later.
 const Effects = (() => {
-  const parts = [];
-  let landing = null, flash = null, shake = 0, trail = null, dropped = false;
   const reduced = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
   const rand = (a, b) => a + Math.random() * (b - a);
+  const TAU = Math.PI * 2;
+  const sfx = (name, data) => Events.emit('fx', { name, ...data });
   const key = (x, y) => y * Game.state.cols + x;
-  const MAX_PARTS = 260;
-  const add = p => { if (parts.length < MAX_PARTS) parts.push({ life: 0, g: 0, spin: 0, rot: 0, ...p }); };
+  const RAINBOW = ['#FF5E8A', '#FFB000', '#FFE14D', '#3DDC5A', '#1FD0F0', '#8A4DFF'];
 
+  // A reusable particle pool. Full pool = new particles are simply skipped.
+  function makePool(size) {
+    const items = Array.from({ length: size }, () => ({ alive: false }));
+    let cursor = 0;
+    return {
+      items,
+      add(p) {
+        for (let n = 0; n < size; n++) {
+          const i = (cursor + n) % size, it = items[i];
+          if (it.alive) continue;
+          it.alive = true; it.life = 0; it.g = 0; it.spin = 0; it.rot = 0; it.floor = 0; it.delay = 0; it.color = '#fff';
+          Object.assign(it, p);
+          cursor = i + 1;
+          return it;
+        }
+        return null;
+      },
+      clear() { for (const it of items) it.alive = false; },
+      any() { return items.some(it => it.alive); },
+    };
+  }
+  const board = makePool(320), screen = makePool(300);
+  let landing = null, flash = null, shake = 0, trail = null, dropped = false;
+  let bombFlash = null, rings = [], broom = null, dance = null, magicT = 0;
+
+  // ----- Board layer -----
   function onLock({ cells }) {
     if (!cells.length) return;
     const set = new Set(cells.map(([x, y]) => key(x, y)));
@@ -1446,23 +1842,24 @@ const Effects = (() => {
     for (const [x, y] of cells) { // a puff of dust from under the piece
       if (set.has(key(x, y + 1))) continue;
       for (let i = 0; i < (power > 1 ? 5 : 3); i++) {
-        add({ kind: 'dust', x: x + .5 + rand(-.35, .35), y: y + .95, vx: rand(-1.8, 1.8) * power, vy: rand(-1.4, -.4) * power, max: rand(260, 380), size: rand(.13, .22) });
+        board.add({ kind: 'dust', x: x + .5 + rand(-.35, .35), y: y + .95, vx: rand(-1.8, 1.8) * power, vy: rand(-1.4, -.4) * power, max: rand(260, 380), size: rand(.13, .22) });
       }
     }
     for (let i = 0; i < 2; i++) { // and a couple of sparkles
       const [x, y] = cells[Math.floor(Math.random() * cells.length)];
-      add({ kind: 'spark', x: x + rand(.1, .9), y: y + rand(.1, .5), vx: rand(-.8, .8), vy: rand(-2.2, -1.2), max: rand(300, 420), size: rand(.16, .24), color: '#FFF3A0' });
+      board.add({ kind: 'spark', x: x + rand(.1, .9), y: y + rand(.1, .5), vx: rand(-.8, .8), vy: rand(-2.2, -1.2), max: rand(300, 420), size: rand(.16, .24), color: '#FFF3A0' });
     }
+    sfx('land', { hard: power > 1 });
   }
   function onRowsFull({ rows }) { // more lines at once = more, faster particles
     const S = Game.state, n = rows.length;
     const per = 1 + n, power = 1 + n * .35;
     flash = { rows, t: 0 };
     for (const y of rows) for (let x = 0; x < S.cols; x++) {
-      const c = S.board[y][x], color = c ? Art.colorOf(c.t, S.key) : '#fff';
+      const c = S.board[y][x], color = c ? Art.colorOf(c.t, S.key, c.skin) : '#fff';
       for (let i = 0; i < per; i++) {
         const spark = Math.random() < .3;
-        add({
+        board.add({
           kind: spark ? 'spark' : 'bit', x: x + .5, y: y + .5,
           vx: rand(-3, 3) * power, vy: rand(-6, -1.5) * (1 + n * .15), g: 16, spin: rand(-8, 8),
           max: rand(360, 480), size: rand(.14, .24) * (1 + n * .08), color: spark ? '#FFF3A0' : color,
@@ -1470,42 +1867,174 @@ const Effects = (() => {
       }
     }
     if (n >= 2 && !reduced) shake = 120 + n * 40;
+    sfx('lines', { count: n });
   }
-  function onHardDrop({ type, r, x, from, to }) { // a quick streak behind the dropping piece
+  function onLines({ count }) {
+    landing = null; // lines moved – the landed piece may be gone
+    if (count >= 3) cheer(count >= 4 ? 'Amazing!' : 'Super!');
+  }
+  // A big bouncy word over the board with sparkles.
+  function cheer(text) {
+    const el = document.getElementById('cheer');
+    el.textContent = text;
+    el.hidden = false;
+    el.classList.remove('go'); void el.offsetWidth; el.classList.add('go');
+    clearTimeout(cheer.timer);
+    cheer.timer = setTimeout(() => { el.hidden = true; }, 1100);
+    const S = Game.state;
+    for (let i = 0; i < 24; i++) board.add({ kind: 'spark', x: S.cols / 2 + rand(-3, 3), y: S.rows * .45 + rand(-2, 2), vx: rand(-4, 4), vy: rand(-5, 1), g: 4, max: rand(450, 700), size: rand(.2, .35), color: RAINBOW[i % RAINBOW.length] });
+    sfx('cheer', { text });
+  }
+  function onHardDrop({ type, r, x, from, to, skin }) { // a quick streak behind the dropping piece
     dropped = true;
     if (to - from < 1) return;
     const cols = new Map(); // column -> top-most cell row of the piece (in its box)
     for (const [lx, ly] of SHAPES[type][r]) if (!cols.has(lx) || ly < cols.get(lx)) cols.set(lx, ly);
-    const color = Art.colorOf(type, Game.state.key);
+    const color = Art.colorOf(type, Game.state.key, skin);
     trail = { t: 0, color, streaks: [...cols].map(([lx, ly]) => ({ x: x + lx, y0: Math.max(0, from + ly), y1: to + ly })) };
+    sfx('drop');
   }
-  function onBlast({ cells }) { // Bomb booster: a colorful burst from every cleared block
-    const key = Game.state.key;
-    for (const [x, y, t] of cells) {
-      for (let i = 0; i < 4; i++) {
-        const spark = Math.random() < .35;
-        add({
-          kind: spark ? 'spark' : 'bit', x: x + .5, y: y + .5, vx: rand(-5, 5), vy: rand(-6, 2), g: 10, spin: rand(-8, 8),
-          max: rand(320, 460), size: rand(.16, .28), color: spark ? '#FFF3A0' : Art.colorOf(t, key),
+  // 💣 A big pixel explosion: flash, shockwave, square pixels that bounce, smoke, shake.
+  function onBlast({ cells, cx, cy }) {
+    const S = Game.state;
+    bombFlash = { x: cx + .5, y: cy + .5, t: 0 };
+    rings.push({ x: cx + .5, y: cy + .5, t: 0, max: 380, r1: 3.6, color: '255, 255, 255', w: .35 });
+    for (const [x, y, t, skin] of cells) {
+      const color = Art.colorOf(t, S.key, skin);
+      for (let i = 0; i < 9; i++) {
+        board.add({
+          kind: 'pixel', x: x + rand(.15, .85), y: y + rand(.15, .85), vx: rand(-7, 7), vy: rand(-10, -2), g: 24,
+          spin: rand(-6, 6), max: rand(600, 850), size: rand(.1, .2), color: Math.random() < .2 ? '#FFF3A0' : color, floor: S.rows,
         });
       }
     }
-    if (!reduced) shake = 220;
+    for (let i = 0; i < 7; i++) board.add({ kind: 'smoke', x: cx + .5 + rand(-1, 1), y: cy + .5 + rand(-1, 1), vx: rand(-.6, .6), vy: rand(-1.4, -.4), max: rand(500, 700), size: rand(.35, .6) });
+    if (!reduced) shake = 260;
+    sfx('bomb');
   }
-  function reset() { parts.length = 0; landing = null; flash = null; shake = 0; trail = null; dropped = false; }
+  // 🔄 Swap: a poof cloud where the old piece was.
+  function onSwap({ cells }) {
+    for (const [x, y] of cells) {
+      for (let i = 0; i < 3; i++) board.add({ kind: 'puff', x: x + .5 + rand(-.3, .3), y: y + .5 + rand(-.3, .3), vx: rand(-1, 1), vy: rand(-1, 1), max: rand(300, 420), size: rand(.3, .45) });
+      board.add({ kind: 'spark', x: x + .5, y: y + .5, vx: rand(-2, 2), vy: rand(-2.5, -.5), max: 380, size: .2, color: '#FFF3A0' });
+    }
+    sfx('swap');
+  }
+  // ⏳ Slow-mo: blue clock ripples from the middle (the blue tint is drawn by Render).
+  function onSlow() {
+    const S = Game.state;
+    for (let i = 0; i < 3; i++) rings.push({ x: S.cols / 2, y: S.rows / 2, t: -i * 160, max: 700, r1: Math.max(S.cols, S.rows) * .55, color: '110, 190, 255', w: .3 });
+    sfx('slowMo');
+  }
+  // ⭐ Magic block: a rainbow burst now, and a sparkle trail while it falls (see update).
+  function onMagic() { sfx('magic'); }
+  // 🧹 Sweep: a broom swishes across the row.
+  function onSweep({ row }) { broom = { row, t: 0 }; sfx('sweep'); }
+  // ❤️ Second chance: hearts burst up from the bottom.
+  function onContinue() {
+    landing = null; trail = null;
+    const S = Game.state;
+    for (let i = 0; i < 26; i++) board.add({ kind: 'heart', x: rand(0, S.cols), y: S.rows - rand(0, 3), vx: rand(-1.5, 1.5), vy: rand(-9, -4), g: 3, spin: rand(-2, 2), max: rand(700, 1000), size: rand(.25, .42), color: Math.random() < .5 ? '#FF4F8B' : '#FF8DB8' });
+    sfx('secondChance');
+  }
+  // A special animal arrives: a rainbow sparkle around it.
+  function onSpawn({ special }) {
+    if (!special) return;
+    const p = Game.state.piece;
+    if (!p) return;
+    for (const [lx, ly] of SHAPES[p.t][p.r]) for (let i = 0; i < 3; i++) {
+      board.add({ kind: 'spark', x: p.x + lx + rand(0, 1), y: p.y + ly + rand(0, 1), vx: rand(-2, 2), vy: rand(-2, 2), max: rand(400, 600), size: rand(.18, .28), color: RAINBOW[i * 2 % RAINBOW.length] });
+    }
+    sfx('special');
+  }
+  function reset() {
+    board.clear(); screen.clear(); rings = [];
+    landing = null; flash = null; shake = 0; trail = null; dropped = false; bombFlash = null; broom = null; dance = null;
+    const el = document.getElementById('cheer'); if (el) el.hidden = true;
+  }
+
+  // ----- Screen layer: the level-complete party -----
+  let fxCanvas, fx, W = 0, H = 0, dpr = 1, screenOn = false;
+  function sizeScreen() {
+    fxCanvas = fxCanvas || document.getElementById('fx');
+    fx = fx || fxCanvas.getContext('2d');
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    fxCanvas.width = Math.round(W * dpr); fxCanvas.height = Math.round(H * dpr);
+  }
+  function celebrate() {
+    dance = { t: 0 };
+    sfx('levelComplete');
+    if (reduced) return;
+    sizeScreen();
+    const cx = W / 2, cy = H * .42;
+    for (let i = 0; i < 70; i++) screen.add({ kind: 'confetti', x: rand(0, W), y: rand(-H * .4, -10), vx: rand(-40, 40), vy: rand(140, 280), spin: rand(-8, 8), max: rand(1800, 2600), size: rand(5, 9), color: RAINBOW[i % RAINBOW.length] });
+    for (let i = 0; i < 26; i++) {
+      const a = rand(0, TAU), v = rand(160, 520);
+      screen.add({ kind: 'star', x: cx, y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v, g: 120, spin: rand(-6, 6), max: rand(900, 1500), size: rand(6, 16), color: Math.random() < .7 ? '#FFD21F' : '#FFF3A0' });
+    }
+    [[200, .25, .22], [600, .78, .18], [1000, .5, .12]].forEach(([delay, fxp, fyp], b) => {
+      const color = RAINBOW[(b * 2) % RAINBOW.length], x = W * fxp, y = H * fyp;
+      for (let i = 0; i < 36; i++) {
+        const a = i / 36 * TAU, v = rand(140, 260);
+        screen.add({ kind: 'firework', x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, g: 160, max: rand(800, 1100), size: rand(2, 3.5), color: i % 3 ? color : '#FFFFFF', delay });
+      }
+    });
+    screenOn = true;
+  }
+  // Coins rain into the coin counter on the "Well done!" panel.
+  function coinRain(target, count) {
+    if (reduced || !target) return;
+    sizeScreen();
+    const b = target.getBoundingClientRect(), tx = b.left + 18, ty = b.top + b.height / 2;
+    for (let i = 0; i < Math.min(16, count); i++) {
+      screen.add({ kind: 'coin', x: rand(W * .1, W * .9), y: rand(-60, -10), fromX: 0, fromY: 0, toX: tx, toY: ty, delay: i * 55, max: 750 + i * 55, size: rand(9, 12) });
+    }
+    screenOn = true;
+  }
 
   function update(dt) {
     if (landing && (landing.t += dt) > 420) landing = null;
     if (flash && (flash.t += dt) > CONFIG.clearDelay) flash = null;
     if (trail && (trail.t += dt) > 260) trail = null;
+    if (bombFlash && (bombFlash.t += dt) > 160) bombFlash = null;
+    if (broom && (broom.t += dt) > 420) broom = null;
+    if (dance && (dance.t += dt) > 1600) dance = null;
+    rings = rings.filter(r => (r.t += dt) < r.max);
     shake = Math.max(0, shake - dt);
-    const s = dt / 1000;
-    for (let i = parts.length - 1; i >= 0; i--) {
-      const p = parts[i];
+    const S = Game.state, s = dt / 1000;
+    if (S.piece && S.piece.t === 'M' && (magicT += dt) > 45) { // rainbow trail behind the magic block
+      magicT = 0;
+      board.add({ kind: 'spark', x: S.piece.x + rand(.1, .9), y: S.piece.y + rand(.2, .9), vx: rand(-.5, .5), vy: rand(-1.4, -.4), max: 450, size: rand(.14, .24), color: RAINBOW[Math.floor(Math.random() * RAINBOW.length)] });
+    }
+    if (broom) for (let i = 0; i < 2; i++) board.add({ kind: 'dust', x: broom.t / 420 * (S.cols + 1) - .5, y: broom.row + rand(.3, 1), vx: rand(-2, 0), vy: rand(-1.5, -.3), max: 320, size: rand(.12, .2) });
+    for (const p of board.items) {
+      if (!p.alive) continue;
       p.life += dt;
-      if (p.life >= p.max) { parts.splice(i, 1); continue; }
+      if (p.life >= p.max) { p.alive = false; continue; }
       p.vy += p.g * s; p.x += p.vx * s; p.y += p.vy * s; p.rot += p.spin * s;
-      if (p.kind === 'dust') { p.vx *= .92; p.vy *= .92; }
+      if (p.kind === 'dust' || p.kind === 'puff' || p.kind === 'smoke') { p.vx *= .92; p.vy *= .92; }
+      if (p.floor && p.y > p.floor - p.size) { p.y = p.floor - p.size; p.vy *= -.45; p.vx *= .8; } // bounce on the board floor
+    }
+    if (screenOn) {
+      let any = false;
+      for (const p of screen.items) {
+        if (!p.alive) continue;
+        any = true;
+        p.life += dt;
+        if (p.life >= p.max) { p.alive = false; continue; }
+        if (p.life < p.delay) continue;
+        if (p.kind === 'coin') {
+          if (!p.fromX) { p.fromX = p.x; p.fromY = p.y; }
+          const q = Math.min(1, (p.life - p.delay) / (p.max - p.delay)), e = q * q;
+          p.x = p.fromX + (p.toX - p.fromX) * e; p.y = p.fromY + (p.toY - p.fromY) * e;
+          continue;
+        }
+        p.vy += p.g * s; p.x += p.vx * s; p.y += p.vy * s; p.rot += p.spin * s;
+        if (p.kind === 'confetti') p.vx += Math.sin(p.life / 200) * 6 * s;
+        if (p.kind === 'star') { p.vx *= .985; p.vy *= .985; }
+      }
+      screenOn = any;
     }
   }
   // Squash on impact, then a small stretch back (along the fall direction).
@@ -1515,6 +2044,12 @@ const Effects = (() => {
     if (p >= 1) return null;
     const a = (p < .4 ? .2 * Math.sin(Math.PI * p / .4) : -.07 * Math.sin(Math.PI * (p - .4) / .6)) * landing.power;
     return { sx: 1 + a * .7, sy: 1 - a };
+  }
+  // The happy dance after a level: each block hops (in cells, against gravity).
+  function danceOffset(x, y) {
+    if (!dance || reduced) return 0;
+    const q = dance.t / 1600;
+    return Math.abs(Math.sin(dance.t / 1000 * Math.PI * 3.2 + x * .7 + y * .35)) * .32 * (1 - q);
   }
   // Drawn under the pieces: the instant-drop trail.
   function drawUnder(ctx, cell) {
@@ -1527,7 +2062,7 @@ const Effects = (() => {
       if (bottom <= top) continue;
       const gr = ctx.createLinearGradient(0, top, 0, bottom);
       gr.addColorStop(0, 'rgba(255, 255, 255, 0)');
-      gr.addColorStop(.7, trail.color);
+      gr.addColorStop(.7, s.color || trail.color);
       gr.addColorStop(1, '#fff');
       ctx.fillStyle = gr;
       const w = cell * (.62 - .3 * q), x = s.x * cell + (cell - w) / 2;
@@ -1536,49 +2071,133 @@ const Effects = (() => {
     }
     ctx.restore();
   }
-  function starPath(ctx, r) {
+  function starPath(ctx, r, points = 4) {
     ctx.beginPath();
-    for (let i = 0; i < 8; i++) {
-      const a = i * Math.PI / 4, rad = i % 2 ? r * .38 : r;
+    for (let i = 0; i < points * 2; i++) {
+      const a = -Math.PI / 2 + i * Math.PI / points, rad = i % 2 ? r * (points === 5 ? .45 : .38) : r;
       ctx.lineTo(Math.cos(a) * rad, Math.sin(a) * rad);
     }
     ctx.closePath();
   }
+  function heartPath(ctx, r) {
+    ctx.beginPath();
+    ctx.moveTo(0, r * .9);
+    ctx.bezierCurveTo(-r * 1.4, -r * .1, -r * .6, -r * 1.1, 0, -r * .35);
+    ctx.bezierCurveTo(r * .6, -r * 1.1, r * 1.4, -r * .1, 0, r * .9);
+    ctx.closePath();
+  }
   function draw(ctx, cell) {
+    const S = Game.state;
     if (flash) {
       const q = flash.t / CONFIG.clearDelay;
       ctx.fillStyle = `rgba(255, 255, 255, ${(.85 * Math.abs(Math.sin(q * Math.PI * 2))).toFixed(3)})`;
-      for (const y of flash.rows) ctx.fillRect(0, y * cell, Game.state.cols * cell, cell);
+      for (const y of flash.rows) ctx.fillRect(0, y * cell, S.cols * cell, cell);
     }
-    for (const p of parts) {
+    if (bombFlash) {
+      const q = bombFlash.t / 160, x = bombFlash.x * cell, y = bombFlash.y * cell, r = cell * 3.2;
+      const gr = ctx.createRadialGradient(x, y, 0, x, y, r);
+      gr.addColorStop(0, `rgba(255, 255, 240, ${(1 - q).toFixed(3)})`); gr.addColorStop(1, 'rgba(255, 240, 200, 0)');
+      ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+    }
+    for (const r of rings) {
+      if (r.t < 0) continue;
+      const q = r.t / r.max;
+      ctx.strokeStyle = `rgba(${r.color}, ${(1 - q).toFixed(3)})`;
+      ctx.lineWidth = Math.max(1, r.w * cell * (1 - q));
+      ctx.beginPath(); ctx.arc(r.x * cell, r.y * cell, r.r1 * cell * (1 - Math.pow(1 - q, 2)), 0, TAU); ctx.stroke();
+    }
+    if (broom) { // a white swish with a broom in front
+      const q = broom.t / 420, front = q * (S.cols + 1) - .5;
+      const gr = ctx.createLinearGradient((front - 3) * cell, 0, front * cell, 0);
+      gr.addColorStop(0, 'rgba(255, 255, 255, 0)'); gr.addColorStop(1, 'rgba(255, 255, 255, .85)');
+      ctx.fillStyle = gr; ctx.fillRect(Math.max(0, front - 3) * cell, broom.row * cell + cell * .15, Math.min(3, front + .5) * cell, cell * .7);
+      ctx.save();
+      ctx.translate(front * cell, (broom.row + .5) * cell); ctx.rotate(-.5 + Math.sin(q * 20) * .25);
+      ctx.font = `${Math.round(cell * 1.2)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('🧹', 0, 0);
+      ctx.restore();
+    }
+    for (const p of board.items) {
+      if (!p.alive) continue;
       const q = p.life / p.max, r = p.size * cell;
       ctx.save();
       ctx.translate(p.x * cell, p.y * cell); ctx.rotate(p.rot);
-      if (p.kind === 'dust') {
-        ctx.globalAlpha = .8 * (1 - q); ctx.fillStyle = '#FFF7E3';
-        ctx.beginPath(); ctx.arc(0, 0, r * (1 + q), 0, Math.PI * 2); ctx.fill();
-      } else if (p.kind === 'spark') {
-        ctx.globalAlpha = 1 - q * q; ctx.fillStyle = p.color;
-        starPath(ctx, r * (1.2 - q * .5)); ctx.fill();
-      } else {
-        ctx.globalAlpha = q > .7 ? (1 - q) / .3 : 1;
-        ctx.fillStyle = p.color; ctx.strokeStyle = '#2E2152'; ctx.lineWidth = Math.max(1, r * .28);
-        ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = 'rgba(255, 255, 255, .6)';
-        ctx.beginPath(); ctx.arc(-r * .3, -r * .3, r * .3, 0, Math.PI * 2); ctx.fill();
+      switch (p.kind) {
+        case 'dust':
+          ctx.globalAlpha = .8 * (1 - q); ctx.fillStyle = '#FFF7E3';
+          ctx.beginPath(); ctx.arc(0, 0, r * (1 + q), 0, TAU); ctx.fill(); break;
+        case 'puff':
+          ctx.globalAlpha = .9 * (1 - q); ctx.fillStyle = '#FFFFFF';
+          ctx.beginPath(); ctx.arc(0, 0, r * (.6 + q), 0, TAU); ctx.fill(); break;
+        case 'smoke':
+          ctx.globalAlpha = .45 * (1 - q); ctx.fillStyle = '#9C97B5';
+          ctx.beginPath(); ctx.arc(0, 0, r * (.7 + q * 1.2), 0, TAU); ctx.fill(); break;
+        case 'spark':
+          ctx.globalAlpha = 1 - q * q; ctx.fillStyle = p.color;
+          starPath(ctx, r * (1.2 - q * .5)); ctx.fill(); break;
+        case 'pixel': // square bomb pixels
+          ctx.globalAlpha = q > .75 ? (1 - q) / .25 : 1; ctx.fillStyle = p.color;
+          ctx.fillRect(-r, -r, r * 2, r * 2);
+          ctx.strokeStyle = 'rgba(46, 33, 82, .7)'; ctx.lineWidth = Math.max(1, r * .3); ctx.strokeRect(-r, -r, r * 2, r * 2); break;
+        case 'heart':
+          ctx.globalAlpha = q > .7 ? (1 - q) / .3 : 1; ctx.fillStyle = p.color;
+          heartPath(ctx, r); ctx.fill(); ctx.strokeStyle = '#2E2152'; ctx.lineWidth = Math.max(1, r * .15); ctx.stroke(); break;
+        default: // 'bit'
+          ctx.globalAlpha = q > .7 ? (1 - q) / .3 : 1;
+          ctx.fillStyle = p.color; ctx.strokeStyle = '#2E2152'; ctx.lineWidth = Math.max(1, r * .28);
+          ctx.beginPath(); ctx.arc(0, 0, r, 0, TAU); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = 'rgba(255, 255, 255, .6)';
+          ctx.beginPath(); ctx.arc(-r * .3, -r * .3, r * .3, 0, TAU); ctx.fill();
       }
       ctx.restore();
+    }
+  }
+  function drawScreen() {
+    if (!fx) return;
+    fx.setTransform(1, 0, 0, 1, 0, 0);
+    fx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+    if (!screenOn) return;
+    fx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    for (const p of screen.items) {
+      if (!p.alive || p.life < p.delay) continue;
+      const q = (p.life - p.delay) / (p.max - p.delay);
+      fx.save();
+      fx.translate(p.x, p.y); fx.rotate(p.rot);
+      if (p.kind === 'confetti') {
+        fx.globalAlpha = q > .8 ? (1 - q) / .2 : 1; fx.fillStyle = p.color;
+        fx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2 * (1 + Math.sin(p.life / 90)));
+      } else if (p.kind === 'star') {
+        fx.globalAlpha = q > .6 ? (1 - q) / .4 : 1; fx.fillStyle = p.color;
+        starPath(fx, p.size, 5); fx.fill(); fx.strokeStyle = '#2E2152'; fx.lineWidth = 1.5; fx.stroke();
+      } else if (p.kind === 'firework') {
+        fx.globalAlpha = 1 - q; fx.fillStyle = p.color;
+        fx.beginPath(); fx.arc(0, 0, p.size, 0, TAU); fx.fill();
+      } else if (p.kind === 'coin') {
+        fx.fillStyle = '#FFC21A'; fx.strokeStyle = '#2E2152'; fx.lineWidth = 2;
+        fx.beginPath(); fx.arc(0, 0, p.size, 0, TAU); fx.fill(); fx.stroke();
+        fx.fillStyle = '#FFF3A0'; fx.beginPath(); fx.arc(-p.size * .3, -p.size * .3, p.size * .3, 0, TAU); fx.fill();
+      }
+      fx.restore();
     }
   }
   Events.on('hardDrop', onHardDrop); // fires just before 'lock'
   Events.on('lock', onLock);
   Events.on('rowsFull', onRowsFull);
+  Events.on('lines', onLines);
   Events.on('blast', onBlast);
-  Events.on('lines', () => { landing = null; }); // lines moved – the landed piece may be gone
+  Events.on('swap', onSwap);
+  Events.on('slowMo', onSlow);
+  Events.on('magic', onMagic);
+  Events.on('sweep', onSweep);
+  Events.on('continue', onContinue);
+  Events.on('spawn', onSpawn);
   Events.on('boardChanged', () => { landing = null; });
-  Events.on('continue', () => { landing = null; trail = null; });
+  Events.on('levelComplete', () => celebrate());
   Events.on('start', reset);
-  return { update, draw, drawUnder, squash, landing: () => landing, shaking: () => shake > 0 };
+  return {
+    update, draw, drawUnder, drawScreen, squash, danceOffset, coinRain, sizeScreen,
+    landing: () => landing, shaking: () => shake > 0,
+  };
 })();
 
 /* ---------- 8. Scene ---------- */
@@ -1843,13 +2462,13 @@ const Render = (() => {
   }
   function tile(c, x, y, mood) {
     if (Game.state.key) atCell(x, y, () => ctx.drawImage(Art.gem(c.t, cell), -cell / 2, -cell / 2, cell, cell));
-    else Art.drawCell(ctx, c.t, c.r, c.lx, c.ly, x * cell, y * cell, cell, mood);
+    else Art.drawCell(ctx, c.skin || c.t, c.r, c.lx, c.ly, x * cell, y * cell, cell, mood);
   }
   function drawPiece(p, y, alpha) {
     const cells = SHAPES[p.t][p.r].filter(([, ly]) => y + ly >= 0);
     ctx.globalAlpha = alpha;
     if (alpha === 1) for (const [lx, ly] of cells) cellShadow(p.x + lx, y + ly);
-    for (const [lx, ly] of cells) tile({ t: p.t, r: p.r, lx, ly }, p.x + lx, y + ly);
+    for (const [lx, ly] of cells) tile({ t: p.t, r: p.r, lx, ly, skin: p.skin }, p.x + lx, y + ly);
     ctx.globalAlpha = 1;
   }
   function drawNext(S) {
@@ -1857,7 +2476,7 @@ const Render = (() => {
     nctx.clearRect(0, 0, NEXT_W, NEXT_H);
     const nt = S.magicNext ? 'M' : S.next; // a queued magic block comes first
     if (!nt) return;
-    if (!S.key) { Art.drawCentered(nctx, nt, nt === 'I' ? 13 : 16, NEXT_W, NEXT_H); return; }
+    if (!S.key) { Art.drawCentered(nctx, Cast.regular(nt, S.world), nt === 'I' ? 13 : 16, NEXT_W, NEXT_H); return; }
     // Gems, turned the way the piece will appear on the sideways board.
     const pts = SHAPES[nt][0].map(([x, y]) => [view.a * x + view.c * y, view.b * x + view.d * y]);
     const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
@@ -1885,7 +2504,10 @@ const Render = (() => {
     }
     for (let y = 0; y < S.rows; y++) for (let x = 0; x < S.cols; x++) {
       const c = S.board[y][x];
-      if (c && !landed(x, y)) tile(c, x, y);
+      if (!c || landed(x, y)) continue;
+      const hop = Effects.danceOffset(x, y); // the happy dance after a level
+      if (hop) { ctx.save(); ctx.translate(0, -hop * cell); tile(c, x, y, 'happy'); ctx.restore(); }
+      else tile(c, x, y);
     }
     if (land) { // the piece that just landed: squash & bounce, happy face
       const sq = Effects.squash(), cells = [];
@@ -1905,6 +2527,10 @@ const Render = (() => {
     if (S.piece) {
       drawPiece(S.piece, Game.ghostY(), .28);
       drawPiece(S.piece, S.piece.y, 1);
+    }
+    if (S.slowT > 0) { // Slow-mo: a gentle blue tint, fading out at the end
+      ctx.fillStyle = `rgba(90, 170, 255, ${(.16 * Math.min(1, S.slowT / 1500)).toFixed(3)})`;
+      ctx.fillRect(0, 0, S.cols * cell, S.rows * cell);
     }
     Effects.draw(ctx, cell);
     drawNext(S);
@@ -2065,6 +2691,7 @@ const UI = (() => {
   const star = on => `<svg class="star${on ? ' on' : ''}" viewBox="0 0 24 24" aria-hidden="true"><path d="${STAR_PATH}"/><ellipse class="glint" cx="9.6" cy="9" rx="1.6" ry="1" transform="rotate(-35 9.6 9)"/></svg>`;
   const LOCK = '<svg class="lock" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="3"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
   const KEY = '<svg class="key-ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M21 21 39 39M32 32l4-4M37 37l4-4" fill="none" stroke="#2E2152" stroke-width="9" stroke-linecap="round"/><path d="M21 21 39 39M32 32l4-4M37 37l4-4" fill="none" stroke="url(#keyGold)" stroke-width="4" stroke-linecap="round"/><circle cx="15" cy="15" r="10" fill="url(#keyGold)" stroke="#2E2152" stroke-width="3.5"/><circle cx="15" cy="15" r="3.6" fill="#2E2152"/><ellipse cx="12" cy="11" rx="3" ry="1.6" fill="#fff" opacity=".8" transform="rotate(-35 12 11)"/></svg>';
+  const CHEST = '<svg class="chest-ico" viewBox="0 0 48 40" aria-hidden="true"><rect x="5" y="16" width="38" height="20" rx="4" fill="#C9772B" stroke="#2E2152" stroke-width="3"/><path d="M5 18c0-9 6-13 19-13s19 4 19 13z" fill="#E08E3A" stroke="#2E2152" stroke-width="3" stroke-linejoin="round"/><path d="M14 6v30M34 6v30" stroke="#FFC21A" stroke-width="4"/><rect x="20" y="15" width="8" height="9" rx="2" fill="#FFE14D" stroke="#2E2152" stroke-width="2.5"/></svg>';
   const ui = { current: null };
 
   const coinChip = n => `<i class="coin" aria-hidden="true"></i><span>${n}</span>`;
@@ -2075,6 +2702,7 @@ const UI = (() => {
     if (name === 'home') renderHome();
     if (name === 'map') renderMap();
     if (name === 'settings') renderSettings();
+    if (name === 'zoo') renderZoo();
     if (name === 'game') { renderBoosters(); requestAnimationFrame(() => { Scene.resize(); Render.resize(); Render.draw(); }); }
   }
 
@@ -2148,10 +2776,20 @@ const UI = (() => {
       const [x0, y0] = pts[i - 1], [x1, y1] = pts[i], my = (y0 + y1) / 2;
       d += ` C${x0},${my} ${x1},${my} ${x1},${y1}`;
     }
+    // Side paths: after every 5th level a short golden branch leads to a key level.
+    const keyPts = {};
+    let branches = '';
+    for (let L = CONFIG.keyEvery; L <= CONFIG.levelCount; L += CONFIG.keyEvery) {
+      const [x, y] = pts[L - 1], kx = x > W / 2 ? W * .16 : W * .84, ky = y + gap * .55;
+      keyPts[Levels.keyAfter(L)] = [kx, ky];
+      branches += `M${x},${y} Q${(x + kx) / 2},${y - 10} ${kx},${ky} `;
+    }
     wrap.insertAdjacentHTML('beforeend',
       `<svg class="road" viewBox="0 0 ${W} ${WORLDS.length * secH}" preserveAspectRatio="none" aria-hidden="true">
         <path d="${d}" fill="none" stroke="rgba(46,33,82,.25)" stroke-width="26" stroke-linecap="round"/>
         <path d="${d}" fill="none" stroke="#FFF7E3" stroke-width="9" stroke-dasharray="1 20" stroke-linecap="round"/>
+        <path d="${branches}" fill="none" stroke="rgba(46,33,82,.25)" stroke-width="18" stroke-linecap="round"/>
+        <path d="${branches}" fill="none" stroke="#FFD21F" stroke-width="7" stroke-dasharray="1 14" stroke-linecap="round"/>
       </svg>`);
 
     WORLDS.forEach((wd, w) => { // world banners: name and stars, or a lock with progress
@@ -2172,8 +2810,9 @@ const UI = (() => {
 
     let current = 0, scrollY = 0;
     for (let L = 1; L <= CONFIG.levelCount && !current; L++) if (Levels.unlocked(L) && !Levels.stars(L)) current = L;
-    pts.forEach(([x, y], i) => {
-      const level = i + 1, got = data.stars[level] || 0;
+    const nodes = pts.map(([x, y], i) => [i + 1, x, y]).concat(Object.entries(keyPts).map(([id, [x, y]]) => [id, x, y]));
+    for (const [level, x, y] of nodes) {
+      const got = Levels.stars(level);
       const locked = !Levels.unlocked(level), key = Levels.isKey(level);
       const btn = document.createElement('button');
       btn.className = 'node' + (key ? ' key' : '') + (locked ? ' locked' : '') + (level === current ? ' current' : '');
@@ -2190,6 +2829,17 @@ const UI = (() => {
         btn.addEventListener('click', () => startLevel(level));
       }
       wrap.appendChild(btn);
+      if (key) { // the reward: a chest and the special animal (a silhouette until won)
+        const sp = Cast.specialFor(level), won = Store.hasSpecial(level);
+        const reward = document.createElement('div');
+        reward.className = 'key-reward' + (won ? ' won' : '');
+        reward.style.left = x + 'px'; reward.style.top = (y - 64) + 'px';
+        if (!won) reward.innerHTML = CHEST;
+        reward.appendChild(Art.pieceCanvas(Cast.special(level), 13, !won));
+        reward.setAttribute('aria-label', won ? `${sp.name} found here` : 'Reward: a treasure chest and a special animal');
+        reward.setAttribute('role', 'img');
+        wrap.appendChild(reward);
+      }
       if (level === data.lastLevel) scrollY = y;
       if (level === current) { // a little panda waits next to the level to play
         const buddy = Art.pieceCanvas('O', 22);
@@ -2198,11 +2848,40 @@ const UI = (() => {
         buddy.style.top = y + 'px';
         wrap.appendChild(buddy);
       }
-    });
+    }
     requestAnimationFrame(() => { // open the map where the player last played
       const sc = $('mapScroll');
       sc.scrollTop = scrollY - sc.clientHeight / 2;
     });
+  }
+
+  // ----- Animal collection -----
+  // Every world's cast as cards, then the special animals: in color once
+  // unlocked, otherwise a silhouette with a key.
+  function renderZoo() {
+    const body = $('zooBody');
+    body.innerHTML = '';
+    const card = (skin, name, locked) => {
+      const c = document.createElement('div');
+      c.className = 'zoo-card' + (locked ? ' locked' : '');
+      c.appendChild(Art.pieceCanvas(skin, 20, locked));
+      c.insertAdjacentHTML('beforeend', locked ? `<span class="zoo-key">${KEY}</span><b>?</b>` : `<b>${name}</b>`);
+      c.setAttribute('role', 'img');
+      c.setAttribute('aria-label', locked ? 'A secret animal – win its key level' : name);
+      return c;
+    };
+    const section = (title, cards, worldIndex) => {
+      const h = document.createElement('h3');
+      h.className = 'zoo-title';
+      h.textContent = title;
+      if (worldIndex !== undefined) h.style.setProperty('--wc', WORLDS[worldIndex].frame[1]);
+      const grid = document.createElement('div');
+      grid.className = 'zoo-grid';
+      cards.forEach(c => grid.appendChild(c));
+      body.append(h, grid);
+    };
+    section('Special friends', SPECIALS.map(s => card(Cast.special(s.key), s.name, !Store.hasSpecial(s.key))));
+    CASTS.forEach((cast, w) => section(WORLDS[w].name, TYPES.map(t => card(Cast.regular(t, w), cast[t].name)), w));
   }
 
   // ----- Settings -----
@@ -2215,7 +2894,7 @@ const UI = (() => {
   }
 
   // ----- Game -----
-  let lastLevel = 1, introTimer = 0;
+  let lastLevel = 1, nextLevel = 2, introTimer = 0;
   function applyWorld(w) {
     const f = WORLDS[w].frame, game = $('game');
     game.style.setProperty('--f1', f[0]); game.style.setProperty('--f2', f[1]); game.style.setProperty('--f3', f[2]);
@@ -2353,11 +3032,26 @@ const UI = (() => {
     coinLine.hidden = !coins;
     coinLine.firstElementChild.textContent = '0';
     coinLine.setAttribute('aria-label', `${coins} coins earned`);
-    if (coins) setTimeout(() => countUp(coinLine.firstElementChild, coins), 450);
+    if (coins) setTimeout(() => { countUp(coinLine.firstElementChild, coins); Effects.coinRain(coinLine, coins); }, 700);
+    // Key levels, first time: a treasure chest of boosters and a new special animal.
+    const prize = $('winPrize');
+    prize.hidden = !(first && Levels.isKey(level));
+    if (!prize.hidden) {
+      const items = Economy.chest(), sp = Cast.specialFor(level);
+      Store.addItems(items);
+      Store.unlockSpecial(level);
+      $('prizeItems').innerHTML = Object.keys(items).map((id, i) => `<span style="--i:${i}" aria-label="${BOOSTERS[id].name}">${BOOSTERS[id].icon}</span>`).join('');
+      $('friendArt').innerHTML = '';
+      $('friendArt').appendChild(Art.pieceCanvas(Cast.special(level), 24));
+      $('friendName').textContent = sp.name;
+      prize.classList.remove('play'); void prize.offsetWidth; prize.classList.add('play');
+    }
     updateHud();
     $('winStars').innerHTML = star(got >= 1) + star(got >= 2) + star(got >= 3);
     $('winScore').textContent = score;
-    const next = level + 1, nextOpen = next <= CONFIG.levelCount && Levels.unlocked(next);
+    // Next: the main path continues after the level (or after the level a key level branches from).
+    const next = Levels.num(level) + 1, nextOpen = next <= CONFIG.levelCount && Levels.unlocked(next);
+    nextLevel = next;
     $('nextLevelBtn').hidden = !nextOpen;
     // At the end of a world whose next world is still locked: show the star progress.
     const lockNote = $('winLock');
@@ -2396,7 +3090,8 @@ const UI = (() => {
     $('resumeBtn').addEventListener('click', togglePause);
     $('pauseRestart').addEventListener('click', () => startLevel(lastLevel));
     $('pauseMap').addEventListener('click', () => { $('pauseOverlay').hidden = true; show('map'); });
-    $('nextLevelBtn').addEventListener('click', () => startLevel(lastLevel + 1));
+    $('nextLevelBtn').addEventListener('click', () => startLevel(nextLevel));
+    $('mapZoo').addEventListener('click', () => show('zoo'));
     $('winRetry').addEventListener('click', () => startLevel(lastLevel));
     $('winMap').addEventListener('click', () => { $('winOverlay').hidden = true; show('map'); });
     $('overRetry').addEventListener('click', () => startLevel(lastLevel));
@@ -2419,7 +3114,7 @@ const UI = (() => {
       if (document.hidden && Game.state.status === 'playing') togglePause();
     });
     window.addEventListener('resize', () => {
-      if (ui.current === 'game') { Scene.resize(); Render.resize(); }
+      if (ui.current === 'game') { Scene.resize(); Render.resize(); Effects.sizeScreen(); }
       else if (ui.current === 'map') renderMap();
       else if (ui.current === 'home') renderHome();
     });
@@ -2559,12 +3254,13 @@ const Shop = (() => {
   Input.init();
   UI.init();
   Shop.init();
+  Effects.sizeScreen();
   UI.show('home');
   let last = performance.now();
   function frame(now) {
     const dt = Math.min(100, now - last);
     last = now;
-    if (UI.current === 'game') { Game.update(dt); Effects.update(dt); Scene.update(dt); Scene.draw(); Render.draw(); UI.tick(); }
+    if (UI.current === 'game') { Game.update(dt); Effects.update(dt); Scene.update(dt); Scene.draw(); Render.draw(); Effects.drawScreen(); UI.tick(); }
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
