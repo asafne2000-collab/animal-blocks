@@ -314,7 +314,104 @@ body.in-game #scene { display: block; }
   .turn-phone svg { width: 120px; height: 120px; }
 }
 
+/* ---------- Coins, chips ---------- */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.coin {
+  display: inline-block; width: 1.15em; height: 1.15em; border-radius: 50%; vertical-align: -.2em; flex: none;
+  background: radial-gradient(circle at 35% 30%, #FFF6B8 0 18%, transparent 19%), radial-gradient(circle, #FFC21A 0 52%, #E89400 53% 60%, #FFC21A 61%);
+  border: 2px solid var(--ink); box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .15);
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 5px; height: 40px; padding: 0 12px; border-radius: 999px;
+  background: var(--gloss-cream); border: 3px solid var(--ink); box-shadow: 0 3px 0 var(--ink);
+  font-weight: 900; font-size: 1.05rem; font-variant-numeric: tabular-nums;
+}
+.chip svg { width: 22px; height: 22px; }
+.bar .chip + .chip { margin-left: -4px; }
+.bar .shop-btn { margin-left: auto; }
+.pop { animation: pop .35s ease-out; }
+@keyframes pop { 40% { transform: scale(1.3); } }
+
+/* ---------- Boosters in a level ---------- */
+.boosters { display: flex; justify-content: center; gap: 10px; flex: none; padding: 2px 0 10px; }
+.boosters[hidden] { display: none; }
+.booster {
+  position: relative; width: 54px; height: 54px; border-radius: 50%; flex: none;
+  display: grid; place-items: center; font-size: 1.6rem; line-height: 1;
+  background: var(--gloss-cream); border: 4px solid var(--ink); box-shadow: var(--depth);
+}
+.booster:active { transform: translateY(3px); box-shadow: var(--depth-pressed); }
+.booster.empty { opacity: .45; }
+.booster.aiming { background: var(--gloss-berry); outline: 4px solid #fff; animation: hop .9s ease-in-out infinite; }
+.booster .ring { /* Slow-mo time left */
+  position: absolute; inset: -10px; width: calc(100% + 20px); height: calc(100% + 20px);
+  transform: rotate(-90deg); pointer-events: none; display: none;
+}
+.booster.running .ring { display: block; }
+.booster .ring circle { fill: none; stroke: var(--berry); stroke-width: 3.5; stroke-linecap: round; }
+.badge {
+  position: absolute; top: -6px; right: -8px; min-width: 24px; height: 24px; padding: 0 5px; border-radius: 999px;
+  display: grid; place-items: center; background: var(--gloss-berry); color: #fff; border: 2.5px solid var(--ink);
+  font-size: .8rem; font-weight: 900; font-variant-numeric: tabular-nums;
+}
+.booster.empty .badge { background: var(--cream); color: var(--ink); }
+.frame.aiming { outline: 5px dashed #fff; outline-offset: 4px; cursor: crosshair; }
+.panel .coins-won { display: flex; align-items: center; gap: 6px; font-size: 1.6rem; font-weight: 900; color: #B86E00; font-variant-numeric: tabular-nums; }
+.btn.chance-btn { overflow: visible; font-size: 2rem; }
+
+/* ---------- Shop ---------- */
+.tabs { display: flex; gap: 6px; padding: 4px; border-radius: 999px; background: rgba(46, 33, 82, .12); }
+.tab {
+  width: 58px; height: 44px; border-radius: 999px; border: 3px solid transparent; background: none;
+  font-size: 1.4rem; display: grid; place-items: center;
+}
+.tab .coin { font-size: 1.3rem; }
+.tab[aria-selected="true"] { background: var(--gloss-cream); border-color: var(--ink); box-shadow: 0 3px 0 var(--ink); }
+#shop .bar .chip { margin-left: auto; }
+.inventory {
+  display: flex; justify-content: space-between; gap: 4px; padding: 8px 10px; margin-bottom: 12px;
+  border-radius: 20px; background: rgba(255, 255, 255, .55); border: 3px solid var(--ink);
+}
+.inv { position: relative; display: flex; flex-direction: column; align-items: center; font-size: 1.4rem; line-height: 1.1; }
+.inv b { font-size: .85rem; font-weight: 900; font-variant-numeric: tabular-nums; }
+.shop-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; margin: 0 -16px; padding: 4px 16px 20px; touch-action: pan-y;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-content: start; }
+.card {
+  position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center;
+  padding: 12px 10px; border-radius: 24px; background: var(--gloss-cream); border: 4px solid var(--ink); box-shadow: var(--depth);
+}
+.card .big-ico { font-size: 2.4rem; line-height: 1.1; }
+.card .name { font-size: 1rem; font-weight: 900; }
+.card .buys { display: flex; flex-direction: column; gap: 8px; width: 100%; margin-top: 2px; }
+.btn.buy { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: .35em .8em; min-height: 44px; font-size: 1rem; }
+.btn.buy .qty { font-weight: 900; }
+.btn.buy .price { display: inline-flex; align-items: center; gap: 4px; }
+.btn.buy.short { opacity: .5; }
+.nope { animation: nope .35s; }
+@keyframes nope { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+.test-mode {
+  grid-column: 1 / -1; justify-self: center; padding: 6px 14px; border-radius: 999px;
+  background: #FFE14D; border: 3px dashed var(--ink); font-weight: 900; font-size: .95rem;
+}
+.pack .btn.real { width: 100%; min-height: 48px; padding: .4em .6em; font-size: 1.15rem; }
+.pack.starter { grid-column: 1 / -1; background: linear-gradient(180deg, #FFF6FB, #FFD1EC); }
+.pack.starter .contents { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 10px; font-weight: 900; }
+.pack.starter .contents .coin { margin-right: 2px; }
+.coins-pack .stack { display: flex; justify-content: center; font-size: 1.6rem; min-height: 2.2rem; align-items: center; }
+.coins-pack .stack .coin + .coin { margin-left: -.45em; }
+.coins-pack .amount { font-size: 1.5rem; font-weight: 900; font-variant-numeric: tabular-nums; }
+.coins-pack .bonus {
+  position: absolute; top: -10px; right: -8px; padding: 2px 8px; border-radius: 999px;
+  background: var(--gloss-berry); color: #fff; border: 2.5px solid var(--ink); font-size: .8rem; font-weight: 900;
+}
+.panel.gate input {
+  width: 140px; height: 56px; text-align: center; font: inherit; font-size: 1.8rem; font-weight: 900; color: var(--ink);
+  border: 4px solid var(--ink); border-radius: 16px; background: #fff; -webkit-user-select: text; user-select: text;
+}
+.flyer { position: fixed; left: 0; top: 0; z-index: 60; font-size: 2rem; pointer-events: none; }
+
 @media (prefers-reduced-motion: reduce) {
+  .booster.aiming, .pop, .nope { animation: none; }
   .node.current { animation: none; }
   .dir-intro svg { animation: none; }
   .btn, .icon-btn { transition: none; }
@@ -376,8 +473,12 @@ body.in-game #scene { display: block; }
     <button class="icon-btn" data-go="home" aria-label="Back">
       <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
     </button>
-    <h2>Level map</h2>
-    <span class="star-count" id="mapStars"></span>
+    <h2 class="sr-only">Level map</h2>
+    <span class="chip" id="mapStars"></span>
+    <span class="chip coin-chip" id="mapCoins"></span>
+    <button class="icon-btn shop-btn" id="mapShop" aria-label="Shop">
+      <svg viewBox="0 0 24 24"><path d="M4 9h16l-1.4 10.2a2 2 0 0 1-2 1.8H7.4a2 2 0 0 1-2-1.8z"/><path d="M8.5 9V7a3.5 3.5 0 0 1 7 0v2"/></svg>
+    </button>
   </header>
   <div class="map-scroll" id="mapScroll"><div class="map-path" id="mapPath"></div></div>
 </section>
@@ -420,6 +521,35 @@ body.in-game #scene { display: block; }
   </div>
 </section>
 
+<!-- ============ SHOP ============ -->
+<section class="screen" id="shop">
+  <header class="bar">
+    <button class="icon-btn" id="shopBack" aria-label="Back">
+      <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <div class="tabs" role="tablist" aria-label="Shops">
+      <button class="tab" role="tab" data-tab="coins" aria-label="Coin shop"><i class="coin" aria-hidden="true"></i></button>
+      <button class="tab" role="tab" data-tab="real" aria-label="Real-money shop">💎</button>
+    </div>
+    <span class="chip coin-chip" id="shopCoins"></span>
+  </header>
+  <div class="inventory" id="inventory" aria-label="Your boosters"></div>
+  <div class="shop-body" id="shopBody"></div>
+
+  <!-- Parental gate: shown before every real-money purchase -->
+  <div class="overlay" id="gate" hidden>
+    <div class="panel gate">
+      <h2>Grown-ups only</h2>
+      <p id="gateQ"></p>
+      <input id="gateInput" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-label="Answer">
+      <div class="row">
+        <button class="btn" id="gateCancel">Cancel</button>
+        <button class="btn primary" id="gateOk">OK</button>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ============ GAME ============ -->
 <section class="screen" id="game">
   <header class="hud">
@@ -434,6 +564,7 @@ body.in-game #scene { display: block; }
     <div class="frame" id="frame"><canvas id="board"></canvas></div>
     <div class="dir-intro" id="dirIntro" hidden aria-hidden="true"><svg viewBox="0 0 120 96"><path d="M10 34h58V14l44 34-44 34V62H10z" fill="url(#arrowGloss)" stroke="#2E2152" stroke-width="6" stroke-linejoin="round"/><path d="M18 40h56V30" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".7"/></svg></div>
   </div>
+  <div class="boosters" id="boosters" hidden></div>
   <div class="rows" id="rows" role="img" aria-label="Rows cleared"></div>
 
   <div class="overlay" id="pauseOverlay" hidden>
@@ -454,6 +585,7 @@ body.in-game #scene { display: block; }
       <h2>Well done!</h2>
       <div class="big-stars" id="winStars"></div>
       <p class="panel-score"><span id="winScore">0</span></p>
+      <p class="coins-won" id="winCoins" hidden>+<span>0</span> <i class="coin" aria-hidden="true"></i></p>
       <p class="world-lock" id="winLock" hidden></p>
       <button class="btn primary big" id="nextLevelBtn">Next level</button>
       <div class="row">
@@ -467,6 +599,7 @@ body.in-game #scene { display: block; }
     <div class="panel">
       <div class="buddy" id="overBuddy"></div>
       <h2>Oops! Try again?</h2>
+      <button class="btn big chance-btn" id="chanceBtn" hidden aria-label="Second chance: keep playing">❤️<span class="badge" id="chanceCount"></span></button>
       <button class="btn primary big icon-only" id="overRetry" aria-label="Try again"><svg viewBox="0 0 24 24" class="ico"><use href="#i-retry"/></svg></button>
       <button class="btn icon-only" id="overMap" aria-label="Level map"><svg viewBox="0 0 24 24" class="ico"><use href="#i-map"/></svg></button>
     </div>
@@ -531,6 +664,14 @@ const CONFIG = {
   // 2 stars = one double clear somewhere in the level (1100);
   // 3 stars = a few multi-line clears (1500).
   starThresholds: { two: 1100, three: 1500 },
+  // Coins, earned once per level (first completion only): 10% of the level's
+  // points, but the level number counts gently (×1 at level 1 rising 4% per
+  // level, ×3 at level 50) instead of ×50 – otherwise late levels would pay
+  // 50× more and the shop would stop mattering. Key levels keep their +20%.
+  coinRate: 0.1,
+  coinLevelStep: 0.04,
+  slowMoMs: 30000,          // Slow-mo booster: half speed for 30 s
+  secondChanceRows: 5,      // Second chance clears this many bottom rows
 };
 
 /* ---------- 2. Events ---------- */
@@ -543,7 +684,10 @@ const Events = {
 /* ---------- 3. Store ---------- */
 const Store = (() => {
   const KEY = 'animalBlocks.v1';
-  const defaults = () => ({ lastLevel: 1, highScore: 0, stars: {}, best: {}, settings: { control: 'drag' } });
+  const defaults = () => ({
+    lastLevel: 1, highScore: 0, stars: {}, best: {}, settings: { control: 'drag' },
+    coins: 0, items: {}, seen: {}, starterBought: false, // seen: boosters ever owned (shown in the game)
+  });
   let data = load();
 
   function load() {
@@ -569,6 +713,15 @@ const Store = (() => {
       save();
     },
     recordScore(score) { if (score > data.highScore) { data.highScore = score; save(); } },
+    addCoins(n) { data.coins += n; save(); },
+    spendCoins(n) { if (data.coins < n) return false; data.coins -= n; save(); return true; },
+    addItems(items) {
+      for (const [id, n] of Object.entries(items)) { data.items[id] = (data.items[id] || 0) + n; data.seen[id] = true; }
+      save();
+    },
+    useItem(id) { if (!(data.items[id] > 0)) return false; data.items[id]--; save(); return true; },
+    count: id => data.items[id] || 0,
+    setStarterBought() { data.starterBought = true; save(); },
     setLastLevel(level) { data.lastLevel = level; save(); },
     setControl(mode) { data.settings.control = mode; save(); },
     reset() { const control = data.settings.control; data = defaults(); data.settings.control = control; save(); },
@@ -624,6 +777,54 @@ const Levels = {
   },
 };
 
+/* ---------- 3c. Coins & boosters ---------- */
+// Coin shop prices. A level pays about 100–160 coins at level 1 and about
+// 300–450 at level 50 (about 11,000 for the whole game, once), so early on a
+// level buys one or two single boosters, later a bundle. Bundles save ~20%.
+const BOOSTERS = {
+  bomb:   { icon: '💣', name: 'Bomb', price: 60, bundle: [3, 150] },
+  swap:   { icon: '🔄', name: 'Swap', price: 30, bundle: [5, 120] },
+  slow:   { icon: '⏳', name: 'Slow-mo', price: 50, bundle: [3, 120] },
+  magic:  { icon: '⭐', name: 'Magic block', price: 40, bundle: [3, 100] },
+  sweep:  { icon: '🧹', name: 'Sweep', price: 40, bundle: [3, 100] },
+  chance: { icon: '❤️', name: 'Second chance', price: 120, bundle: [3, 300] },
+};
+const IN_LEVEL_BOOSTERS = ['bomb', 'swap', 'slow', 'magic', 'sweep']; // the 6th is on the "Oops" screen
+const Economy = {
+  coinsFor(level, base) {
+    const key = Levels.isKey(level) ? CONFIG.keyScoreBonus : 1;
+    return Math.round(base * CONFIG.coinRate * (1 + CONFIG.coinLevelStep * (level - 1)) * key);
+  },
+};
+
+/* ---------- 3d. Payments (REAL MONEY) ----------
+   PROTOTYPE – NO REAL PAYMENTS. While TEST_MODE is true, every purchase
+   succeeds for free and the shop shows a "Test mode" label.
+   This is the ONLY place that talks to a payment system. To go live on
+   Android: set TEST_MODE to false, load real prices from Google Play
+   Billing into `price`, and replace the body of `purchase()` with the
+   Billing flow (e.g. through a Capacitor/Cordova billing plugin). The rest
+   of the game only calls Payments.products() and Payments.purchase(id). */
+const Payments = (() => {
+  const TEST_MODE = true;
+  const PRODUCTS = [ // prices are USD placeholders until Google Play provides them
+    { id: 'starter_pack', kind: 'starter', price: '$2.99', coins: 1000, items: { bomb: 2, swap: 2, slow: 2, magic: 2, sweep: 2, chance: 2 }, once: true },
+    { id: 'coins_small', kind: 'coins', size: 1, price: '$0.99', coins: 500 },
+    { id: 'coins_medium', kind: 'coins', size: 2, price: '$1.99', coins: 1200, bonus: '+20%' },
+    { id: 'coins_big', kind: 'coins', size: 3, price: '$4.99', coins: 3500, bonus: '+40%' },
+    { id: 'coins_huge', kind: 'coins', size: 4, price: '$9.99', coins: 8000, bonus: '+60%' },
+  ];
+  async function purchase(id) {
+    const product = PRODUCTS.find(p => p.id === id);
+    if (!product) return { ok: false };
+    if (TEST_MODE) return { ok: true, product }; // free in test mode
+    // TODO(Android): start Google Play Billing for `id`, wait for the result,
+    // verify and acknowledge the purchase, then return { ok: true, product }.
+    return { ok: false };
+  }
+  return { TEST_MODE, products: () => PRODUCTS, purchase };
+})();
+
 /* ---------- 4. Pieces ---------- */
 // Cells are [x, y] inside an n×n box, in the base (spawn) orientation.
 const PIECES = {
@@ -636,6 +837,8 @@ const PIECES = {
   Z: { n: 3, cells: [[0, 0], [1, 0], [1, 1], [2, 1]], name: 'Crab', color: '#FF3B4E' },
 };
 const TYPES = Object.keys(PIECES);
+// The Magic block booster: a single cell that can fill any gap (not in the normal bag).
+PIECES.M = { n: 1, cells: [[0, 0]], name: 'Magic block', color: '#FFD21F' };
 // On key levels the same shapes are made of glossy geometric gems instead of animals.
 const GEMS = {
   I: { shape: 'circle', color: '#1FD0F0' },
@@ -645,11 +848,12 @@ const GEMS = {
   J: { shape: 'triangle', color: '#3B7BFF' },
   S: { shape: 'square', color: '#3DDC5A' },
   Z: { shape: 'circle', color: '#FF3B6B' },
+  M: { shape: 'star', color: '#FFD21F' },
 };
 
 // SHAPES[type][rotation] = cells after rotating clockwise `rotation` times.
 const SHAPES = {};
-for (const t of TYPES) {
+for (const t of [...TYPES, 'M']) {
   const { n, cells } = PIECES[t];
   SHAPES[t] = [cells];
   for (let r = 1; r < 4; r++) SHAPES[t].push(SHAPES[t][r - 1].map(([x, y]) => [n - 1 - y, x]));
@@ -740,6 +944,15 @@ const Art = (() => {
     }
   }
 
+  // A five-point star path centered at (x, y).
+  function starShape(g, x, y, r) {
+    g.beginPath();
+    for (let i = 0; i < 10; i++) {
+      const a = -Math.PI / 2 + i * Math.PI / 5, rad = i % 2 ? r * .45 : r;
+      g.lineTo(x + Math.cos(a) * rad, y + Math.sin(a) * rad);
+    }
+    g.closePath();
+  }
   // A lighter belly patch along the bottom of the given cells.
   function belly(g, cells, color) {
     for (const [x, y] of cells) { rr(g, x + .13, y + .62, .74, .26, .12); fill(g, color); }
@@ -852,6 +1065,13 @@ const Art = (() => {
         face(g, .8, { cheek: 'rgba(255, 110, 40, .7)' });
       });
     },
+    M(g) { // Magic block: rainbow tile with a white star
+      rr(g, .05, .05, .9, .9, .26);
+      const gr = g.createLinearGradient(0, 0, 1, 1);
+      ['#FF5E8A', '#FFB000', '#FFE14D', '#3DDC5A', '#1FD0F0', '#8A4DFF'].forEach((c, i) => gr.addColorStop(i / 5, c));
+      g.fillStyle = gr; g.fill(); g.lineWidth = .08; g.strokeStyle = INK; g.stroke();
+      starShape(g, .5, .53, .3); fill(g, '#fff'); g.lineWidth = .05; g.strokeStyle = INK; g.stroke();
+    },
     Z(g, base) { // Crab: red, coral belly, two-tone claws, yellow spots
       tiles(g, base, 'Z', PIECES.Z.color);
       ell(g, 1.5, 1.55, .3, .24); fill(g, '#FFAE9A'); // belly
@@ -930,6 +1150,7 @@ const Art = (() => {
     g.beginPath();
     if (shape === 'circle') g.arc(.5, .5, .42 * s, 0, Math.PI * 2);
     else if (shape === 'square') rr(g, o + .08 * s, o + .08 * s, .84 * s, .84 * s, .2 * s);
+    else if (shape === 'star') starShape(g, .5, .53, .46 * s);
     else { g.moveTo(.5, o + .08 * s); g.lineTo(o + .93 * s, o + .88 * s); g.lineTo(o + .07 * s, o + .88 * s); g.closePath(); }
   }
   function gem(t, size) {
@@ -972,6 +1193,9 @@ const Game = (() => {
     clearing: null, // { rows, t } while full rows flash before clearing
     fast: false,   // fast fall on while the player holds it
     frozen: false, // stops falling while still accepting input (direction intro, Phase 2 tutorial)
+    slowT: 0,          // Slow-mo booster: ms of half speed left
+    magicNext: false,  // Magic block booster: the next piece is a single cell
+    chanceUsed: false, // Second chance: once per level
   };
   const KICKS = [[0, 0], [-1, 0], [1, 0], [0, -1], [-2, 0], [2, 0], [-1, -1], [1, -1]];
 
@@ -996,8 +1220,9 @@ const Game = (() => {
     return false;
   }
   function spawn() {
-    const t = S.next;
-    S.next = fromBag();
+    let t;
+    if (S.magicNext) { t = 'M'; S.magicNext = false; } // the queued piece waits until after the magic block
+    else { t = S.next; S.next = fromBag(); }
     const minY = Math.min(...SHAPES[t][0].map(c => c[1]));
     S.piece = { t, r: 0, x: Math.floor((S.cols - PIECES[t].n) / 2), y: -minY };
     S.pieceId++;
@@ -1009,6 +1234,7 @@ const Game = (() => {
     Object.assign(S, Levels.setup(level), {
       bag: [], level, score: 0, base: 0, lines: 0,
       interval: Levels.interval(level), status: 'playing', frozen: false, clearing: null,
+      slowT: 0, magicNext: false, chanceUsed: false,
     });
     S.board = emptyBoard();
     S.next = fromBag();
@@ -1029,7 +1255,7 @@ const Game = (() => {
     return true;
   }
   function rotate() {
-    if (S.status !== 'playing' || !S.piece || S.piece.t === 'O') return false;
+    if (S.status !== 'playing' || !S.piece || S.piece.t === 'O' || S.piece.t === 'M') return false;
     const p = S.piece, nr = (p.r + 1) % 4;
     for (const [kx, ky] of KICKS) {
       if (!collides(p.t, nr, p.x + kx, p.y + ky)) {
@@ -1078,12 +1304,22 @@ const Game = (() => {
     }
     spawn();
   }
-  function finishClear() {
-    const { rows } = S.clearing;
-    S.clearing = null;
-    for (const y of rows) { // rows are sorted top to bottom
+  function removeRows(rows) { // rows sorted top to bottom
+    for (const y of rows) {
       S.board.splice(y, 1);
       S.board.unshift(Array(S.cols).fill(null));
+    }
+  }
+  function finishClear() {
+    const { rows, free } = S.clearing;
+    S.clearing = null;
+    removeRows(rows);
+    if (free) { // cleared by a booster: no points, no lines, no stars
+      const p = S.piece;
+      while (p && collides(p.t, p.r, p.x, p.y) && p.y > -4) p.y--; // rows moved – keep the piece clear of them
+      Events.emit('boardChanged', {});
+      if (!S.piece) spawn();
+      return;
     }
     const points = CONFIG.lineScores[Math.min(rows.length, 4)];
     S.base += points;
@@ -1100,6 +1336,7 @@ const Game = (() => {
   }
   function update(dt) {
     if (S.status !== 'playing' || S.frozen) return;
+    if (S.slowT > 0) S.slowT = Math.max(0, S.slowT - dt);
     if (S.clearing) {
       S.clearing.t += dt;
       if (S.clearing.t >= CONFIG.clearDelay) finishClear();
@@ -1112,7 +1349,8 @@ const Game = (() => {
     } else {
       S.lockT = 0;
       S.fallT += dt;
-      const interval = S.fast ? Math.min(CONFIG.fastFallInterval, S.interval * CONFIG.fastFallFactor) : S.interval;
+      const normal = S.slowT > 0 ? S.interval * 2 : S.interval;
+      const interval = S.fast ? Math.min(CONFIG.fastFallInterval, normal * CONFIG.fastFallFactor) : normal;
       if (S.fallT >= interval) { S.fallT = 0; S.piece.y++; }
     }
   }
@@ -1129,7 +1367,60 @@ const Game = (() => {
     const t = CONFIG.starThresholds;
     return base >= t.three ? 3 : base >= t.two ? 2 : 1;
   }
-  return { state: S, start, move, rotate, setFastFall, hardDrop, freeze, ghostY, update, pause, resume, stars };
+
+  // ----- Boosters -----
+  // Each returns true when it did something (only then is the item used up).
+  // They never give points, never count toward the level's lines and never
+  // affect stars. They work in the logical frame, so sideways levels just work.
+  const canBoost = () => S.status === 'playing' && !S.clearing;
+  function bomb(cx, cy) { // clear a 3×3 area of placed blocks
+    if (!canBoost()) return false;
+    const cells = [];
+    for (let y = cy - 1; y <= cy + 1; y++) for (let x = cx - 1; x <= cx + 1; x++) {
+      if (y < 0 || y >= S.rows || x < 0 || x >= S.cols || !S.board[y][x]) continue;
+      cells.push([x, y, S.board[y][x].t]);
+      S.board[y][x] = null;
+    }
+    if (!cells.length) return false;
+    Events.emit('blast', { cells });
+    return true;
+  }
+  function swap() { // replace the current piece with a different one
+    if (!canBoost() || !S.piece) return false;
+    const p = S.piece;
+    const choices = TYPES.filter(t => t !== p.t);
+    const t = choices[Math.floor(Math.random() * choices.length)];
+    const minY = Math.min(...SHAPES[t][0].map(c => c[1]));
+    const spots = [[p.x, p.y], [p.x, Math.max(p.y, -minY)], [Math.floor((S.cols - PIECES[t].n) / 2), -minY]];
+    const spot = spots.find(([x, y]) => !collides(t, 0, x, y));
+    if (!spot) return false;
+    S.piece = { t, r: 0, x: spot[0], y: spot[1] };
+    S.pieceId++; S.lockT = 0; S.fast = false;
+    Events.emit('swap', { type: t });
+    return true;
+  }
+  function slowMo() { if (!canBoost()) return false; S.slowT = CONFIG.slowMoMs; return true; }
+  function magic() { if (!canBoost() || S.magicNext) return false; S.magicNext = true; return true; }
+  function sweep() { // clear the bottom row (the far-side column on sideways levels)
+    const y = S.rows - 1;
+    if (!canBoost() || !S.board[y].some(Boolean)) return false;
+    S.clearing = { rows: [y], t: 0, free: true };
+    Events.emit('rowsFull', { rows: [y] });
+    return true;
+  }
+  function secondChance() { // after "Oops": clear the bottom rows and keep playing
+    if (S.status !== 'over' || S.chanceUsed) return false;
+    S.chanceUsed = true;
+    removeRows(Array.from({ length: CONFIG.secondChanceRows }, (_, i) => S.rows - CONFIG.secondChanceRows + i));
+    S.status = 'playing';
+    Events.emit('continue', {});
+    spawn();
+    return true;
+  }
+  return {
+    state: S, start, move, rotate, setFastFall, hardDrop, freeze, ghostY, update, pause, resume, stars,
+    bomb, swap, slowMo, magic, sweep, secondChance,
+  };
 })();
 
 /* ---------- 7. Effects ---------- */
@@ -1187,6 +1478,19 @@ const Effects = (() => {
     for (const [lx, ly] of SHAPES[type][r]) if (!cols.has(lx) || ly < cols.get(lx)) cols.set(lx, ly);
     const color = Art.colorOf(type, Game.state.key);
     trail = { t: 0, color, streaks: [...cols].map(([lx, ly]) => ({ x: x + lx, y0: Math.max(0, from + ly), y1: to + ly })) };
+  }
+  function onBlast({ cells }) { // Bomb booster: a colorful burst from every cleared block
+    const key = Game.state.key;
+    for (const [x, y, t] of cells) {
+      for (let i = 0; i < 4; i++) {
+        const spark = Math.random() < .35;
+        add({
+          kind: spark ? 'spark' : 'bit', x: x + .5, y: y + .5, vx: rand(-5, 5), vy: rand(-6, 2), g: 10, spin: rand(-8, 8),
+          max: rand(320, 460), size: rand(.16, .28), color: spark ? '#FFF3A0' : Art.colorOf(t, key),
+        });
+      }
+    }
+    if (!reduced) shake = 220;
   }
   function reset() { parts.length = 0; landing = null; flash = null; shake = 0; trail = null; dropped = false; }
 
@@ -1269,7 +1573,10 @@ const Effects = (() => {
   Events.on('hardDrop', onHardDrop); // fires just before 'lock'
   Events.on('lock', onLock);
   Events.on('rowsFull', onRowsFull);
+  Events.on('blast', onBlast);
   Events.on('lines', () => { landing = null; }); // lines moved – the landed piece may be gone
+  Events.on('boardChanged', () => { landing = null; });
+  Events.on('continue', () => { landing = null; trail = null; });
   Events.on('start', reset);
   return { update, draw, drawUnder, squash, landing: () => landing, shaking: () => shake > 0 };
 })();
@@ -1493,7 +1800,7 @@ const Render = (() => {
     Art.clear();
     // Pre-draw the empty board in the world's colors: gradient, soft checker,
     // dots, and an inner shadow on the side the pieces come from.
-    const theme = WORLDS[Levels.world(S.level)];
+    const theme = WORLDS[Math.min(Levels.world(S.level), WORLDS.length - 1)];
     bg = document.createElement('canvas');
     bg.width = board.width; bg.height = board.height;
     const b = bg.getContext('2d');
@@ -1548,15 +1855,16 @@ const Render = (() => {
   function drawNext(S) {
     nctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     nctx.clearRect(0, 0, NEXT_W, NEXT_H);
-    if (!S.next) return;
-    if (!S.key) { Art.drawCentered(nctx, S.next, S.next === 'I' ? 13 : 16, NEXT_W, NEXT_H); return; }
+    const nt = S.magicNext ? 'M' : S.next; // a queued magic block comes first
+    if (!nt) return;
+    if (!S.key) { Art.drawCentered(nctx, nt, nt === 'I' ? 13 : 16, NEXT_W, NEXT_H); return; }
     // Gems, turned the way the piece will appear on the sideways board.
-    const pts = SHAPES[S.next][0].map(([x, y]) => [view.a * x + view.c * y, view.b * x + view.d * y]);
+    const pts = SHAPES[nt][0].map(([x, y]) => [view.a * x + view.c * y, view.b * x + view.d * y]);
     const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
     const w = Math.max(...xs) - Math.min(...xs) + 1, h = Math.max(...ys) - Math.min(...ys) + 1;
     const s = Math.min(14, NEXT_W / w, NEXT_H / h);
     const ox = (NEXT_W - w * s) / 2, oy = (NEXT_H - h * s) / 2;
-    for (const [x, y] of pts) nctx.drawImage(Art.gem(S.next, s), ox + (x - Math.min(...xs)) * s, oy + (y - Math.min(...ys)) * s, s, s);
+    for (const [x, y] of pts) nctx.drawImage(Art.gem(nt, s), ox + (x - Math.min(...xs)) * s, oy + (y - Math.min(...ys)) * s, s, s);
   }
   function draw() {
     const S = Game.state;
@@ -1601,7 +1909,16 @@ const Render = (() => {
     Effects.draw(ctx, cell);
     drawNext(S);
   }
-  return { init, resize, draw, cellSize: () => cell, view: () => view };
+  // The logical board cell under a screen point (for aiming the Bomb), or null.
+  function cellAt(clientX, clientY) {
+    const r = board.getBoundingClientRect();
+    const sx = (clientX - r.left - board.clientLeft) / cell, sy = (clientY - r.top - board.clientTop) / cell;
+    const u = sx - view.e, v = sy - view.f; // undo the turn: logical = transpose · (screen − offset)
+    const x = Math.floor(view.a * u + view.b * v), y = Math.floor(view.c * u + view.d * v);
+    const S = Game.state;
+    return x >= 0 && x < S.cols && y >= 0 && y < S.rows ? [x, y] : null;
+  }
+  return { init, resize, draw, cellAt, cellSize: () => cell, view: () => view };
 })();
 
 /* ---------- 10. Input ---------- */
@@ -1618,8 +1935,9 @@ const Input = (() => {
   const toLogical = (sx, sy) => { const v = Render.view(); return [v.a * sx + v.b * sy, v.c * sx + v.d * sy]; };
 
   function onDown(e) {
+    if (e.target.closest('button, .overlay')) return; // HUD and booster buttons keep working
+    if (UI.aiming) { e.preventDefault(); UI.aimAt(e.clientX, e.clientY); return; } // Bomb: tap a spot
     if (!playing() || g) return;
-    if (e.target.closest('button, .overlay')) return; // HUD buttons keep working
     e.preventDefault();
     try { e.currentTarget.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
     const now = performance.now(), [x, y] = toLogical(e.clientX, e.clientY);
@@ -1749,6 +2067,7 @@ const UI = (() => {
   const KEY = '<svg class="key-ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M21 21 39 39M32 32l4-4M37 37l4-4" fill="none" stroke="#2E2152" stroke-width="9" stroke-linecap="round"/><path d="M21 21 39 39M32 32l4-4M37 37l4-4" fill="none" stroke="url(#keyGold)" stroke-width="4" stroke-linecap="round"/><circle cx="15" cy="15" r="10" fill="url(#keyGold)" stroke="#2E2152" stroke-width="3.5"/><circle cx="15" cy="15" r="3.6" fill="#2E2152"/><ellipse cx="12" cy="11" rx="3" ry="1.6" fill="#fff" opacity=".8" transform="rotate(-35 12 11)"/></svg>';
   const ui = { current: null };
 
+  const coinChip = n => `<i class="coin" aria-hidden="true"></i><span>${n}</span>`;
   function show(name) {
     document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === name));
     document.body.classList.toggle('in-game', name === 'game');
@@ -1756,7 +2075,7 @@ const UI = (() => {
     if (name === 'home') renderHome();
     if (name === 'map') renderMap();
     if (name === 'settings') renderSettings();
-    if (name === 'game') requestAnimationFrame(() => { Scene.resize(); Render.resize(); Render.draw(); });
+    if (name === 'game') { renderBoosters(); requestAnimationFrame(() => { Scene.resize(); Render.resize(); Render.draw(); }); }
   }
 
   // ----- Home -----
@@ -1798,6 +2117,9 @@ const UI = (() => {
   function renderMap() {
     const data = Store.get();
     $('mapStars').innerHTML = `${star(true)}<span>${Store.totalStars()}</span>`;
+    $('mapStars').setAttribute('aria-label', `${Store.totalStars()} stars`);
+    $('mapCoins').innerHTML = coinChip(data.coins);
+    $('mapCoins').setAttribute('aria-label', `${data.coins} coins`);
     const wrap = $('mapPath');
     wrap.innerHTML = '';
     const W = Math.round(wrap.clientWidth || 360), gap = 100, BANNER = 120, per = CONFIG.worldSize;
@@ -1901,16 +2223,80 @@ const UI = (() => {
   }
   function startLevel(level) {
     if (!Levels.unlocked(level)) return;
+    stopAim();
     lastLevel = level;
     Store.setLastLevel(level);
     ['pauseOverlay', 'winOverlay', 'overOverlay'].forEach(id => { $(id).hidden = true; });
     show('game');
     applyWorld(Levels.world(level));
     Game.start(level);
+    renderBoosters();
     Render.resize();
     updateHud();
     showDirection();
   }
+
+  // ----- Boosters during a level -----
+  // Big round buttons under the board for boosters the player owns (or has
+  // owned). Dimmed at 0 – tapping then opens the coin shop.
+  ui.aiming = false;
+  function renderBoosters() {
+    const bar = $('boosters'), data = Store.get();
+    bar.innerHTML = '';
+    for (const id of IN_LEVEL_BOOSTERS) {
+      if (!data.seen[id]) continue;
+      const b = BOOSTERS[id], n = Store.count(id);
+      const btn = document.createElement('button');
+      btn.className = 'booster' + (n ? '' : ' empty') + (ui.aiming && id === 'bomb' ? ' aiming' : '');
+      btn.dataset.id = id;
+      btn.innerHTML = `<span class="ico">${b.icon}</span><span class="badge">${n}</span>` +
+        (id === 'slow' ? '<svg class="ring" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" pathLength="100"/></svg>' : '');
+      btn.setAttribute('aria-label', n ? `${b.name}, ${n} left` : `${b.name}, none left – open the coin shop`);
+      btn.addEventListener('click', () => useBooster(id));
+      bar.appendChild(btn);
+    }
+    const was = bar.hidden;
+    bar.hidden = !bar.children.length;
+    if (was !== bar.hidden && ui.current === 'game') Render.resize();
+  }
+  function useBooster(id) {
+    const S = Game.state;
+    if (S.status !== 'playing') return;
+    if (!Store.count(id)) { openShopFromGame(); return; }
+    if (id === 'bomb') { if (ui.aiming) stopAim(); else startAim(); return; }
+    const used = { swap: Game.swap, slow: Game.slowMo, magic: Game.magic, sweep: Game.sweep }[id]();
+    if (used) { Store.useItem(id); Events.emit('booster', { id }); renderBoosters(); }
+  }
+  // Bomb: tap the button, then tap the board. The game waits while aiming.
+  function startAim() {
+    ui.aiming = true; Game.freeze(true);
+    $('frame').classList.add('aiming');
+    renderBoosters();
+  }
+  function stopAim() {
+    if (!ui.aiming) return;
+    ui.aiming = false; Game.freeze(false);
+    $('frame').classList.remove('aiming');
+    renderBoosters();
+  }
+  ui.aimAt = (clientX, clientY) => {
+    const cell = Render.cellAt(clientX, clientY);
+    if (!cell) { stopAim(); return; } // tapping outside the board cancels
+    if (Game.bomb(cell[0], cell[1])) { Store.useItem('bomb'); Events.emit('booster', { id: 'bomb' }); stopAim(); }
+  };
+  function openShopFromGame() {
+    stopAim();
+    if (Game.state.status === 'playing') Game.pause();
+    Shop.open('coins', () => { show('game'); if (Game.state.status === 'paused') $('pauseOverlay').hidden = false; });
+  }
+  // Called every frame while playing: the Slow-mo button shows time left.
+  ui.tick = () => {
+    const btn = document.querySelector('.booster[data-id="slow"]');
+    if (!btn) return;
+    const left = Game.state.slowT / CONFIG.slowMoMs;
+    btn.classList.toggle('running', left > 0);
+    btn.querySelector('.ring circle').style.strokeDasharray = `${(left * 100).toFixed(1)} 100`;
+  };
   // Key levels: a short arrow shows which way pieces fall; the game waits for it.
   function showDirection() {
     const S = Game.state, intro = $('dirIntro');
@@ -1943,12 +2329,31 @@ const UI = (() => {
   }
   function togglePause() {
     const S = Game.state;
-    if (S.status === 'playing') { Game.pause(); $('pauseOverlay').hidden = false; }
+    if (S.status === 'playing') { stopAim(); Game.pause(); $('pauseOverlay').hidden = false; }
     else if (S.status === 'paused') { Game.resume(); $('pauseOverlay').hidden = true; }
   }
+  // Counts a number up from 0 (about 0.9 s), for the coins on "Well done!".
+  function countUp(el, to) {
+    const t0 = performance.now(), dur = 900;
+    const step = now => {
+      const q = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - q, 3);
+      el.textContent = Math.round(to * e);
+      if (q < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
   function onLevelComplete({ level, score, base }) {
+    stopAim();
     const got = Game.stars(base);
+    const first = !Levels.stars(level); // coins only for the first completion
+    const coins = first ? Economy.coinsFor(level, base) : 0;
     Store.recordLevel(level, got, score);
+    if (coins) Store.addCoins(coins);
+    const coinLine = $('winCoins');
+    coinLine.hidden = !coins;
+    coinLine.firstElementChild.textContent = '0';
+    coinLine.setAttribute('aria-label', `${coins} coins earned`);
+    if (coins) setTimeout(() => countUp(coinLine.firstElementChild, coins), 450);
     updateHud();
     $('winStars').innerHTML = star(got >= 1) + star(got >= 2) + star(got >= 3);
     $('winScore').textContent = score;
@@ -1965,7 +2370,12 @@ const UI = (() => {
     setTimeout(() => { $('winOverlay').hidden = false; }, 350);
   }
   function onGameOver({ score }) {
+    stopAim();
     Store.recordScore(score);
+    // Second chance: offered only if owned and not used yet in this level.
+    const n = Store.count('chance');
+    $('chanceBtn').hidden = !n || Game.state.chanceUsed;
+    $('chanceCount').textContent = n;
     const buddy = $('overBuddy'); // a smiling animal, never a scary screen
     buddy.innerHTML = '';
     buddy.appendChild(Art.pieceCanvas('O', 52));
@@ -1991,6 +2401,15 @@ const UI = (() => {
     $('winMap').addEventListener('click', () => { $('winOverlay').hidden = true; show('map'); });
     $('overRetry').addEventListener('click', () => startLevel(lastLevel));
     $('overMap').addEventListener('click', () => { $('overOverlay').hidden = true; show('map'); });
+    $('chanceBtn').addEventListener('click', () => {
+      if (Store.count('chance') && Game.secondChance()) {
+        Store.useItem('chance');
+        Events.emit('booster', { id: 'chance' });
+        $('overOverlay').hidden = true;
+        renderBoosters();
+      }
+    });
+    $('mapShop').addEventListener('click', () => Shop.open('coins', () => show('map')));
 
     Events.on('lines', updateHud);
     Events.on('levelComplete', onLevelComplete);
@@ -2005,7 +2424,132 @@ const UI = (() => {
       else if (ui.current === 'home') renderHome();
     });
   }
-  return Object.assign(ui, { init, show, togglePause, startLevel });
+  return Object.assign(ui, { init, show, togglePause, startLevel, coinChip });
+})();
+
+/* ---------- 11b. Shop ---------- */
+// Two tabs: the coin shop (boosters for game coins) and the real-money shop
+// (coin packs, starter pack – via Payments, test mode for now). Kid-friendly:
+// no timers, no pop-ups, it only opens when the player taps the shop.
+const Shop = (() => {
+  const $ = id => document.getElementById(id);
+  const NUM_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+  const reduced = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  let tab = 'coins', onBack = null, gate = null;
+
+  function open(which, back) {
+    tab = which || 'coins'; onBack = back;
+    UI.show('shop');
+    render();
+  }
+  function renderHeader() {
+    const c = Store.get().coins;
+    $('shopCoins').innerHTML = UI.coinChip(c);
+    $('shopCoins').setAttribute('aria-label', `${c} coins`);
+    document.querySelectorAll('#shop .tab').forEach(t => t.setAttribute('aria-selected', String(t.dataset.tab === tab)));
+    const inv = $('inventory');
+    inv.innerHTML = Object.entries(BOOSTERS).map(([id, b]) =>
+      `<span class="inv" data-id="${id}" aria-label="${b.name}: ${Store.count(id)}"><span class="ico">${b.icon}</span><b>${Store.count(id)}</b></span>`).join('');
+  }
+  function render() {
+    renderHeader();
+    const body = $('shopBody');
+    body.scrollTop = 0;
+    if (tab === 'coins') {
+      const coins = Store.get().coins;
+      body.innerHTML = Object.entries(BOOSTERS).map(([id, b]) => {
+        const [n, bundlePrice] = b.bundle;
+        const buy = (qty, price) => `<button class="btn buy${coins < price ? ' short' : ''}" data-id="${id}" data-qty="${qty}" data-price="${price}" aria-label="Buy ${qty} ${b.name} for ${price} coins">
+            <span class="qty">×${qty}</span><span class="price">${UI.coinChip(price)}</span></button>`;
+        return `<div class="card item"><span class="big-ico">${b.icon}</span><b class="name">${b.name}</b>
+          <div class="buys">${buy(1, b.price)}${buy(n, bundlePrice)}</div></div>`;
+      }).join('');
+      body.querySelectorAll('.buy').forEach(btn => btn.addEventListener('click', () => buyWithCoins(btn)));
+    } else {
+      const products = Payments.products().filter(p => !(p.once && Store.get().starterBought));
+      const banner = Payments.TEST_MODE ? '<p class="test-mode">Test mode: purchases are free</p>' : '';
+      body.innerHTML = banner + products.map(p => {
+        if (p.kind === 'starter') {
+          const items = Object.entries(p.items).map(([id, n]) => `<span>${BOOSTERS[id].icon}×${n}</span>`).join('');
+          return `<div class="card pack starter"><span class="big-ico">🎁</span><b class="name">Starter pack</b>
+            <div class="contents">${UI.coinChip(p.coins)}${items}</div>
+            <button class="btn primary real" data-id="${p.id}" aria-label="Starter pack for ${p.price}">${p.price}</button></div>`;
+        }
+        return `<div class="card pack coins-pack size${p.size}">${p.bonus ? `<span class="bonus">${p.bonus}</span>` : ''}
+          <span class="stack">${'<i class="coin" aria-hidden="true"></i>'.repeat(p.size)}</span>
+          <b class="amount">${p.coins}</b>
+          <button class="btn primary real" data-id="${p.id}" aria-label="${p.coins} coins for ${p.price}">${p.price}</button></div>`;
+      }).join('');
+      body.querySelectorAll('.real').forEach(btn => btn.addEventListener('click', () => askGrownUp(btn)));
+    }
+  }
+
+  function buyWithCoins(btn) {
+    const { id } = btn.dataset, qty = +btn.dataset.qty, price = +btn.dataset.price;
+    if (!Store.spendCoins(price)) { btn.classList.remove('nope'); void btn.offsetWidth; btn.classList.add('nope'); return; }
+    Store.addItems({ [id]: qty });
+    Events.emit('purchase', { id, qty, currency: 'coins' });
+    const rect = btn.getBoundingClientRect(); // before the cards are redrawn
+    render();
+    flyTo(BOOSTERS[id].icon, rect, document.querySelector(`.inv[data-id="${id}"]`));
+  }
+
+  // Parental gate: "What is seven times eight?" – a young child can't answer alone.
+  function askGrownUp(btn) {
+    const a = 3 + Math.floor(Math.random() * 7), b = 3 + Math.floor(Math.random() * 7);
+    gate = { answer: a * b, id: btn.dataset.id, from: btn };
+    $('gateQ').textContent = `What is ${NUM_WORDS[a]} times ${NUM_WORDS[b]}?`;
+    $('gateInput').value = '';
+    $('gate').hidden = false;
+    setTimeout(() => $('gateInput').focus(), 50);
+  }
+  function closeGate() { $('gate').hidden = true; gate = null; }
+  async function checkGate() {
+    if (!gate) return;
+    const ok = parseInt($('gateInput').value, 10) === gate.answer;
+    const { id, from } = gate;
+    closeGate();
+    if (!ok) return; // wrong answer: back to the shop, nothing bought
+    const result = await Payments.purchase(id);
+    if (!result.ok) return;
+    const p = result.product;
+    if (p.coins) Store.addCoins(p.coins);
+    if (p.items) Store.addItems(p.items);
+    if (p.once) Store.setStarterBought();
+    Events.emit('purchase', { id, currency: 'real', test: Payments.TEST_MODE });
+    const fromRect = from.getBoundingClientRect();
+    render();
+    flyTo(p.items ? '🎁' : '', fromRect, $('shopCoins'));
+    if (p.items) Object.keys(p.items).forEach((k, i) => setTimeout(() => flyTo(BOOSTERS[k].icon, fromRect, document.querySelector(`.inv[data-id="${k}"]`)), 120 * (i + 1)));
+  }
+
+  // A happy little flight from the buy button into the inventory (or coin counter).
+  function flyTo(icon, from, target) {
+    if (!target) return;
+    const a = from.getBoundingClientRect ? from.getBoundingClientRect() : from, b = target.getBoundingClientRect();
+    const pop = () => { target.classList.remove('pop'); void target.offsetWidth; target.classList.add('pop'); };
+    if (reduced) { pop(); return; }
+    const el = document.createElement('span');
+    el.className = 'flyer';
+    el.innerHTML = icon || '<i class="coin"></i>';
+    document.body.appendChild(el);
+    const x0 = a.left + a.width / 2, y0 = a.top + a.height / 2, x1 = b.left + b.width / 2, y1 = b.top + b.height / 2;
+    const anim = el.animate([
+      { transform: `translate(${x0}px, ${y0}px) translate(-50%, -50%) scale(1)` },
+      { transform: `translate(${(x0 + x1) / 2}px, ${Math.min(y0, y1) - 80}px) translate(-50%, -50%) scale(1.5) rotate(-15deg)`, offset: .45 },
+      { transform: `translate(${x1}px, ${y1}px) translate(-50%, -50%) scale(.6)` },
+    ], { duration: 650, easing: 'ease-in-out' });
+    anim.onfinish = () => { el.remove(); pop(); };
+  }
+
+  function init() {
+    document.querySelectorAll('#shop .tab').forEach(t => t.addEventListener('click', () => { tab = t.dataset.tab; render(); }));
+    $('shopBack').addEventListener('click', () => { closeGate(); (onBack || (() => UI.show('map')))(); });
+    $('gateCancel').addEventListener('click', closeGate);
+    $('gateOk').addEventListener('click', checkGate);
+    $('gateInput').addEventListener('keydown', e => { if (e.key === 'Enter') checkGate(); });
+  }
+  return { init, open };
 })();
 
 /* ---------- 12. Boot ---------- */
@@ -2014,12 +2558,13 @@ const UI = (() => {
   Render.init();
   Input.init();
   UI.init();
+  Shop.init();
   UI.show('home');
   let last = performance.now();
   function frame(now) {
     const dt = Math.min(100, now - last);
     last = now;
-    if (UI.current === 'game') { Game.update(dt); Effects.update(dt); Scene.update(dt); Scene.draw(); Render.draw(); }
+    if (UI.current === 'game') { Game.update(dt); Effects.update(dt); Scene.update(dt); Scene.draw(); Render.draw(); UI.tick(); }
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
