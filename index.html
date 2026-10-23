@@ -506,17 +506,16 @@ const CONFIG = {
   cols: 10,                 // regular board
   rows: 20,
   rowsPerLevel: 10,         // lines to clear per level (rows, or columns on key levels)
-  levelCount: 50,
+  levelCount: 0,            // set from WORLDS below (worlds × worldSize)
   worldSize: 10,            // 5 worlds × 10 levels
   baseInterval: 1000,       // ms per step at level 1 (1 step/sec)
-  speedFactor: 0.95,        // each level is 5% faster
+  speedFactor: 0.97,        // each level is 3% faster
   minInterval: 100,         // cap: 10 steps/sec
   lineScores: [0, 100, 300, 500, 800], // × level number
   // Key levels: every 5th level, sideways gravity on a square board.
   keyEvery: 5,
   keyBoard: 12,             // 12×12
-  keySpeedStep: 0.9,        // 10% faster than the previous key level...
-  keyVsRegular: 0.9,        // ...and at least 10% faster than the regular level after it
+  keyVsRegular: 0.9,        // 10% faster than the regular level right after it
   keyScoreBonus: 1.2,       // +20% points
   worldUnlockStars: 2,      // stars needed on EVERY level of a world to open the next one
   fastFallInterval: 100,    // fast fall: about 10 rows per second...
@@ -578,6 +577,8 @@ const Store = (() => {
 
 /* ---------- 3b. Worlds & levels ---------- */
 // Each world: name, board frame gloss (top, middle, bottom) and board colors.
+// To add a world: add an entry here (and a painter in Scene, or it reuses one).
+// The level count, map, unlocking and speed curve all follow automatically.
 const WORLDS = [
   { name: 'Sunny Meadow', frame: ['#B6F27E', '#56C73C', '#2F8C2A'], board: ['#2F64B0', '#1B3A73'] },
   { name: 'Animal Kingdom', frame: ['#FFD08A', '#F08A2A', '#A9501A'], board: ['#7A3A2C', '#45201A'] },
@@ -585,6 +586,7 @@ const WORLDS = [
   { name: 'Snowy Mountains', frame: ['#FFFFFF', '#BFE2FF', '#7AAEE0'], board: ['#3B5C8E', '#1E3357'] },
   { name: 'Candy Sky', frame: ['#FFB8EA', '#D063DD', '#7A2FA8'], board: ['#4A2A7A', '#24124A'] },
 ];
+CONFIG.levelCount = WORLDS.length * CONFIG.worldSize;
 const Levels = {
   world: L => Math.floor((L - 1) / CONFIG.worldSize),
   isKey: L => L % CONFIG.keyEvery === 0,
@@ -596,12 +598,10 @@ const Levels = {
       : { cols: CONFIG.cols, rows: CONFIG.rows, gravity: 'down', key: false };
   },
   rawRegular: L => CONFIG.baseInterval * Math.pow(CONFIG.speedFactor, L - 1),
-  interval(L) { // ms per step, never faster than the speed cap
-    if (!this.isKey(L)) return Math.max(CONFIG.minInterval, this.rawRegular(L));
-    let ms = Infinity;
-    for (let k = CONFIG.keyEvery; k <= L; k += CONFIG.keyEvery) {
-      ms = Math.min(ms * CONFIG.keySpeedStep, this.rawRegular(k + 1) * CONFIG.keyVsRegular);
-    }
+  // ms per step, never faster than the speed cap. Works for any level number,
+  // so more worlds can be added later.
+  interval(L) {
+    const ms = this.isKey(L) ? this.rawRegular(L + 1) * CONFIG.keyVsRegular : this.rawRegular(L);
     return Math.max(CONFIG.minInterval, ms);
   },
   levelsOf: w => Array.from({ length: CONFIG.worldSize }, (_, i) => w * CONFIG.worldSize + i + 1),
@@ -1409,12 +1409,12 @@ const Scene = (() => {
       for (let i = 0; i < 4; i++) puff(g, R() * W, H * (.15 + R() * .35), u * .04, 'rgba(215, 194, 255, .6)');
     },
   ];
-  function paint(g, w, W, H) { PAINT[w](g, W, H, seeded(w * 7919 + 17)); }
+  function paint(g, w, W, H) { PAINT[w % PAINT.length](g, W, H, seeded(w * 7919 + 17)); }
 
   // The animated full-screen background behind the game screen.
-  let canvas, ctx, world = 0, layer = null, W = 0, H = 0, dpr = 1, parts = [];
+  let canvas, ctx, world = 0, look = 0, layer = null, W = 0, H = 0, dpr = 1, parts = [];
   function init() { canvas = document.getElementById('scene'); ctx = canvas.getContext('2d'); }
-  function setWorld(w) { world = w; resize(); }
+  function setWorld(w) { world = w; look = w % PAINT.length; resize(); } // look: which moving things to show
   function resize() {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     W = window.innerWidth; H = window.innerHeight;
@@ -1433,10 +1433,10 @@ const Scene = (() => {
     const s = dt / 1000;
     for (const p of parts) {
       p.ph += s * 2;
-      if (world === 0) { p.x += (14 + p.s * 18) * s; p.y += Math.sin(p.ph) * 12 * s + 6 * s; }   // drifting petals
-      else if (world === 1) { p.y -= (6 + p.s * 10) * s; p.x += Math.sin(p.ph) * 8 * s; }       // golden dust
-      else if (world === 2) { p.y -= (18 + p.s * 30) * s; p.x += Math.sin(p.ph) * 10 * s; }     // bubbles
-      else if (world === 3) { p.y += (20 + p.s * 30) * s; p.x += Math.sin(p.ph) * 14 * s; }     // snow
+      if (look === 0) { p.x += (14 + p.s * 18) * s; p.y += Math.sin(p.ph) * 12 * s + 6 * s; }   // drifting petals
+      else if (look === 1) { p.y -= (6 + p.s * 10) * s; p.x += Math.sin(p.ph) * 8 * s; }       // golden dust
+      else if (look === 2) { p.y -= (18 + p.s * 30) * s; p.x += Math.sin(p.ph) * 10 * s; }     // bubbles
+      else if (look === 3) { p.y += (20 + p.s * 30) * s; p.x += Math.sin(p.ph) * 14 * s; }     // snow
       if (p.x > W + 10) p.x = -10; if (p.x < -10) p.x = W + 10;
       if (p.y > H + 10) p.y = -10; if (p.y < -10) p.y = H + 10;
     }
@@ -1447,10 +1447,10 @@ const Scene = (() => {
     ctx.drawImage(layer, 0, 0);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     for (const p of parts) {
-      if (world === 0) { ctx.fillStyle = p.s > .6 ? 'rgba(255, 140, 190, .85)' : 'rgba(255, 255, 255, .9)'; ctx.beginPath(); ctx.ellipse(p.x, p.y, p.r * 1.6, p.r, p.ph, 0, TAU); ctx.fill(); }
-      else if (world === 1) { ctx.fillStyle = `rgba(255, 230, 150, ${.35 + .35 * Math.sin(p.ph)})`; ctx.beginPath(); ctx.arc(p.x, p.y, p.r * .8, 0, TAU); ctx.fill(); }
-      else if (world === 2) { ctx.strokeStyle = 'rgba(255, 255, 255, .6)'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 1.6, 0, TAU); ctx.stroke(); }
-      else if (world === 3) { ctx.fillStyle = 'rgba(255, 255, 255, .95)'; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, TAU); ctx.fill(); }
+      if (look === 0) { ctx.fillStyle = p.s > .6 ? 'rgba(255, 140, 190, .85)' : 'rgba(255, 255, 255, .9)'; ctx.beginPath(); ctx.ellipse(p.x, p.y, p.r * 1.6, p.r, p.ph, 0, TAU); ctx.fill(); }
+      else if (look === 1) { ctx.fillStyle = `rgba(255, 230, 150, ${.35 + .35 * Math.sin(p.ph)})`; ctx.beginPath(); ctx.arc(p.x, p.y, p.r * .8, 0, TAU); ctx.fill(); }
+      else if (look === 2) { ctx.strokeStyle = 'rgba(255, 255, 255, .6)'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 1.6, 0, TAU); ctx.stroke(); }
+      else if (look === 3) { ctx.fillStyle = 'rgba(255, 255, 255, .95)'; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, TAU); ctx.fill(); }
       else { const a = .5 + .5 * Math.sin(p.ph * 1.5); ctx.fillStyle = `rgba(255, 245, 190, ${a.toFixed(2)})`; const r = p.r * 1.4; ctx.beginPath(); ctx.moveTo(p.x, p.y - r * 2); ctx.lineTo(p.x + r * .5, p.y - r * .5); ctx.lineTo(p.x + r * 2, p.y); ctx.lineTo(p.x + r * .5, p.y + r * .5); ctx.lineTo(p.x, p.y + r * 2); ctx.lineTo(p.x - r * .5, p.y + r * .5); ctx.lineTo(p.x - r * 2, p.y); ctx.lineTo(p.x - r * .5, p.y - r * .5); ctx.fill(); }
     }
   }
