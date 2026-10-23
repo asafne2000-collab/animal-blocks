@@ -1,0 +1,1115 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="בלוקי חיות">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#FFD84D">
+<title>בלוקי חיות</title>
+<style>
+/* =========================================================
+   DESIGN TOKENS
+   Sunny yellow page, deep plum "ink" for outlines & text,
+   chunky sticker-style buttons. The animals bring the color.
+   ========================================================= */
+:root {
+  --sun: #FFD84D;
+  --sun-deep: #F2BE2A;
+  --ink: #2E2152;
+  --ink-soft: #5A4A8F;
+  --board: #3A2C6B;
+  --cream: #FFF7E3;
+  --berry: #E8336D;
+  --star: #FFB400;
+  --font: "Rubik", "Varela Round", "Arial Rounded MT Bold", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
+body {
+  position: fixed; inset: 0;
+  background-color: var(--sun);
+  background-image: radial-gradient(circle at 2px 2px, rgba(46, 33, 82, .07) 2px, transparent 2.6px);
+  background-size: 24px 24px;
+  color: var(--ink);
+  font-family: var(--font);
+  -webkit-user-select: none; user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
+
+/* ---------- Screens ---------- */
+.screen {
+  position: absolute; inset: 0;
+  max-width: 520px; margin: 0 auto;
+  display: none; flex-direction: column;
+  padding: calc(var(--safe-t) + 12px) 16px calc(var(--safe-b) + 12px);
+}
+.screen.active { display: flex; }
+
+/* ---------- Buttons ---------- */
+.btn {
+  font-weight: 800; font-size: 1.3rem; line-height: 1.1;
+  background: var(--cream); color: var(--ink);
+  border: 3px solid var(--ink); border-radius: 999px;
+  padding: .75em 1.5em; min-height: 56px;
+  box-shadow: 0 6px 0 var(--ink);
+  transition: transform .08s, box-shadow .08s;
+}
+.btn:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--ink); }
+.btn.primary { background: var(--berry); color: #fff; }
+.btn.big { font-size: 1.7rem; padding: .7em 2.4em; }
+.btn.small { font-size: 1.05rem; padding: .6em 1.1em; min-height: 48px; }
+.btn.quiet { background: transparent; box-shadow: none; border-style: dashed; font-size: 1rem; }
+.btn.quiet:active { transform: none; }
+.btn.quiet.armed { background: var(--berry); color: #fff; border-style: solid; }
+
+.icon-btn {
+  width: 52px; height: 52px; flex: none;
+  display: grid; place-items: center;
+  background: var(--cream);
+  border: 3px solid var(--ink); border-radius: 18px;
+  box-shadow: 0 5px 0 var(--ink);
+  transition: transform .08s, box-shadow .08s;
+}
+.icon-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--ink); }
+.icon-btn svg { width: 26px; height: 26px; stroke: var(--ink); stroke-width: 3; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- Top bar (map / settings) ---------- */
+.bar { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; }
+.bar h2 { flex: 1; font-size: 1.6rem; font-weight: 900; }
+.star-count { display: flex; align-items: center; gap: 4px; font-weight: 900; font-size: 1.15rem; }
+.star-count svg { width: 26px; height: 26px; }
+
+/* ---------- Stars ---------- */
+.star path { fill: var(--cream); stroke: var(--ink); stroke-width: 1.7; stroke-linejoin: round; }
+.star.on path { fill: var(--star); }
+
+/* ---------- Home ---------- */
+#home { align-items: center; justify-content: space-between; text-align: center; }
+#home .settings-btn { align-self: flex-end; }
+.title {
+  display: flex; flex-direction: column; align-items: center;
+  font-weight: 900; line-height: .9; letter-spacing: -.02em;
+  color: var(--cream);
+  -webkit-text-stroke: 4px var(--ink); paint-order: stroke fill;
+  text-shadow: 0 7px 0 var(--ink);
+}
+.title span:first-child { font-size: clamp(3.4rem, 19vw, 5.6rem); transform: rotate(-4deg); }
+.title span:last-child { font-size: clamp(4rem, 23vw, 6.6rem); color: var(--berry); transform: rotate(3deg); margin-top: -.08em; }
+.cast {
+  display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end;
+  gap: 14px 18px; max-width: 360px;
+}
+.cast figure { display: flex; flex-direction: column; align-items: center; gap: 6px; transform: rotate(var(--tilt, 0deg)); }
+.cast figcaption { font-weight: 800; font-size: .95rem; }
+.home-foot { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.home-stars { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 1.05rem; min-height: 1.5em; }
+.home-stars svg { width: 24px; height: 24px; }
+
+/* ---------- Map ---------- */
+.map-scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; margin: 0 -16px; touch-action: pan-y; }
+.map-path { position: relative; width: 100%; }
+.map-path svg.road { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.node {
+  position: absolute; transform: translate(-50%, -50%);
+  width: 66px; height: 66px; border-radius: 50%;
+  border: 3px solid var(--ink); background: var(--cream);
+  box-shadow: 0 5px 0 var(--ink);
+  font-weight: 900; font-size: 1.5rem;
+}
+.node:active { box-shadow: 0 2px 0 var(--ink); margin-top: 3px; }
+.node.current { width: 80px; height: 80px; font-size: 1.9rem; background: var(--berry); color: #fff; animation: hop 1.4s ease-in-out infinite; }
+.node.locked { background: #F6E3A0; color: rgba(46, 33, 82, .4); border-color: rgba(46, 33, 82, .35); box-shadow: 0 5px 0 rgba(46, 33, 82, .2); }
+.node .mini { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); display: flex; gap: 1px; margin-top: 6px; }
+.node .mini svg { width: 18px; height: 18px; }
+.node .lock { width: 22px; height: 22px; stroke: currentColor; stroke-width: 3; fill: none; }
+.map-buddy { position: absolute; pointer-events: none; transform: translate(-50%, -50%) rotate(-8deg); }
+@keyframes hop { 0%, 100% { translate: 0 0; } 50% { translate: 0 -6px; } }
+
+/* ---------- Settings ---------- */
+#settings h3 { font-size: 1.25rem; font-weight: 900; margin: 8px 0 12px; }
+.choice { display: flex; flex-direction: column; gap: 14px; }
+.option {
+  display: flex; align-items: center; gap: 14px; text-align: right;
+  background: var(--cream); border: 3px solid var(--ink); border-radius: 24px;
+  padding: 14px; box-shadow: 0 5px 0 var(--ink);
+}
+.option[aria-checked="true"] { background: #fff; outline: 4px solid var(--berry); outline-offset: -9px; }
+.option svg { width: 64px; height: 64px; flex: none; }
+.option b { display: block; font-size: 1.25rem; font-weight: 900; margin-bottom: 4px; }
+.option span { display: block; font-size: .98rem; line-height: 1.4; font-weight: 600; }
+.option .tick { width: 30px; height: 30px; flex: none; border-radius: 50%; border: 3px solid var(--ink); margin-inline-start: auto; display: grid; place-items: center; }
+.option[aria-checked="true"] .tick { background: var(--berry); }
+.option[aria-checked="true"] .tick::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: #fff; }
+.settings-foot { margin-top: auto; display: flex; justify-content: center; padding-top: 20px; }
+
+/* ---------- Game ---------- */
+#game { padding-left: 10px; padding-right: 10px; }
+.hud { display: flex; align-items: stretch; gap: 8px; height: 64px; flex: none; }
+.hud-box {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: var(--cream); border: 3px solid var(--ink); border-radius: 18px;
+  padding: 2px 12px; min-width: 64px;
+}
+.hud-box.grow { flex: 1; }
+.hud-label { font-size: .8rem; font-weight: 800; color: var(--ink-soft); }
+.hud-box b { font-size: 1.5rem; font-weight: 900; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.hud-box.next { padding: 2px 8px; }
+#next { width: 56px; height: 36px; display: block; }
+.hud .icon-btn { height: 64px; width: 56px; }
+.play {
+  flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center;
+  padding: 10px 0 14px; touch-action: none;
+}
+#board {
+  display: block; border: 4px solid var(--ink); border-radius: 16px;
+  box-shadow: 0 6px 0 var(--ink); background: var(--board);
+}
+.rows { display: flex; justify-content: center; gap: 6px; flex: none; height: 22px; direction: ltr; }
+.rows i { width: 22px; height: 22px; border-radius: 7px; border: 3px solid var(--ink); background: var(--cream); }
+.rows i.on { background: var(--c); }
+
+/* ---------- Overlays ---------- */
+.overlay {
+  position: absolute; inset: 0; z-index: 5;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(46, 33, 82, .55); padding: 20px;
+}
+.overlay[hidden] { display: none; }
+.panel {
+  width: 100%; max-width: 360px; text-align: center;
+  background: var(--cream); border: 4px solid var(--ink); border-radius: 32px;
+  box-shadow: 0 8px 0 var(--ink); padding: 26px 22px 28px;
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.panel h2 { font-size: 2.1rem; font-weight: 900; line-height: 1.1; }
+.panel p { font-size: 1.1rem; font-weight: 700; line-height: 1.4; }
+.panel .hint { font-size: .98rem; font-weight: 600; color: var(--ink-soft); }
+.panel .btn { width: 100%; }
+.panel .row { display: flex; gap: 10px; width: 100%; }
+.panel .row .btn { flex: 1; }
+.big-stars { display: flex; gap: 6px; align-items: flex-end; }
+.big-stars svg { width: 76px; height: 76px; }
+.big-stars svg:nth-child(2) { width: 92px; height: 92px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .node.current { animation: none; }
+  .btn, .icon-btn { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============ HOME ============ -->
+<section class="screen" id="home">
+  <button class="icon-btn settings-btn" data-go="settings" aria-label="הגדרות">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M21.2 12h-2.6M5.4 12H2.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8M18.5 18.5l-1.8-1.8M7.3 7.3 5.5 5.5"/></svg>
+  </button>
+  <h1 class="title"><span>בלוקי</span><span>חיות</span></h1>
+  <div class="cast" id="cast"></div>
+  <div class="home-foot">
+    <p class="home-stars" id="homeStars"></p>
+    <button class="btn primary big" data-go="map">לשחק</button>
+  </div>
+</section>
+
+<!-- ============ MAP ============ -->
+<section class="screen" id="map">
+  <header class="bar">
+    <button class="icon-btn" data-go="home" aria-label="חזרה">
+      <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+    </button>
+    <h2>מפת השלבים</h2>
+    <span class="star-count" id="mapStars"></span>
+  </header>
+  <div class="map-scroll" id="mapScroll"><div class="map-path" id="mapPath"></div></div>
+</section>
+
+<!-- ============ SETTINGS ============ -->
+<section class="screen" id="settings">
+  <header class="bar">
+    <button class="icon-btn" data-go="home" aria-label="חזרה">
+      <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+    </button>
+    <h2>הגדרות</h2>
+  </header>
+  <h3>איך מזיזים את החיות?</h3>
+  <div class="choice" role="radiogroup">
+    <button class="option" role="radio" data-control="drag">
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <rect x="4" y="4" width="56" height="56" rx="16" fill="#43C46E" stroke="#2E2152" stroke-width="3"/>
+        <path d="M14 46c8-4 18-4 26-14" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="1 7" stroke-linecap="round"/>
+        <circle cx="42" cy="28" r="9" fill="#FFF7E3" stroke="#2E2152" stroke-width="3"/>
+      </svg>
+      <div><b>גרירה חופשית</b><span>החיה הולכת אחרי האצבע. נגיעה קצרה מסובבת, משיכה מהירה למטה מפילה.</span></div>
+      <i class="tick" aria-hidden="true"></i>
+    </button>
+    <button class="option" role="radio" data-control="swipe">
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <rect x="4" y="4" width="56" height="56" rx="16" fill="#4C8DF6" stroke="#2E2152" stroke-width="3"/>
+        <path d="M14 26h14m-5-5 5 5-5 5M50 26H36m5-5-5 5 5 5M32 36v14m-5-5 5 5 5-5" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div><b>החלקות</b><span>החלקה לצד זזה צעד אחד. החלקה למטה מפילה. נגיעה או החלקה למעלה מסובבת.</span></div>
+      <i class="tick" aria-hidden="true"></i>
+    </button>
+  </div>
+  <div class="settings-foot">
+    <button class="btn quiet" id="resetBtn">למחוק את כל ההתקדמות</button>
+  </div>
+</section>
+
+<!-- ============ GAME ============ -->
+<section class="screen" id="game">
+  <header class="hud">
+    <button class="icon-btn" id="pauseBtn" aria-label="הפסקה">
+      <svg viewBox="0 0 24 24"><path d="M9 6v12M15 6v12"/></svg>
+    </button>
+    <div class="hud-box"><span class="hud-label">שלב</span><b id="hudLevel">1</b></div>
+    <div class="hud-box grow"><span class="hud-label">ניקוד</span><b id="hudScore">0</b></div>
+    <div class="hud-box next"><span class="hud-label">הבא</span><canvas id="next"></canvas></div>
+  </header>
+  <div class="play" id="play"><canvas id="board"></canvas></div>
+  <div class="rows" id="rows" role="img" aria-label="שורות שנוקו"></div>
+
+  <div class="overlay" id="pauseOverlay" hidden>
+    <div class="panel">
+      <h2>הפסקה</h2>
+      <button class="btn primary" id="resumeBtn">להמשיך</button>
+      <div class="row">
+        <button class="btn small" id="pauseRestart">מההתחלה</button>
+        <button class="btn small" id="pauseMap">למפה</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="winOverlay" hidden>
+    <div class="panel">
+      <h2 id="winTitle">כל הכבוד!</h2>
+      <div class="big-stars" id="winStars"></div>
+      <p>ניקוד: <b id="winScore">0</b></p>
+      <p class="hint" id="winHint"></p>
+      <button class="btn primary" id="nextLevelBtn">לשלב הבא</button>
+      <div class="row">
+        <button class="btn small" id="winRetry">לשחק שוב</button>
+        <button class="btn small" id="winMap">למפה</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="overOverlay" hidden>
+    <div class="panel">
+      <h2>אוי! נגמר המקום</h2>
+      <p id="overText"></p>
+      <button class="btn primary" id="overRetry">לנסות שוב</button>
+      <button class="btn small" id="overMap">למפה</button>
+    </div>
+  </div>
+</section>
+
+<script>
+'use strict';
+/* =========================================================
+   ANIMAL BLOCKS — Phase 1
+   Sections:
+     1. CONFIG     – all game numbers in one place
+     2. Events     – tiny event bus (hooks for Phase 2: sounds,
+                     effects, tutorial can listen without touching
+                     game logic)
+     3. Store      – progress & settings saved on the device
+     4. Pieces     – the 7 animal shapes + rotation
+     5. Art        – drawing the animals on canvas
+     6. Game       – pure game rules (board, falling, scoring)
+     7. Render     – draws the board and next preview
+     8. Input      – touch (drag / swipe) and keyboard
+     9. UI         – screens, map, overlays, settings
+    10. Boot       – main loop
+   ========================================================= */
+
+/* ---------- 1. CONFIG ---------- */
+const CONFIG = {
+  cols: 10,
+  rows: 20,
+  rowsPerLevel: 10,
+  levelCount: 50,
+  baseInterval: 1000,       // ms per step at level 1 (1 step/sec)
+  speedFactor: 0.95,        // each level is 5% faster
+  minInterval: 100,         // cap: 10 steps/sec
+  lineScores: [0, 100, 300, 500, 800], // × level number
+  lockDelay: 500,           // ms a landed animal waits before locking
+  maxLockResets: 15,
+  // Stars: level points divided by the level number.
+  // Finishing = 1 star; clearing several rows together earns more.
+  starThresholds: { two: 1200, three: 1600 },
+};
+
+/* ---------- 2. Events ---------- */
+const Events = {
+  handlers: {},
+  on(name, fn) { (this.handlers[name] = this.handlers[name] || []).push(fn); },
+  emit(name, data) { (this.handlers[name] || []).forEach(fn => fn(data)); },
+};
+
+/* ---------- 3. Store ---------- */
+const Store = (() => {
+  const KEY = 'animalBlocks.v1';
+  const defaults = () => ({ unlocked: 1, stars: {}, best: {}, settings: { control: 'drag' } });
+  let data = load();
+
+  function load() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) {
+        const d = JSON.parse(raw), def = defaults();
+        return { ...def, ...d, settings: { ...def.settings, ...(d.settings || {}) } };
+      }
+    } catch (e) { /* storage unavailable – play without saving */ }
+    return defaults();
+  }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) { /* ignore */ }
+  }
+  return {
+    get: () => data,
+    totalStars: () => Object.values(data.stars).reduce((a, b) => a + b, 0),
+    recordLevel(level, stars, score) {
+      if (stars > (data.stars[level] || 0)) data.stars[level] = stars;
+      if (score > (data.best[level] || 0)) data.best[level] = score;
+      data.unlocked = Math.max(data.unlocked, Math.min(level + 1, CONFIG.levelCount));
+      save();
+    },
+    setControl(mode) { data.settings.control = mode; save(); },
+    reset() { const control = data.settings.control; data = defaults(); data.settings.control = control; save(); },
+  };
+})();
+
+/* ---------- 4. Pieces ---------- */
+// Cells are [x, y] inside an n×n box, in the base (spawn) orientation.
+const PIECES = {
+  I: { n: 4, cells: [[0, 1], [1, 1], [2, 1], [3, 1]], name: 'נחש', color: '#43C46E' },
+  O: { n: 2, cells: [[0, 0], [1, 0], [0, 1], [1, 1]], name: 'פנדה', color: '#FFD3E0' },
+  T: { n: 3, cells: [[1, 0], [0, 1], [1, 1], [2, 1]], name: 'צב', color: '#2CC7BE' },
+  L: { n: 3, cells: [[2, 0], [0, 1], [1, 1], [2, 1]], name: 'ג׳ירפה', color: '#FFB33C' },
+  J: { n: 3, cells: [[0, 0], [0, 1], [1, 1], [2, 1]], name: 'פיל', color: '#5B9BF8' },
+  S: { n: 3, cells: [[1, 0], [2, 0], [0, 1], [1, 1]], name: 'זחל', color: '#A8DE3C' },
+  Z: { n: 3, cells: [[0, 0], [1, 0], [1, 1], [2, 1]], name: 'סרטן', color: '#F7646A' },
+};
+const TYPES = Object.keys(PIECES);
+
+// SHAPES[type][rotation] = cells after rotating clockwise `rotation` times.
+const SHAPES = {};
+for (const t of TYPES) {
+  const { n, cells } = PIECES[t];
+  SHAPES[t] = [cells];
+  for (let r = 1; r < 4; r++) SHAPES[t].push(SHAPES[t][r - 1].map(([x, y]) => [n - 1 - y, x]));
+}
+
+/* ---------- 5. Art ---------- */
+const Art = (() => {
+  const INK = '#2E2152';
+  const cache = new Map();
+
+  // drawing helpers (units = cells)
+  const circle = (g, x, y, r) => { g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); };
+  const ell = (g, x, y, rx, ry, rot = 0) => { g.beginPath(); g.ellipse(x, y, rx, ry, rot, 0, Math.PI * 2); };
+  const fill = (g, c) => { g.fillStyle = c; g.fill(); };
+  function rr(g, x, y, w, h, r) {
+    g.beginPath(); g.moveTo(x + r, y);
+    g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r);
+    g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath();
+  }
+  function tiles(g, t, color, edge) {
+    for (const [x, y] of PIECES[t].cells) {
+      rr(g, x + .05, y + .05, .9, .9, .26);
+      fill(g, color); g.lineWidth = .07; g.strokeStyle = edge; g.stroke();
+    }
+  }
+  // Draws `fn` at (x, y) of the rotated piece, but keeps it upright so faces never go upside down.
+  function upright(g, base, x, y, fn) {
+    const p = g.getTransform().transformPoint(new DOMPoint(x, y));
+    const q = base.inverse().transformPoint(p);
+    g.save(); g.setTransform(base); g.translate(q.x, q.y); fn(); g.restore();
+  }
+  // Big cute eyes, rosy cheeks, smile. Origin = face center, k = size.
+  function face(g, k = 1, opt = {}) {
+    const ex = .19 * k, ey = -.06 * k, er = .15 * k;
+    g.lineWidth = .035 * k; g.strokeStyle = INK;
+    for (const s of [-1, 1]) {
+      circle(g, s * ex, ey, er); fill(g, '#fff'); g.stroke();
+      circle(g, s * ex + .015 * k, ey + .025 * k, er * .62); fill(g, INK);
+      circle(g, s * ex + .05 * k, ey - .025 * k, er * .25); fill(g, '#fff');
+    }
+    g.fillStyle = 'rgba(255, 92, 138, .55)';
+    ell(g, -.34 * k, .13 * k, .08 * k, .05 * k); g.fill();
+    ell(g, .34 * k, .13 * k, .08 * k, .05 * k); g.fill();
+    g.lineCap = 'round'; g.lineWidth = .045 * k; g.strokeStyle = INK;
+    g.beginPath(); g.arc(0, .1 * k, .07 * k, .2 * Math.PI, .8 * Math.PI); g.stroke();
+    if (opt.tongue) {
+      g.strokeStyle = '#E8336D'; g.lineWidth = .04 * k; g.beginPath();
+      g.moveTo(0, .18 * k); g.lineTo(0, .3 * k);
+      g.moveTo(0, .3 * k); g.lineTo(-.05 * k, .36 * k);
+      g.moveTo(0, .3 * k); g.lineTo(.05 * k, .36 * k); g.stroke();
+    }
+  }
+
+  // One function per animal, drawn in its base orientation.
+  const DRAW = {
+    I(g, base) { // Snake
+      tiles(g, 'I', '#43C46E', '#23884A');
+      for (let i = 0; i < 3; i++) {
+        ell(g, i + .5, 1.5, .17, .17, Math.PI / 4); fill(g, '#FFE066');
+        circle(g, i + .2, 1.25, .05); fill(g, '#23884A');
+        circle(g, i + .8, 1.75, .05); fill(g, '#23884A');
+      }
+      upright(g, base, 3.5, 1.47, () => face(g, .95, { tongue: true }));
+    },
+    O(g) { // Panda (never rotates)
+      tiles(g, 'O', '#FFD3E0', '#F09AB7');
+      circle(g, .42, .4, .24); fill(g, INK);
+      circle(g, 1.58, .4, .24); fill(g, INK);
+      ell(g, 1, 1.05, .8, .72); fill(g, '#fff'); g.lineWidth = .06; g.strokeStyle = INK; g.stroke();
+      ell(g, .68, .98, .2, .25, .5); fill(g, INK);
+      ell(g, 1.32, .98, .2, .25, -.5); fill(g, INK);
+      for (const x of [.7, 1.3]) {
+        circle(g, x, .96, .1); fill(g, '#fff');
+        circle(g, x + .01, .98, .06); fill(g, INK);
+        circle(g, x + .03, .94, .025); fill(g, '#fff');
+      }
+      ell(g, 1, 1.22, .1, .07); fill(g, INK);
+      g.lineWidth = .05; g.lineCap = 'round'; g.beginPath();
+      g.moveTo(1, 1.28); g.quadraticCurveTo(.93, 1.4, .86, 1.33);
+      g.moveTo(1, 1.28); g.quadraticCurveTo(1.07, 1.4, 1.14, 1.33); g.stroke();
+      g.fillStyle = 'rgba(255, 92, 138, .5)';
+      ell(g, .48, 1.28, .1, .06); g.fill(); ell(g, 1.52, 1.28, .1, .06); g.fill();
+    },
+    T(g, base) { // Turtle
+      tiles(g, 'T', '#2CC7BE', '#16948C');
+      for (const [x, y, r] of [[.3, 1.24, -.5], [2.7, 1.24, .5], [.3, 1.78, .5], [2.7, 1.78, -.5]]) {
+        ell(g, x, y, .17, .11, r); fill(g, '#9BEDE5');
+      }
+      ell(g, 1.5, 1.5, 1.02, .38); fill(g, '#8CCB4E'); g.lineWidth = .06; g.strokeStyle = '#3F7F22'; g.stroke();
+      for (const x of [.95, 1.5, 2.05]) { ell(g, x, 1.5, .19, .15); fill(g, '#B9E383'); }
+      upright(g, base, 1.5, .52, () => face(g, .9));
+    },
+    L(g, base) { // Giraffe
+      tiles(g, 'L', '#FFB33C', '#D9861A');
+      g.fillStyle = '#A65E1C';
+      for (const [x, y, r] of [[.38, 1.32, .13], [.72, 1.7, .1], [1.28, 1.38, .15], [1.72, 1.72, .1], [2.3, 1.6, .13], [2.75, 1.28, .08], [2.28, .9, .07]]) {
+        ell(g, x, y, r, r * .85, .6); g.fill();
+      }
+      g.strokeStyle = '#A65E1C'; g.lineWidth = .06; g.lineCap = 'round';
+      g.beginPath(); g.moveTo(.15, 1.3); g.lineTo(.13, 1.56); g.stroke();
+      circle(g, .13, 1.62, .06); g.fill();
+      upright(g, base, 2.5, .56, () => {
+        g.strokeStyle = '#A65E1C'; g.lineWidth = .06; g.lineCap = 'round'; g.beginPath();
+        g.moveTo(-.13, -.24); g.lineTo(-.16, -.36); g.moveTo(.13, -.24); g.lineTo(.16, -.36); g.stroke();
+        g.fillStyle = '#A65E1C'; circle(g, -.16, -.37, .055); g.fill(); circle(g, .16, -.37, .055); g.fill();
+        face(g, .8);
+      });
+    },
+    J(g, base) { // Elephant
+      tiles(g, 'J', '#5B9BF8', '#2F6BD0');
+      for (const x of [.5, 1.5, 2.5]) { ell(g, x, 1.87, .13, .06); fill(g, '#E9F2FF'); }
+      g.strokeStyle = '#2F6BD0'; g.lineWidth = .06; g.lineCap = 'round';
+      g.beginPath(); g.moveTo(2.86, 1.35); g.quadraticCurveTo(2.93, 1.5, 2.86, 1.62); g.stroke();
+      const trunk = () => { g.beginPath(); g.moveTo(.45, .7); g.quadraticCurveTo(.47, 1.25, .3, 1.42); g.quadraticCurveTo(.18, 1.53, .27, 1.63); };
+      g.lineWidth = .22; g.strokeStyle = '#2F6BD0'; trunk(); g.stroke();
+      g.lineWidth = .13; g.strokeStyle = '#5B9BF8'; trunk(); g.stroke();
+      ell(g, .8, .46, .16, .26); fill(g, '#A9CBFF'); g.lineWidth = .05; g.strokeStyle = '#2F6BD0'; g.stroke();
+      upright(g, base, .42, .42, () => face(g, .75));
+    },
+    S(g, base) { // Caterpillar
+      tiles(g, 'S', '#A8DE3C', '#6FA81E');
+      for (const [x, y] of [[1, 0], [0, 1], [1, 1]]) {
+        circle(g, x + .5, y + .5, .26); fill(g, '#C9F07C');
+        circle(g, x + .5, y + .5, .08); fill(g, '#FF9F43');
+        circle(g, x + .3, y + .87, .045); fill(g, INK);
+        circle(g, x + .7, y + .87, .045); fill(g, INK);
+      }
+      upright(g, base, 2.5, .57, () => {
+        g.strokeStyle = INK; g.lineWidth = .04; g.lineCap = 'round'; g.beginPath();
+        g.moveTo(-.1, -.25); g.quadraticCurveTo(-.15, -.35, -.22, -.38);
+        g.moveTo(.1, -.25); g.quadraticCurveTo(.15, -.35, .22, -.38); g.stroke();
+        circle(g, -.22, -.38, .05); fill(g, '#E8336D'); circle(g, .22, -.38, .05); fill(g, '#E8336D');
+        face(g, .8);
+      });
+    },
+    Z(g, base) { // Crab
+      tiles(g, 'Z', '#F7646A', '#C73A42');
+      const claw = (x, y, a) => {
+        circle(g, x, y, .28); fill(g, '#D93C45');
+        g.beginPath(); g.moveTo(x, y); g.arc(x, y, .31, a - .5, a + .5); g.closePath(); fill(g, '#F7646A');
+      };
+      claw(.45, .5, Math.PI); claw(2.55, 1.5, 0);
+      for (const [x, y, r] of [[1.35, 1.4, .07], [1.65, 1.56, .06], [1.42, 1.72, .05]]) { circle(g, x, y, r); fill(g, '#FFA3A7'); }
+      upright(g, base, 1.5, .58, () => {
+        g.strokeStyle = INK; g.lineWidth = .04; g.lineCap = 'round'; g.beginPath();
+        g.moveTo(-.19, -.18); g.lineTo(-.2, -.32); g.moveTo(.19, -.18); g.lineTo(.2, -.32); g.stroke();
+        face(g, .85);
+      });
+    },
+  };
+
+  function render(t, r, size, dpr) {
+    const n = PIECES[t].n;
+    const c = document.createElement('canvas');
+    c.width = c.height = Math.max(1, Math.round(n * size * dpr));
+    const g = c.getContext('2d');
+    const k = c.width / n;
+    g.scale(k, k);
+    const base = g.getTransform();
+    g.translate(n / 2, n / 2); g.rotate(r * Math.PI / 2); g.translate(-n / 2, -n / 2);
+    g.beginPath();
+    for (const [x, y] of PIECES[t].cells) g.rect(x, y, 1, 1);
+    g.clip();
+    DRAW[t](g, base);
+    return c;
+  }
+  function get(t, r, size) {
+    const dpr = Math.min(window.devicePixelRatio || 1, 3);
+    const key = `${t}${r}@${size}x${dpr}`;
+    let c = cache.get(key);
+    if (!c) { c = render(t, r, size, dpr); cache.set(key, c); }
+    return c;
+  }
+  // Draw one cell (lx, ly) of a piece image at canvas position (px, py).
+  function drawCell(ctx, t, r, lx, ly, px, py, size) {
+    const c = get(t, r, size), d = c.width / PIECES[t].n;
+    ctx.drawImage(c, lx * d, ly * d, d, d, px, py, size, size);
+  }
+  function bounds(t) {
+    const xs = PIECES[t].cells.map(c => c[0]), ys = PIECES[t].cells.map(c => c[1]);
+    return { x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs) + 1, h: Math.max(...ys) - Math.min(...ys) + 1 };
+  }
+  // Draw a whole piece (spawn orientation) centered in a W×H area.
+  function drawCentered(ctx, t, size, W, H) {
+    const c = get(t, 0, size), d = c.width / PIECES[t].n, b = bounds(t);
+    const w = b.w * size, h = b.h * size;
+    ctx.drawImage(c, b.x * d, b.y * d, b.w * d, b.h * d, (W - w) / 2, (H - h) / 2, w, h);
+  }
+  // A standalone canvas element with the piece, for menus.
+  function pieceCanvas(t, size) {
+    const b = bounds(t), dpr = Math.min(window.devicePixelRatio || 1, 3);
+    const el = document.createElement('canvas');
+    el.width = Math.round(b.w * size * dpr); el.height = Math.round(b.h * size * dpr);
+    el.style.width = b.w * size + 'px'; el.style.height = b.h * size + 'px';
+    const ctx = el.getContext('2d'); ctx.scale(dpr, dpr);
+    drawCentered(ctx, t, size, b.w * size, b.h * size);
+    return el;
+  }
+  return { get, drawCell, drawCentered, pieceCanvas, clear: () => cache.clear() };
+})();
+
+/* ---------- 6. Game ---------- */
+const Game = (() => {
+  const S = {
+    board: null, piece: null, next: null, bag: [], pieceId: 0,
+    level: 1, score: 0, lines: 0, interval: 1000,
+    fallT: 0, lockT: 0, lockResets: 0, status: 'idle', // idle | playing | paused | won | over
+  };
+  const KICKS = [[0, 0], [-1, 0], [1, 0], [0, -1], [-2, 0], [2, 0], [-1, -1], [1, -1]];
+
+  const emptyBoard = () => Array.from({ length: CONFIG.rows }, () => Array(CONFIG.cols).fill(null));
+  const intervalFor = level => Math.max(CONFIG.minInterval, CONFIG.baseInterval * Math.pow(CONFIG.speedFactor, level - 1));
+
+  function fromBag() { // "7-bag": every animal appears once before any repeats
+    if (!S.bag.length) {
+      S.bag = TYPES.slice();
+      for (let i = S.bag.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [S.bag[i], S.bag[j]] = [S.bag[j], S.bag[i]];
+      }
+    }
+    return S.bag.pop();
+  }
+  function collides(t, r, x, y) {
+    for (const [cx, cy] of SHAPES[t][r]) {
+      const bx = x + cx, by = y + cy;
+      if (bx < 0 || bx >= CONFIG.cols || by >= CONFIG.rows) return true;
+      if (by >= 0 && S.board[by][bx]) return true;
+    }
+    return false;
+  }
+  function spawn() {
+    const t = S.next;
+    S.next = fromBag();
+    const minY = Math.min(...SHAPES[t][0].map(c => c[1]));
+    S.piece = { t, r: 0, x: Math.floor((CONFIG.cols - PIECES[t].n) / 2), y: -minY };
+    S.pieceId++;
+    S.fallT = 0; S.lockT = 0; S.lockResets = 0;
+    if (collides(t, 0, S.piece.x, S.piece.y)) { end('over'); return; }
+    Events.emit('spawn', { type: t, next: S.next });
+  }
+  function start(level) {
+    Object.assign(S, {
+      board: emptyBoard(), bag: [], level, score: 0, lines: 0,
+      interval: intervalFor(level), status: 'playing',
+    });
+    S.next = fromBag();
+    Events.emit('start', { level });
+    spawn();
+  }
+  const grounded = () => collides(S.piece.t, S.piece.r, S.piece.x, S.piece.y + 1);
+  function afterShift() { // moving/rotating on the ground buys a bit more time
+    if (grounded() && S.lockResets < CONFIG.maxLockResets) { S.lockT = 0; S.lockResets++; }
+  }
+  function move(dx, dy) {
+    if (S.status !== 'playing' || !S.piece) return false;
+    const p = S.piece;
+    if (collides(p.t, p.r, p.x + dx, p.y + dy)) return false;
+    p.x += dx; p.y += dy;
+    if (dy > 0) S.fallT = 0; else afterShift();
+    Events.emit('move', { dx, dy });
+    return true;
+  }
+  function rotate() {
+    if (S.status !== 'playing' || !S.piece || S.piece.t === 'O') return false;
+    const p = S.piece, nr = (p.r + 1) % 4;
+    for (const [kx, ky] of KICKS) {
+      if (!collides(p.t, nr, p.x + kx, p.y + ky)) {
+        p.x += kx; p.y += ky; p.r = nr;
+        afterShift();
+        Events.emit('rotate', {});
+        return true;
+      }
+    }
+    return false;
+  }
+  function ghostY() {
+    const p = S.piece;
+    let y = p.y;
+    while (!collides(p.t, p.r, p.x, y + 1)) y++;
+    return y;
+  }
+  function hardDrop() {
+    if (S.status !== 'playing' || !S.piece) return;
+    const y = ghostY(), distance = y - S.piece.y;
+    S.piece.y = y;
+    Events.emit('hardDrop', { distance });
+    lock();
+  }
+  function clearLines() {
+    let count = 0;
+    for (let y = CONFIG.rows - 1; y >= 0; y--) {
+      if (S.board[y].every(Boolean)) {
+        S.board.splice(y, 1);
+        S.board.unshift(Array(CONFIG.cols).fill(null));
+        count++; y++;
+      }
+    }
+    return count;
+  }
+  function lock() {
+    const p = S.piece;
+    let toppedOut = false;
+    for (const [lx, ly] of SHAPES[p.t][p.r]) {
+      const bx = p.x + lx, by = p.y + ly;
+      if (by < 0) { toppedOut = true; continue; }
+      S.board[by][bx] = { t: p.t, r: p.r, lx, ly };
+    }
+    S.piece = null;
+    Events.emit('lock', { type: p.t });
+    if (toppedOut) { end('over'); return; }
+    const cleared = clearLines();
+    if (cleared) {
+      S.score += CONFIG.lineScores[cleared] * S.level;
+      S.lines += cleared;
+      Events.emit('lines', { count: cleared, total: S.lines, score: S.score });
+    }
+    if (S.lines >= CONFIG.rowsPerLevel) { end('won'); return; }
+    spawn();
+  }
+  function end(result) {
+    S.status = result;
+    S.piece = null;
+    Events.emit(result === 'won' ? 'levelComplete' : 'gameOver', { level: S.level, score: S.score, lines: S.lines });
+  }
+  function update(dt) {
+    if (S.status !== 'playing' || !S.piece) return;
+    if (grounded()) {
+      S.lockT += dt;
+      if (S.lockT >= CONFIG.lockDelay) lock();
+    } else {
+      S.lockT = 0;
+      S.fallT += dt;
+      if (S.fallT >= S.interval) { S.fallT = 0; S.piece.y++; }
+    }
+  }
+  function pause() { if (S.status === 'playing') { S.status = 'paused'; return true; } return false; }
+  function resume() { if (S.status === 'paused') S.status = 'playing'; }
+  function stars(score, level) {
+    const per = score / level;
+    return per >= CONFIG.starThresholds.three ? 3 : per >= CONFIG.starThresholds.two ? 2 : 1;
+  }
+  return { state: S, start, move, rotate, hardDrop, ghostY, update, pause, resume, stars };
+})();
+
+/* ---------- 7. Render ---------- */
+const Render = (() => {
+  let board, ctx, next, nctx, bg = null, cell = 24, dpr = 1;
+  const NEXT_W = 56, NEXT_H = 36;
+
+  function init() {
+    board = document.getElementById('board'); ctx = board.getContext('2d');
+    next = document.getElementById('next'); nctx = next.getContext('2d');
+  }
+  function resize() {
+    const play = document.getElementById('play');
+    const cs = getComputedStyle(play);
+    const w = play.clientWidth - 8;
+    const h = play.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - 8;
+    dpr = Math.min(window.devicePixelRatio || 1, 3);
+    cell = Math.max(10, Math.floor(Math.min(w / CONFIG.cols, h / CONFIG.rows)));
+    const W = cell * CONFIG.cols, H = cell * CONFIG.rows;
+    board.style.width = W + 'px'; board.style.height = H + 'px';
+    board.width = Math.round(W * dpr); board.height = Math.round(H * dpr);
+    next.width = Math.round(NEXT_W * dpr); next.height = Math.round(NEXT_H * dpr);
+    Art.clear();
+    // Pre-draw the empty board background with dots at grid corners.
+    bg = document.createElement('canvas');
+    bg.width = board.width; bg.height = board.height;
+    const b = bg.getContext('2d');
+    b.scale(dpr, dpr);
+    b.fillStyle = '#3A2C6B'; b.fillRect(0, 0, W, H);
+    b.fillStyle = 'rgba(255, 255, 255, .13)';
+    for (let y = 1; y < CONFIG.rows; y++) for (let x = 1; x < CONFIG.cols; x++) {
+      b.beginPath(); b.arc(x * cell, y * cell, Math.max(1, cell * .06), 0, Math.PI * 2); b.fill();
+    }
+  }
+  function drawPiece(p, y, alpha) {
+    ctx.globalAlpha = alpha;
+    for (const [lx, ly] of SHAPES[p.t][p.r]) {
+      if (y + ly < 0) continue;
+      Art.drawCell(ctx, p.t, p.r, lx, ly, (p.x + lx) * cell, (y + ly) * cell, cell);
+    }
+    ctx.globalAlpha = 1;
+  }
+  function draw() {
+    const S = Game.state;
+    if (!bg || !S.board) return;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.drawImage(bg, 0, 0);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    for (let y = 0; y < CONFIG.rows; y++) for (let x = 0; x < CONFIG.cols; x++) {
+      const c = S.board[y][x];
+      if (c) Art.drawCell(ctx, c.t, c.r, c.lx, c.ly, x * cell, y * cell, cell);
+    }
+    if (S.piece) {
+      drawPiece(S.piece, Game.ghostY(), .28);
+      drawPiece(S.piece, S.piece.y, 1);
+    }
+    nctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    nctx.clearRect(0, 0, NEXT_W, NEXT_H);
+    if (S.next) {
+      const size = S.next === 'I' ? 13 : 16;
+      Art.drawCentered(nctx, S.next, size, NEXT_W, NEXT_H);
+    }
+  }
+  return { init, resize, draw, cellSize: () => cell };
+})();
+
+/* ---------- 8. Input ---------- */
+const Input = (() => {
+  let g = null; // current gesture
+  const mode = () => Store.get().settings.control;
+  const playing = () => Game.state.status === 'playing' && Game.state.piece;
+
+  function onDown(e) {
+    if (!playing() || g) return;
+    e.preventDefault();
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+    const now = performance.now();
+    g = {
+      id: e.pointerId, x0: e.clientX, y0: e.clientY, t0: now,
+      px0: Game.state.piece.x, pieceId: Game.state.pieceId,
+      drops: 0, moved: false, done: false, samples: [[e.clientY, now]],
+    };
+  }
+  function onMove(e) {
+    if (!g || e.pointerId !== g.id) return;
+    e.preventDefault();
+    if (g.done || !playing()) return;
+    if (Game.state.pieceId !== g.pieceId) { g.done = true; return; } // a new animal arrived – finish this gesture
+    const dx = e.clientX - g.x0, dy = e.clientY - g.y0, now = performance.now();
+    g.samples.push([e.clientY, now]);
+    if (g.samples.length > 8) g.samples.shift();
+    if (Math.abs(dx) > 10 || Math.abs(dy) > 10) g.moved = true;
+    const cell = Render.cellSize();
+    if (mode() === 'drag') dragMove(dx, dy, cell); else swipeMove(dx, dy, cell);
+  }
+  function dragMove(dx, dy, cell) {
+    const p = Game.state.piece;
+    const target = g.px0 + Math.round(dx / (cell * .9));
+    let guard = CONFIG.cols;
+    while (p.x < target && guard-- > 0 && Game.move(1, 0));
+    while (p.x > target && guard-- > 0 && Game.move(-1, 0));
+    const want = Math.floor(Math.max(0, dy - cell * .4) / (cell * .8));
+    while (g.drops < want && Game.move(0, 1)) g.drops++;
+    g.drops = Math.max(g.drops, want);
+  }
+  function swipeMove(dx, dy, cell) {
+    const th = Math.max(24, cell * .8);
+    const ax = Math.abs(dx), ay = Math.abs(dy);
+    if (ax > ay && ax >= th) { g.done = true; Game.move(dx > 0 ? 1 : -1, 0); }
+    else if (ay > ax && dy >= th * 1.3) { g.done = true; Game.hardDrop(); }
+    else if (ay > ax && dy <= -th) { g.done = true; Game.rotate(); }
+  }
+  function velocityY(gest) { // px per ms over the last ~100ms
+    const s = gest.samples, last = s[s.length - 1];
+    let first = s[0];
+    for (const smp of s) if (last[1] - smp[1] <= 100) { first = smp; break; }
+    const dt = last[1] - first[1];
+    return dt > 0 ? (last[0] - first[0]) / dt : 0;
+  }
+  function onUp(e) {
+    if (!g || e.pointerId !== g.id) return;
+    const gest = g; g = null;
+    if (gest.done || !playing() || Game.state.pieceId !== gest.pieceId) return;
+    const dt = performance.now() - gest.t0;
+    const dx = e.clientX - gest.x0, dy = e.clientY - gest.y0;
+    if (!gest.moved && dt < 350) { Game.rotate(); return; }
+    if (mode() === 'drag') {
+      const cell = Render.cellSize();
+      if (velocityY(gest) > .9 && dy > cell * 1.2) Game.hardDrop();
+      else if (dy < -cell * 1.5 && Math.abs(dy) > Math.abs(dx)) Game.rotate();
+    }
+  }
+  function onCancel(e) { if (g && e.pointerId === g.id) g = null; }
+
+  function onKey(e) {
+    if (UI.current !== 'game') return;
+    if (e.key === 'Escape' || e.key === 'p' || e.key === 'P') { UI.togglePause(); e.preventDefault(); return; }
+    if (!playing()) return;
+    switch (e.key) {
+      case 'ArrowLeft': Game.move(-1, 0); break;
+      case 'ArrowRight': Game.move(1, 0); break;
+      case 'ArrowDown': Game.move(0, 1); break;
+      case 'ArrowUp': case 'x': case 'X': Game.rotate(); break;
+      case ' ': Game.hardDrop(); break;
+      default: return;
+    }
+    e.preventDefault();
+  }
+  function init() {
+    const area = document.getElementById('play');
+    area.addEventListener('pointerdown', onDown);
+    area.addEventListener('pointermove', onMove);
+    area.addEventListener('pointerup', onUp);
+    area.addEventListener('pointercancel', onCancel);
+    area.addEventListener('touchmove', e => e.preventDefault(), { passive: false }); // stop iOS scroll/bounce
+    window.addEventListener('keydown', onKey);
+  }
+  return { init };
+})();
+
+/* ---------- 9. UI ---------- */
+const UI = (() => {
+  const $ = id => document.getElementById(id);
+  const STAR_PATH = 'M12 2.6l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.5l-5.9 3.1 1.2-6.5-4.8-4.6 6.6-.9z';
+  const star = on => `<svg class="star${on ? ' on' : ''}" viewBox="0 0 24 24" aria-hidden="true"><path d="${STAR_PATH}"/></svg>`;
+  const ui = { current: null };
+
+  function show(name) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === name));
+    ui.current = name;
+    if (name === 'home') renderHome();
+    if (name === 'map') renderMap();
+    if (name === 'settings') renderSettings();
+    if (name === 'game') requestAnimationFrame(() => { Render.resize(); Render.draw(); });
+  }
+
+  // ----- Home -----
+  function renderHome() {
+    const cast = $('cast');
+    cast.innerHTML = '';
+    const size = Math.max(18, Math.min(30, Math.floor(window.innerWidth / 15)));
+    const tilts = [-6, 4, -3, 6, -5, 3, -2];
+    TYPES.forEach((t, i) => {
+      const fig = document.createElement('figure');
+      fig.style.setProperty('--tilt', tilts[i] + 'deg');
+      fig.appendChild(Art.pieceCanvas(t, size));
+      const cap = document.createElement('figcaption');
+      cap.textContent = PIECES[t].name;
+      fig.appendChild(cap);
+      cast.appendChild(fig);
+    });
+    const total = Store.totalStars();
+    $('homeStars').innerHTML = total ? `${star(true)} <span>${total} כוכבים</span>` : '';
+  }
+
+  // ----- Map -----
+  function renderMap() {
+    const data = Store.get();
+    $('mapStars').innerHTML = `${star(true)}<span>${Store.totalStars()}</span>`;
+    const wrap = $('mapPath');
+    wrap.innerHTML = '';
+    const N = CONFIG.levelCount, gap = 104, top = 70;
+    const W = wrap.clientWidth || 360;
+    const pts = [];
+    for (let i = 0; i < N; i++) pts.push([W / 2 + Math.sin(i * 1.15) * W * .27, top + i * gap]);
+    const H = top * 2 + (N - 1) * gap;
+    wrap.style.height = H + 'px';
+
+    let d = `M${pts[0][0]},${pts[0][1]}`;
+    for (let i = 1; i < N; i++) {
+      const [x0, y0] = pts[i - 1], [x1, y1] = pts[i], my = (y0 + y1) / 2;
+      d += ` C${x0},${my} ${x1},${my} ${x1},${y1}`;
+    }
+    wrap.insertAdjacentHTML('beforeend',
+      `<svg class="road" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
+        <path d="${d}" fill="none" stroke="rgba(46,33,82,.14)" stroke-width="26" stroke-linecap="round"/>
+        <path d="${d}" fill="none" stroke="#FFF7E3" stroke-width="9" stroke-dasharray="1 20" stroke-linecap="round"/>
+      </svg>`);
+
+    let currentNode = null;
+    pts.forEach(([x, y], i) => {
+      const level = i + 1;
+      const got = data.stars[level] || 0;
+      const locked = level > data.unlocked;
+      const isCurrent = level === data.unlocked && !got;
+      const btn = document.createElement('button');
+      btn.className = 'node' + (locked ? ' locked' : '') + (isCurrent ? ' current' : '');
+      btn.style.left = x + 'px'; btn.style.top = y + 'px';
+      if (locked) {
+        btn.innerHTML = `<svg class="lock" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="3"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>`;
+        btn.setAttribute('aria-label', `שלב ${level} נעול`);
+        btn.disabled = true;
+      } else {
+        btn.innerHTML = `<span>${level}</span>` + (got ? `<span class="mini">${star(got >= 1)}${star(got >= 2)}${star(got >= 3)}</span>` : '');
+        btn.setAttribute('aria-label', `שלב ${level}` + (got ? `, ${got} כוכבים` : ''));
+        btn.addEventListener('click', () => startLevel(level));
+      }
+      wrap.appendChild(btn);
+      if (level === data.unlocked) currentNode = { btn, x, y };
+    });
+
+    if (currentNode) { // a little panda waits next to the level to play
+      const buddy = Art.pieceCanvas('O', 22);
+      buddy.className = 'map-buddy';
+      const side = currentNode.x > W / 2 ? -1 : 1;
+      buddy.style.left = (currentNode.x + side * 72) + 'px';
+      buddy.style.top = currentNode.y + 'px';
+      wrap.appendChild(buddy);
+      requestAnimationFrame(() => {
+        const sc = $('mapScroll');
+        sc.scrollTop = currentNode.y - sc.clientHeight / 2;
+      });
+    }
+  }
+
+  // ----- Settings -----
+  function renderSettings() {
+    const m = Store.get().settings.control;
+    document.querySelectorAll('[data-control]').forEach(b => b.setAttribute('aria-checked', String(b.dataset.control === m)));
+    const r = $('resetBtn');
+    r.classList.remove('armed');
+    r.textContent = 'למחוק את כל ההתקדמות';
+  }
+
+  // ----- Game -----
+  let lastLevel = 1;
+  function startLevel(level) {
+    lastLevel = level;
+    ['pauseOverlay', 'winOverlay', 'overOverlay'].forEach(id => { $(id).hidden = true; });
+    show('game');
+    Game.start(level);
+    updateHud();
+  }
+  function updateHud() {
+    const S = Game.state;
+    $('hudLevel').textContent = S.level;
+    $('hudScore').textContent = S.score;
+    const rows = $('rows');
+    if (!rows.children.length) {
+      for (let i = 0; i < CONFIG.rowsPerLevel; i++) {
+        const pip = document.createElement('i');
+        pip.style.setProperty('--c', PIECES[TYPES[i % TYPES.length]].color);
+        rows.appendChild(pip);
+      }
+    }
+    [...rows.children].forEach((pip, i) => pip.classList.toggle('on', i < S.lines));
+    rows.setAttribute('aria-label', `שורות: ${Math.min(S.lines, CONFIG.rowsPerLevel)} מתוך ${CONFIG.rowsPerLevel}`);
+  }
+  function togglePause() {
+    const S = Game.state;
+    if (S.status === 'playing') { Game.pause(); $('pauseOverlay').hidden = false; }
+    else if (S.status === 'paused') { Game.resume(); $('pauseOverlay').hidden = true; }
+  }
+  function onLevelComplete({ level, score }) {
+    const got = Game.stars(score, level);
+    Store.recordLevel(level, got, score);
+    updateHud();
+    $('winTitle').textContent = got === 3 ? 'מושלם!' : got === 2 ? 'יופי של משחק!' : 'כל הכבוד!';
+    $('winStars').innerHTML = star(got >= 1) + star(got >= 2) + star(got >= 3);
+    $('winScore').textContent = score;
+    $('winHint').textContent = got < 3 ? 'טיפ: כמה שורות ביחד נותנות יותר נקודות ויותר כוכבים.' : '';
+    $('nextLevelBtn').hidden = level >= CONFIG.levelCount;
+    setTimeout(() => { $('winOverlay').hidden = false; }, 350);
+  }
+  function onGameOver({ lines }) {
+    $('overText').textContent = `ניקית ${Math.min(lines, CONFIG.rowsPerLevel)} שורות מתוך ${CONFIG.rowsPerLevel}. עוד ניסיון?`;
+    setTimeout(() => { $('overOverlay').hidden = false; }, 350);
+  }
+
+  function init() {
+    document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => show(b.dataset.go)));
+    document.querySelectorAll('[data-control]').forEach(b => b.addEventListener('click', () => {
+      Store.setControl(b.dataset.control); renderSettings();
+    }));
+    $('resetBtn').addEventListener('click', e => {
+      const btn = e.currentTarget;
+      if (btn.classList.contains('armed')) { Store.reset(); btn.classList.remove('armed'); btn.textContent = 'ההתקדמות נמחקה'; }
+      else { btn.classList.add('armed'); btn.textContent = 'בטוח? לחיצה נוספת תמחק'; }
+    });
+    $('pauseBtn').addEventListener('click', togglePause);
+    $('resumeBtn').addEventListener('click', togglePause);
+    $('pauseRestart').addEventListener('click', () => startLevel(lastLevel));
+    $('pauseMap').addEventListener('click', () => { $('pauseOverlay').hidden = true; show('map'); });
+    $('nextLevelBtn').addEventListener('click', () => startLevel(lastLevel + 1));
+    $('winRetry').addEventListener('click', () => startLevel(lastLevel));
+    $('winMap').addEventListener('click', () => { $('winOverlay').hidden = true; show('map'); });
+    $('overRetry').addEventListener('click', () => startLevel(lastLevel));
+    $('overMap').addEventListener('click', () => { $('overOverlay').hidden = true; show('map'); });
+
+    Events.on('lines', updateHud);
+    Events.on('levelComplete', onLevelComplete);
+    Events.on('gameOver', onGameOver);
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && Game.state.status === 'playing') togglePause();
+    });
+    window.addEventListener('resize', () => {
+      if (ui.current === 'game') Render.resize();
+      else if (ui.current === 'map') renderMap();
+      else if (ui.current === 'home') renderHome();
+    });
+  }
+  return Object.assign(ui, { init, show, togglePause, startLevel });
+})();
+
+/* ---------- 10. Boot ---------- */
+(function boot() {
+  Render.init();
+  Input.init();
+  UI.init();
+  UI.show('home');
+  let last = performance.now();
+  function frame(now) {
+    const dt = Math.min(100, now - last);
+    last = now;
+    if (UI.current === 'game') { Game.update(dt); Render.draw(); }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
