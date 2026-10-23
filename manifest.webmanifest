@@ -1,0 +1,14 @@
+{
+  "name": "Animal Blocks",
+  "short_name": "Animal Blocks",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFD84D",
+  "theme_color": "#FFD84D",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
