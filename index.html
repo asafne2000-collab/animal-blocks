@@ -95,7 +95,6 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 .btn.quiet { background: transparent; box-shadow: none; border-style: dashed; border-width: 3px; font-size: 1rem; }
 .btn.quiet::before { display: none; }
 .btn.quiet:active { transform: none; }
-.btn.quiet.armed { background: var(--gloss-berry); color: #fff; border-style: solid; }
 
 .icon-btn {
   width: 54px; height: 54px; flex: none;
@@ -191,7 +190,7 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 @keyframes hop { 0%, 100% { translate: 0 0; } 50% { translate: 0 -6px; } }
 
 /* ---------- Settings ---------- */
-.choice { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+.choice { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 6px 6px 0; }
 .option {
   position: relative; aspect-ratio: 1;
   background: var(--gloss-cream); border: 4px solid var(--ink); border-radius: 30px;
@@ -204,7 +203,69 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 .option[aria-checked="true"] .tick::after { content: ""; width: 12px; height: 7px; border: solid #fff; border-width: 0 0 4px 4px; transform: translateY(-2px) rotate(-45deg); }
 .hand-outline { fill: var(--ink); stroke: var(--ink); stroke-width: 5; stroke-linejoin: round; }
 .hand-fill { fill: var(--cream); }
-.settings-foot { margin-top: auto; display: flex; justify-content: center; padding-top: 20px; }
+.settings-foot { margin-top: auto; display: flex; justify-content: center; padding-top: 4px; }
+.settings-body {
+  flex: 1; min-height: 0; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  display: flex; flex-direction: column; gap: 18px;
+  margin: 0 -8px; padding: 6px 8px 12px;
+}
+.set-card {
+  display: flex; flex-direction: column; gap: 12px;
+  background: var(--gloss-cream); border: 4px solid var(--ink); border-radius: 26px;
+  box-shadow: var(--depth); padding: 12px 14px 16px;
+}
+.set-card[hidden] { display: none; }
+.set-title { display: flex; align-items: center; gap: 8px; font-size: 1.25rem; font-weight: 900; }
+.set-row { display: flex; align-items: center; gap: 12px; min-height: 52px; }
+.set-ico { flex: none; width: 44px; text-align: center; font-size: 2rem; line-height: 1; }
+.set-ico.small { width: 30px; font-size: 1.6rem; }
+.set-ico.hands svg { width: 32px; height: 38px; transform: scaleX(-1); }
+.set-label { flex: 1; font-size: 1.15rem; font-weight: 900; }
+/* on/off switch: green with the knob on the right = on */
+.switch {
+  position: relative; flex: none; width: 70px; height: 42px; padding: 0;
+  border: 4px solid var(--ink); border-radius: 999px;
+  background: linear-gradient(180deg, #DCD5EC, #B7ADD3);
+  box-shadow: inset 0 3px 0 rgba(46, 33, 82, .18), 0 3px 0 var(--ink);
+}
+.switch i {
+  position: absolute; top: 3px; left: 3px; width: 28px; height: 28px; border-radius: 50%;
+  background: var(--gloss-cream); border: 3px solid var(--ink); transition: transform .15s;
+}
+.switch[aria-checked="true"] { background: linear-gradient(180deg, #9AF09B, #3DBB55); }
+.switch[aria-checked="true"] i { transform: translateX(28px); }
+/* chunky slider */
+.slider { flex: 1; min-width: 0; height: 44px; margin: 0; background: transparent; -webkit-appearance: none; appearance: none; touch-action: pan-x; }
+.slider:disabled { opacity: .35; }
+.slider::-webkit-slider-runnable-track { height: 16px; border-radius: 999px; border: 3px solid var(--ink); background: linear-gradient(90deg, #FFE98A, var(--berry)); }
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 34px; height: 34px; margin-top: -12px; border-radius: 50%;
+  background: var(--gloss-cream); border: 4px solid var(--ink); box-shadow: 0 3px 0 var(--ink);
+}
+.slider::-moz-range-track { height: 10px; border-radius: 999px; border: 3px solid var(--ink); background: linear-gradient(90deg, #FFE98A, var(--berry)); }
+.slider::-moz-range-thumb { width: 26px; height: 26px; border-radius: 50%; background: #fff; border: 4px solid var(--ink); }
+/* keyboard keys */
+.key-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.key-row {
+  display: flex; align-items: center; gap: 6px; min-width: 0; min-height: 52px; padding: 6px; text-align: left;
+  background: #fff; border: 3px solid var(--ink); border-radius: 16px; box-shadow: 0 3px 0 var(--ink);
+}
+.key-row:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
+.key-row .ico { flex: none; font-size: 1.2rem; }
+.key-row .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 800; }
+.key-row kbd {
+  flex: none; min-width: 38px; padding: 4px 6px; border-radius: 10px; text-align: center;
+  font: inherit; font-weight: 900; color: #fff; background: var(--gloss-plum); border: 2.5px solid var(--ink);
+}
+.key-row.waiting { background: #FFF3B0; outline: 4px solid var(--berry); outline-offset: 2px; }
+.key-row.waiting kbd { background: var(--gloss-berry); animation: hop .9s ease-in-out infinite; }
+.key-note { text-align: center; font-weight: 800; color: var(--berry); }
+.key-note:empty { display: none; }
+.set-card .btn.small { align-self: center; }
+.btn.soon:disabled { opacity: .5; cursor: default; }
+.btn.soon:disabled:active { transform: none; box-shadow: var(--depth); }
+.btn .tag { margin-left: 6px; padding: 2px 8px; border-radius: 999px; font-size: .75rem; color: #fff; background: var(--gloss-plum); vertical-align: middle; }
+.erase-ico { font-size: 3rem; line-height: 1; }
 
 /* ---------- Game ---------- */
 #game { padding-left: 10px; padding-right: 10px; touch-action: none; }
@@ -249,7 +310,7 @@ body.in-game #scene { display: block; }
 .world-lock svg { width: 30px; height: 30px; }
 .world-lock .lock { stroke: var(--ink); stroke-width: 3; fill: none; }
 #next { width: 56px; height: 36px; display: block; }
-.hud .icon-btn { height: 64px; width: 56px; }
+.hud .icon-btn { height: 64px; width: 48px; }
 .play {
   flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center;
   padding: 12px 0 14px; touch-action: none;
@@ -332,11 +393,15 @@ body.in-game #scene { display: block; }
 .chip svg { width: 22px; height: 22px; }
 .bar .chip + .chip { margin-left: -4px; }
 .bar .shop-btn { margin-left: auto; }
+/* the map's settings button floats in the bottom corner (the top bar is full on phones) */
+.map-settings { position: absolute; right: 16px; bottom: calc(var(--safe-b) + 16px); z-index: 4; border-radius: 50%; width: 58px; height: 58px; }
 .pop { animation: pop .35s ease-out; }
 @keyframes pop { 40% { transform: scale(1.3); } }
 
 /* ---------- Boosters in a level ---------- */
-.boosters { display: flex; justify-content: center; gap: 10px; flex: none; padding: 2px 0 10px; }
+/* boosters sit on the thumb's side: right, or left with "Left hand" on (mirrored) */
+.boosters { display: flex; justify-content: flex-end; gap: 10px; flex: none; padding: 2px 0 10px; }
+body.left-handed .boosters { flex-direction: row-reverse; }
 .boosters[hidden] { display: none; }
 .booster {
   position: relative; width: 54px; height: 54px; border-radius: 50%; flex: none;
@@ -483,7 +548,7 @@ body.in-game #scene { display: block; }
 .zoo-key .key-ico { width: 32px; height: 32px; }
 
 @media (prefers-reduced-motion: reduce) {
-  .booster.aiming, .pop, .nope { animation: none; }
+  .booster.aiming, .pop, .nope, .key-row.waiting kbd { animation: none; }
   .cheer.go, .big-stars svg.on, .key-prize.play .chest, .key-prize.play .chest-lid, .key-prize.play .prize-items span, .key-prize.play .new-friend { animation: none; }
   .node.current { animation: none; }
   .dir-intro svg { animation: none; }
@@ -512,6 +577,7 @@ body.in-game #scene { display: block; }
     <stop offset="0" stop-color="#FF9DBE"/><stop offset=".5" stop-color="#F2477C"/><stop offset="1" stop-color="#C91D57"/>
   </linearGradient>
   <symbol id="i-retry" viewBox="0 0 24 24"><path d="M5 12a7 7 0 1 0 2.2-5.1M5 4v4h4"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M21.2 12h-2.6M5.4 12H2.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8M18.5 18.5l-1.8-1.8M7.3 7.3 5.5 5.5"/></symbol>
   <symbol id="i-map" viewBox="0 0 24 24"><path d="M3.5 6.5 9 4l6 2.5L20.5 4v13.5L15 20l-6-2.5-5.5 2.5zM9 4v13.5M15 6.5V20"/></symbol>
 </svg>
 
@@ -529,7 +595,7 @@ body.in-game #scene { display: block; }
 
 <!-- ============ HOME ============ -->
 <section class="screen" id="home">
-  <button class="icon-btn settings-btn" data-go="settings" aria-label="Settings">
+  <button class="icon-btn settings-btn" data-settings aria-label="Settings">
     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M21.2 12h-2.6M5.4 12H2.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8M18.5 18.5l-1.8-1.8M7.3 7.3 5.5 5.5"/></svg>
   </button>
   <h1 class="title"><span>Animal</span><span>Blocks</span></h1>
@@ -557,43 +623,110 @@ body.in-game #scene { display: block; }
     </button>
   </header>
   <div class="map-scroll" id="mapScroll"><div class="map-path" id="mapPath"></div></div>
+    <button class="icon-btn map-settings" data-settings aria-label="Settings">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M21.2 12h-2.6M5.4 12H2.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8M18.5 18.5l-1.8-1.8M7.3 7.3 5.5 5.5"/></svg>
+    </button>
 </section>
 
 <!-- ============ SETTINGS ============ -->
+<!-- Opens from Home, the map and inside a level (which pauses the game). -->
 <section class="screen" id="settings">
   <header class="bar">
-    <button class="icon-btn" data-go="home" aria-label="Back">
+    <button class="icon-btn" id="settingsBack" aria-label="Back">
       <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
     </button>
     <h2>Settings</h2>
   </header>
-  <div class="choice" role="radiogroup" aria-label="How to move the animals">
-    <!-- Mode 1: dragging hand -->
-    <button class="option" role="radio" data-control="drag" aria-label="Free drag">
-      <svg viewBox="0 0 96 96" aria-hidden="true">
-        <rect x="3" y="3" width="90" height="90" rx="24" fill="#43C46E"/>
-        <path d="M12 58h24M60 58h24" fill="none" stroke="#FFF7E3" stroke-width="5" stroke-dasharray="0.5 9" stroke-linecap="round"/>
-        <rect x="44" y="12" width="24" height="24" rx="7" fill="#FFB33C" stroke="#2E2152" stroke-width="3"/>
-        <circle cx="52" cy="22" r="2.4" fill="#2E2152"/><circle cx="60" cy="22" r="2.4" fill="#2E2152"/>
-        <use href="#hand" x="36" y="32" width="40" height="48" class="hand-outline"/>
-        <use href="#hand" x="36" y="32" width="40" height="48" class="hand-fill"/>
-      </svg>
-      <i class="tick" aria-hidden="true"></i>
-    </button>
-    <!-- Mode 2: swiping hand -->
-    <button class="option" role="radio" data-control="swipe" aria-label="Swipes">
-      <svg viewBox="0 0 96 96" aria-hidden="true">
-        <rect x="3" y="3" width="90" height="90" rx="24" fill="#4C8DF6"/>
-        <path d="M36 26H14m7-7-7 7 7 7M60 26h22m-7-7 7 7-7 7" fill="none" stroke="#FFF7E3" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M22 50h10M18 60h12M20 70h8" fill="none" stroke="#FFF7E3" stroke-width="4" stroke-linecap="round" opacity=".7"/>
-        <use href="#hand" x="30" y="30" width="40" height="48" class="hand-outline" transform="rotate(-14 50 54)"/>
-        <use href="#hand" x="30" y="30" width="40" height="48" class="hand-fill" transform="rotate(-14 50 54)"/>
-      </svg>
-      <i class="tick" aria-hidden="true"></i>
-    </button>
+  <div class="settings-body">
+    <!-- Sound -->
+    <div class="set-card">
+      <div class="set-row">
+        <span class="set-ico" aria-hidden="true">🎵</span>
+        <button class="switch" role="switch" data-switch="music" aria-label="Music"><i></i></button>
+        <input class="slider" type="range" min="0" max="100" data-volume="musicVol" aria-label="Music volume">
+      </div>
+      <div class="set-row">
+        <span class="set-ico" aria-hidden="true">🔊</span>
+        <button class="switch" role="switch" data-switch="sfx" aria-label="Sound effects"><i></i></button>
+        <input class="slider" type="range" min="0" max="100" data-volume="sfxVol" aria-label="Sound effects volume">
+      </div>
+    </div>
+
+    <!-- Touch controls -->
+    <div class="set-card">
+      <h3 class="set-title"><span aria-hidden="true">👆</span> Touch</h3>
+      <div class="choice" role="radiogroup" aria-label="How to move the animals">
+        <!-- Mode 1: dragging hand -->
+        <button class="option" role="radio" data-control="drag" aria-label="Free drag">
+          <svg viewBox="0 0 96 96" aria-hidden="true">
+            <rect x="3" y="3" width="90" height="90" rx="24" fill="#43C46E"/>
+            <path d="M12 58h24M60 58h24" fill="none" stroke="#FFF7E3" stroke-width="5" stroke-dasharray="0.5 9" stroke-linecap="round"/>
+            <rect x="44" y="12" width="24" height="24" rx="7" fill="#FFB33C" stroke="#2E2152" stroke-width="3"/>
+            <circle cx="52" cy="22" r="2.4" fill="#2E2152"/><circle cx="60" cy="22" r="2.4" fill="#2E2152"/>
+            <use href="#hand" x="36" y="32" width="40" height="48" class="hand-outline"/>
+            <use href="#hand" x="36" y="32" width="40" height="48" class="hand-fill"/>
+          </svg>
+          <i class="tick" aria-hidden="true"></i>
+        </button>
+        <!-- Mode 2: swiping hand -->
+        <button class="option" role="radio" data-control="swipe" aria-label="Swipes">
+          <svg viewBox="0 0 96 96" aria-hidden="true">
+            <rect x="3" y="3" width="90" height="90" rx="24" fill="#4C8DF6"/>
+            <path d="M36 26H14m7-7-7 7 7 7M60 26h22m-7-7 7 7-7 7" fill="none" stroke="#FFF7E3" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M22 50h10M18 60h12M20 70h8" fill="none" stroke="#FFF7E3" stroke-width="4" stroke-linecap="round" opacity=".7"/>
+            <use href="#hand" x="30" y="30" width="40" height="48" class="hand-outline" transform="rotate(-14 50 54)"/>
+            <use href="#hand" x="30" y="30" width="40" height="48" class="hand-fill" transform="rotate(-14 50 54)"/>
+          </svg>
+          <i class="tick" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="set-row">
+        <span class="set-ico small" aria-hidden="true" title="Big moves">🐢</span>
+        <input class="slider" type="range" min="0" max="100" id="sensitivity" aria-label="Touch sensitivity: how small a finger move counts">
+        <span class="set-ico small" aria-hidden="true" title="Tiny moves">🐇</span>
+      </div>
+      <div class="set-row">
+        <span class="set-ico hands" aria-hidden="true">
+          <svg viewBox="0 0 40 48"><use href="#hand" class="hand-outline"/><use href="#hand" class="hand-fill"/></svg>
+        </span>
+        <span class="set-label">Left hand</span>
+        <button class="switch" role="switch" data-switch="leftHanded" aria-label="Left-handed: boosters on the left"><i></i></button>
+      </div>
+    </div>
+
+    <!-- Keyboard (computers only) -->
+    <div class="set-card" id="keysCard">
+      <h3 class="set-title"><span aria-hidden="true">⌨️</span> Keys</h3>
+      <div class="key-list" id="keyList"></div>
+      <p class="key-note" id="keyNote" aria-live="polite"></p>
+      <button class="btn small" id="resetKeys">↺ Default keys</button>
+    </div>
+
+    <!-- Other -->
+    <div class="set-card">
+      <div class="set-row">
+        <span class="set-ico" aria-hidden="true">📳</span>
+        <span class="set-label">Vibration</span>
+        <button class="switch" role="switch" data-switch="vibrate" aria-label="Vibration"><i></i></button>
+      </div>
+      <!-- Phase 2: the tutorial replay goes here -->
+      <button class="btn small soon" id="tutorialBtn" disabled aria-label="Replay tutorial (coming soon)">? Tutorial <span class="tag">soon</span></button>
+    </div>
+    <div class="settings-foot">
+      <button class="btn quiet" id="resetBtn">🗑️ Erase all progress</button>
+    </div>
   </div>
-  <div class="settings-foot">
-    <button class="btn quiet" id="resetBtn">Erase all progress</button>
+
+  <div class="overlay" id="eraseOverlay" hidden>
+    <div class="panel">
+      <div class="erase-ico" aria-hidden="true">🗑️</div>
+      <h2>Are you sure?</h2>
+      <p>All stars, coins, boosters and animals will be gone.</p>
+      <div class="row">
+        <button class="btn" id="eraseNo">Keep</button>
+        <button class="btn primary" id="eraseYes">Erase</button>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -643,6 +776,9 @@ body.in-game #scene { display: block; }
     <button class="icon-btn" id="pauseBtn" aria-label="Pause">
       <svg viewBox="0 0 24 24"><path d="M9 6v12M15 6v12"/></svg>
     </button>
+    <button class="icon-btn" data-settings aria-label="Settings">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M21.2 12h-2.6M5.4 12H2.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8M18.5 18.5l-1.8-1.8M7.3 7.3 5.5 5.5"/></svg>
+    </button>
     <div class="hud-box" id="hudLevelBox"><span class="hud-label">Level</span><b id="hudLevel">1</b></div>
     <div class="hud-box grow"><span class="hud-label">Score</span><b id="hudScore">0</b></div>
     <div class="hud-box next"><span class="hud-label">Next</span><canvas id="next"></canvas></div>
@@ -665,6 +801,7 @@ body.in-game #scene { display: block; }
       <div class="row">
         <button class="btn icon-only" id="pauseRestart" aria-label="Restart level"><svg viewBox="0 0 24 24" class="ico"><use href="#i-retry"/></svg></button>
         <button class="btn icon-only" id="pauseMap" aria-label="Level map"><svg viewBox="0 0 24 24" class="ico"><use href="#i-map"/></svg></button>
+        <button class="btn icon-only" data-settings aria-label="Settings"><svg viewBox="0 0 24 24" class="ico"><use href="#i-gear"/></svg></button>
       </div>
     </div>
   </div>
@@ -718,6 +855,7 @@ body.in-game #scene { display: block; }
      5. Art        – drawing the animals (and key-level gems) on canvas
      6. Game       – pure game rules (board, falling, scoring)
      7. Effects    – landing squash, dust, line flash, particles
+    7b. Sound      – music & sound effects made in code, vibration
      8. Scene      – painted world backgrounds
      9. Render     – draws the board (turned for sideways key levels)
     10. Input      – touch (drag / swipe) and keyboard
@@ -784,8 +922,17 @@ const Events = {
 /* ---------- 3. Store ---------- */
 const Store = (() => {
   const KEY = 'animalBlocks.v1';
+  // Keyboard keys are KeyboardEvent.code values, so they work on any layout.
+  const DEFAULT_KEYS = { left: 'ArrowLeft', right: 'ArrowRight', rotate: 'ArrowUp', speed: 'ArrowDown', drop: 'Space', pause: 'Escape' };
+  const defaultSettings = () => ({
+    control: 'drag',
+    music: true, musicVol: .6, sfx: true, sfxVol: .8, // volumes 0–1
+    sensitivity: .5,          // 0 = needs big finger moves, 1 = tiny moves count
+    leftHanded: false, vibrate: true,
+    keys: { ...DEFAULT_KEYS },
+  });
   const defaults = () => ({
-    lastLevel: 1, highScore: 0, stars: {}, best: {}, settings: { control: 'drag' },
+    lastLevel: 1, highScore: 0, stars: {}, best: {}, settings: defaultSettings(),
     coins: 0, items: {}, seen: {}, starterBought: false, // seen: boosters ever owned (shown in the game)
     specials: {}, version: 2, // specials: special animals unlocked by key levels, e.g. { K1: true }
   });
@@ -799,7 +946,9 @@ const Store = (() => {
         // Version 1 saves: levels 5, 10, … 50 were key levels on the main path;
         // they are regular levels now. Their stars simply stay where they are,
         // so nobody loses progress, and the new side key levels start fresh.
-        return { ...def, ...d, version: def.version, settings: { ...def.settings, ...(d.settings || {}) } };
+        const settings = { ...def.settings, ...(d.settings || {}) };
+        settings.keys = { ...DEFAULT_KEYS, ...(settings.keys || {}) };
+        return { ...def, ...d, version: def.version, settings };
       }
     } catch (e) { /* storage unavailable – play without saving */ }
     return defaults();
@@ -830,7 +979,12 @@ const Store = (() => {
     hasSpecial: keyId => !!data.specials[keyId],
     setLastLevel(level) { data.lastLevel = level; save(); },
     setControl(mode) { data.settings.control = mode; save(); },
-    reset() { const control = data.settings.control; data = defaults(); data.settings.control = control; save(); },
+    setting: name => data.settings[name],
+    set(name, value) { data.settings[name] = value; save(); },
+    setKey(action, code) { data.settings.keys[action] = code; save(); },
+    resetKeys() { data.settings.keys = { ...DEFAULT_KEYS }; save(); },
+    // Erasing progress keeps all settings (sound, controls, keys).
+    reset() { const settings = data.settings; data = defaults(); data.settings = settings; save(); },
   };
 })();
 
@@ -2203,6 +2357,392 @@ const Effects = (() => {
   };
 })();
 
+/* ---------- 7b. Sound ---------- */
+// All music and sound effects are made right here with the Web Audio API –
+// no sound files, no libraries. Every tune below is original.
+// Kid-friendly by design: soft waveforms (sine / triangle, a filtered square
+// for Candy Sky), gentle attacks, a warm low-pass filter and a limiter at the
+// very end, so nothing is ever sharp or loud.
+// Phones only allow audio after a tap: the audio starts on the first touch
+// or key press, and the music begins right then. On iPhone the silent switch
+// mutes everything (audio session 'ambient', like most games).
+// Sounds listen to the same events as Effects ('fx', 'move', 'rotate').
+const Sound = (() => {
+  const MAJOR = [0, 2, 4, 5, 7, 9, 11], MIXO = [0, 2, 4, 5, 7, 9, 10];
+  // A tune: tempo (quarter notes per minute; every step is an eighth note),
+  // root note (MIDI), scale, steps per bar (8 = 4/4, 6 = 3/4 or 6/8), one
+  // chord per bar (a scale degree) and per-bar patterns, one token per step:
+  //   melody: scale degree (1 = root, 8 = an octave up), '-' hold, '.' rest
+  //   bass:   'R' chord root, '5' its fifth, '-' hold, '.' rest
+  //   arp:    chord tone 0–3 (3 = the octave), 'c' whole chord, '.' rest
+  //   drums:  k kick, h hat, s shaker, b wood block, '.' nothing
+  // `vol` evens out tunes that come out louder than the others.
+  const TUNES = {
+    meadow: { // Sunny Meadow: a bouncy whistle over a plucked guitar
+      bpm: 112, root: 60, scale: MAJOR, beat: 8, lead: 'flute', arpInst: 'pluck', pad: true, vol: .85,
+      chords: [1, 4, 5, 1, 6, 4, 2, 5],
+      melody: ['5 - 3 5 6 - 5 -', '4 - 6 - 8 - 6 -', '5 - 7 - 9 8 7 5', '8 - - - . . . .',
+        '6 - 8 - 10 - 8 -', '8 - 6 - 4 - 6 -', '5 4 3 2 4 - 3 2', '2 - 5 - 7 - . .'],
+      bass: 'R - - - 5 - - -', arp: '. 0 1 2 . 0 1 2', drums: 'k.h.k.h.',
+    },
+    savanna: { // Animal Kingdom: marimba and wood blocks
+      bpm: 100, root: 62, scale: MAJOR, beat: 8, lead: 'marimba',
+      chords: [1, 1, 4, 5, 1, 6, 4, 5],
+      melody: ['1 . 3 5 . 6 5 3', '5 . 3 2 . 1 2 .', '4 . 6 8 . 6 4 .', '5 . 7 5 . 3 2 .',
+        '8 . 6 5 . 3 5 .', '6 . 8 6 . 5 3 .', '4 . 3 2 . 4 6 .', '5 6 5 3 2 . . .'],
+      bass: 'R . . R . . 5 .', drums: 'k.sbk.sb',
+    },
+    ocean: { // Ocean Reef: a slow, rocking 6/8 with bubbly plucks and waves
+      bpm: 80, root: 57, scale: MAJOR, beat: 6, lead: 'piano', arpInst: 'bubble', pad: true,
+      chords: [1, 4, 1, 5, 6, 4, 2, 5],
+      melody: ['3 - - 5 - 3', '4 - - 6 - 8', '5 - - 3 - 1', '2 - - - . .',
+        '3 - 5 6 - 5', '4 - 6 8 - 6', '6 - 5 4 - 2', '5 - - - . .'],
+      bass: 'R - - 5 - -', arp: '0 1 2 3 2 1', drums: 's.....', arpOct: 24,
+    },
+    snow: { // Snowy Mountains: a music-box waltz with bells
+      bpm: 96, root: 67, scale: MAJOR, beat: 6, lead: 'bell', arpInst: 'pluck',
+      chords: [1, 6, 4, 5, 1, 6, 2, 5],
+      melody: ['5 - 3 - 5 -', '6 - - - 5 -', '4 - 6 - 8 -', '7 - - - 5 -',
+        '5 - 8 - 7 -', '6 - 3 - 5 -', '4 - 3 - 2 -', '5 - - - . .'],
+      bass: 'R - - - - -', arp: '. . c . c .', drums: '......', arpOct: 0,
+    },
+    candy: { // Candy Sky: a sparkly, bouncy chiptune
+      bpm: 126, root: 60, scale: MAJOR, beat: 8, lead: 'chip', arpInst: 'pluck',
+      chords: [4, 5, 3, 6, 2, 5, 1, 1],
+      melody: ['8 6 4 6 8 - 10 -', '9 7 5 7 9 - 7 -', '10 8 7 8 10 - 7 -', '6 - 8 - 10 - 13 -',
+        '9 - 11 - 9 - 6 -', '7 - 9 - 12 - 11 -', '10 - 8 - 5 - 8 -', '8 - - - . . . .'],
+      bass: 'R . R . 5 . R .', arp: '. 0 . 1 . 2 . 1', drums: 'k.hsk.hs',
+    },
+    map: { // the level map and menus: calm piano with soft strings
+      bpm: 76, root: 65, scale: MAJOR, beat: 8, lead: 'piano', arpInst: 'pluck', pad: true, vol: .8,
+      chords: [1, 5, 6, 4, 1, 4, 2, 5],
+      melody: ['5 - - - 3 - 2 -', '2 - - - 7 - 5 -', '6 - - - 8 - 10 -', '8 - - 6 4 - - -',
+        '3 - 5 - 8 - 7 -', '6 - - - 4 - - -', '2 - 4 - 6 - 4 -', '5 - - - . . . .'],
+      bass: 'R - - - - - - -', arp: '0 . 1 . 2 . 1 .', drums: '........',
+    },
+    key: { // key levels: an exciting adventure with a driving beat
+      bpm: 138, root: 62, scale: MIXO, beat: 8, lead: 'chip', arpInst: 'pluck',
+      chords: [1, 7, 4, 1, 1, 7, 4, 5],
+      melody: ['1 1 5 . 8 . 7 5', '7 . 9 . 11 . 9 .', '8 . 6 . 4 6 8 .', '8 - 7 5 . 5 8 .',
+        '1 1 5 . 8 . 10 8', '9 . 7 . 11 . 9 .', '11 . 10 . 8 . 6 .', '5 . 7 . 9 - . .'],
+      bass: 'R . R . R . 5 .', arp: '0 1 2 1 0 1 2 1', drums: 'k.hkk.h.',
+    },
+  };
+  const WORLD_TUNES = ['meadow', 'savanna', 'ocean', 'snow', 'candy'];
+  for (const T of Object.values(TUNES)) { // split the patterns into steps once
+    T.mel = T.melody.map(b => b.split(' '));
+    T.bassSteps = T.bass.split(' ');
+    T.arpSteps = T.arp ? T.arp.split(' ') : null;
+  }
+
+  let ctx = null, master, musicBus, duckBus, sfxBus, noiseBuf, track = null, timer = 0;
+  let tuneOut = null; // the playing tune's own fader (for fading between tunes)
+  const S = name => Store.setting(name);
+  const hz = midi => 440 * Math.pow(2, (midi - 69) / 12);
+  const degree = (T, d) => T.root + T.scale[((d - 1) % 7 + 7) % 7] + 12 * Math.floor((d - 1) / 7);
+  const loud = v => v * v; // sliders feel even: half the slider ≈ half as loud
+
+  // ----- Start-up (must happen inside a tap) -----
+  function unlock() {
+    if (!ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      try { if (navigator.audioSession) navigator.audioSession.type = 'ambient'; } catch (e) { /* older iOS */ }
+      ctx = new AC();
+      const warm = ctx.createBiquadFilter(); // takes the edge off every sound
+      warm.type = 'lowpass'; warm.frequency.value = 7000;
+      const limit = ctx.createDynamicsCompressor(); // never louder than this
+      limit.threshold.value = -4; limit.knee.value = 4; limit.ratio.value = 12; // only catches peaks
+      limit.attack.value = .003; limit.release.value = .25;
+      master = ctx.createGain(); master.gain.value = .7;
+      musicBus = ctx.createGain(); duckBus = ctx.createGain(); sfxBus = ctx.createGain();
+      musicBus.connect(duckBus); duckBus.connect(master); sfxBus.connect(master);
+      master.connect(warm); warm.connect(limit); limit.connect(ctx.destination);
+      noiseBuf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
+      const d = noiseBuf.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      const silent = ctx.createBufferSource(); // iOS: a silent sound inside the tap unlocks audio
+      silent.buffer = ctx.createBuffer(1, 1, 22050); silent.connect(ctx.destination); silent.start(0);
+      applyVolumes(true);
+      timer = setInterval(tick, 25);
+    }
+    if (ctx.state !== 'running') ctx.resume().catch(() => {});
+  }
+  function applyVolumes(now) {
+    if (!ctx) return;
+    const t = ctx.currentTime, k = now ? .001 : .05;
+    musicBus.gain.setTargetAtTime(S('music') ? loud(S('musicVol')) * .32 : 0, t, k); // music stays in the background
+    sfxBus.gain.setTargetAtTime(S('sfx') ? loud(S('sfxVol')) * 2 : 0, t, k);
+  }
+
+  // ----- Building blocks -----
+  // One note. Percussive notes fade over their length; `hold` notes stay
+  // until the end, then fade out over `release`.
+  function tone(t, f, dur, o = {}) {
+    const bus = o.bus || sfxBus, osc = ctx.createOscillator(), g = ctx.createGain();
+    osc.type = o.type || 'sine';
+    osc.frequency.setValueAtTime(f, t);
+    if (o.to) osc.frequency.exponentialRampToValueAtTime(o.to, t + (o.glide || dur));
+    if (o.detune) osc.detune.value = o.detune;
+    if (o.vib) { // vibrato: [speed, depth in Hz]
+      const lfo = ctx.createOscillator(), lg = ctx.createGain();
+      lfo.frequency.value = o.vib[0]; lg.gain.value = o.vib[1];
+      lfo.connect(lg); lg.connect(osc.frequency); lfo.start(t); lfo.stop(t + dur + .6);
+    }
+    const a = o.attack || .008, peak = o.gain || .1, rel = o.release || .08;
+    g.gain.setValueAtTime(.0001, t);
+    g.gain.exponentialRampToValueAtTime(peak, t + a);
+    if (o.hold) g.gain.setValueAtTime(peak, t + Math.max(a, dur));
+    g.gain.exponentialRampToValueAtTime(.0001, t + Math.max(a, dur) + rel);
+    let node = osc;
+    if (o.lp) { const f2 = ctx.createBiquadFilter(); f2.type = 'lowpass'; f2.frequency.value = o.lp; osc.connect(f2); node = f2; }
+    node.connect(g);
+    connectOut(g, bus, t, o.pan, o.panTo, dur);
+    osc.start(t); osc.stop(t + dur + rel + .05);
+  }
+  // A puff of filtered noise (whoosh, poof, boom, shaker).
+  function noise(t, dur, o = {}) {
+    const src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    src.buffer = noiseBuf;
+    f.type = o.filter || 'bandpass'; f.Q.value = o.q || 1;
+    f.frequency.setValueAtTime(o.freq || 1000, t);
+    if (o.to) f.frequency.exponentialRampToValueAtTime(o.to, t + dur);
+    const a = o.attack || .005, peak = o.gain || .1;
+    g.gain.setValueAtTime(.0001, t);
+    g.gain.exponentialRampToValueAtTime(peak, t + a);
+    g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    src.connect(f); f.connect(g);
+    connectOut(g, o.bus || sfxBus, t, o.pan, o.panTo, dur);
+    src.start(t, Math.random() * .5); src.stop(t + dur + .05);
+  }
+  function connectOut(node, bus, t, pan, panTo, dur) {
+    if (pan === undefined || !ctx.createStereoPanner) { node.connect(bus); return; }
+    const p = ctx.createStereoPanner();
+    p.pan.setValueAtTime(pan, t);
+    if (panTo !== undefined) p.pan.linearRampToValueAtTime(panTo, t + dur);
+    node.connect(p); p.connect(bus);
+  }
+
+  // ----- Music instruments -----
+  function lead(T, t, midi, dur) {
+    const f = hz(midi), m = { bus: tuneOut };
+    switch (T.lead) {
+      case 'flute': tone(t, f, dur * .9, { ...m, type: 'triangle', hold: true, attack: .04, release: .12, gain: .13, vib: [5, f * .006], lp: 2600 }); break;
+      case 'marimba':
+        tone(t, f, .45, { ...m, gain: .2, attack: .004 });
+        tone(t, f * 4, .06, { ...m, gain: .025, attack: .002 }); break;
+      case 'bell':
+        tone(t, f, 1.3, { ...m, gain: .12, attack: .004 });
+        tone(t, f * 3, .35, { ...m, gain: .02, attack: .002 }); break;
+      case 'chip': tone(t, f, dur * .8, { ...m, type: 'square', hold: true, attack: .006, release: .06, gain: .045, lp: 1800 }); break;
+      default: // 'piano'
+        tone(t, f, Math.max(.6, dur * 1.4), { ...m, type: 'triangle', gain: .14, attack: .006 });
+        tone(t, f * 2, .3, { ...m, gain: .025, attack: .004 });
+    }
+  }
+  function arpNote(T, t, midi, dur) {
+    const f = hz(midi), m = { bus: tuneOut };
+    if (T.arpInst === 'bubble') tone(t, f, .22, { ...m, gain: .045, attack: .01, to: f * 1.06, glide: .1 });
+    else tone(t, f, Math.max(.22, dur), { ...m, type: 'triangle', gain: .05, attack: .004, lp: 2200 });
+  }
+  function drum(ch, t) {
+    const m = { bus: tuneOut };
+    if (ch === 'k') tone(t, 110, .14, { ...m, to: 45, gain: .2, attack: .003 });
+    else if (ch === 'h') noise(t, .035, { ...m, filter: 'highpass', freq: 7000, gain: .025 });
+    else if (ch === 's') noise(t, .09, { ...m, freq: 5200, q: 2, gain: .03, attack: .02 });
+    else if (ch === 'b') { tone(t, 880, .06, { ...m, gain: .06, attack: .002 }); tone(t, 1320, .04, { ...m, gain: .02, attack: .002 }); }
+  }
+  // Chord tones of the bar's chord: 0 root, 1 third, 2 fifth, 3 octave.
+  const chordTone = (T, c, i) => degree(T, c + [0, 2, 4, 7][i]);
+  function playStep(tr, t) {
+    const T = tr.tune, stepDur = 60 / T.bpm / 2;
+    const bar = Math.floor(tr.step / T.beat) % T.chords.length, i = tr.step % T.beat, c = T.chords[bar];
+    const holdFrom = (steps, at) => { let n = 1; while (steps[at + n] === '-') n++; return n * stepDur; };
+    const mel = T.mel[bar], tok = mel[i];
+    if (tok !== '.' && tok !== '-') lead(T, t, degree(T, +tok) + 12, holdFrom(mel, i));
+    const b = T.bassSteps[i];
+    if (b === 'R' || b === '5') {
+      const f = hz(degree(T, c + (b === '5' ? 4 : 0)) - 24), dur = holdFrom(T.bassSteps, i);
+      tone(t, f, dur * .9, { bus: tuneOut, type: 'triangle', hold: true, attack: .01, release: .1, gain: .16, lp: 500 });
+    }
+    const a = T.arpSteps && T.arpSteps[i];
+    if (a === 'c') [0, 1, 2].forEach(k => arpNote(T, t, chordTone(T, c, k) + (T.arpOct ?? 12), stepDur));
+    else if (a && a !== '.') arpNote(T, t, chordTone(T, c, +a) + (T.arpOct ?? 12), stepDur);
+    if (T.pad && i === 0) { // soft strings: the chord, held for the whole bar
+      const dur = stepDur * T.beat;
+      for (const k of [0, 1, 2]) for (const det of [-7, 7]) {
+        tone(t, hz(chordTone(T, c, k)), dur, { bus: tuneOut, type: 'triangle', hold: true, attack: .35, release: .5, gain: .018, detune: det, lp: 1200 });
+      }
+    }
+    drum(T.drums[i], t);
+  }
+
+  // ----- Which tune plays where -----
+  // The level's tune in a level (also while paused in Settings or the shop),
+  // nothing on "Well done!" / "Oops!", the calm map tune everywhere else.
+  function wanted() {
+    if (!S('music')) return null;
+    const G = Game.state, screen = UI.current;
+    const inLevel = screen === 'game' || ((screen === 'settings' || screen === 'shop') && G.status === 'paused');
+    if (!inLevel) return 'map';
+    if (G.status === 'won' || G.status === 'over') return null;
+    return G.key ? 'key' : WORLD_TUNES[Levels.world(G.level) % WORLD_TUNES.length];
+  }
+  function switchTo(name) {
+    if (track) { // fade the old tune out
+      const out = track.out;
+      out.gain.setTargetAtTime(0, ctx.currentTime, .3);
+      setTimeout(() => out.disconnect(), 2000);
+    }
+    track = null;
+    if (!name) return;
+    const out = ctx.createGain();
+    out.gain.setValueAtTime(0, ctx.currentTime);
+    out.gain.setTargetAtTime(TUNES[name].vol || 1, ctx.currentTime + .2, .5);
+    out.connect(duckBus);
+    track = { name, tune: TUNES[name], step: 0, next: ctx.currentTime + .25, out };
+  }
+  // Runs every 25 ms: picks the tune and schedules its notes a moment ahead.
+  function tick() {
+    if (!ctx || ctx.state !== 'running') return;
+    const name = wanted();
+    if (name !== (track ? track.name : null)) switchTo(name);
+    duckBus.gain.setTargetAtTime(Game.state.status === 'paused' ? .4 : 1, ctx.currentTime, .2); // quieter while paused
+    if (!track) return;
+    const T = track.tune, stepDur = 60 / T.bpm / 2;
+    if (track.next < ctx.currentTime) track.next = ctx.currentTime + .05; // woke up late: skip ahead
+    tuneOut = track.out;
+    while (track.next < ctx.currentTime + .15) { playStep(track, track.next); track.next += stepDur; track.step++; }
+  }
+
+  // ----- Sound effects -----
+  const N = { C5: 72, E5: 76, G5: 79, C6: 84, E6: 88, G6: 91, C7: 96 };
+  const PENTA = [0, 2, 4, 7, 9];
+  const penta = (base, i) => base + PENTA[i % 5] + 12 * Math.floor(i / 5);
+  let moveFlip = false;
+  const SFX = {
+    move() { moveFlip = !moveFlip; tone(now(), moveFlip ? 1050 : 990, .035, { gain: .045, attack: .003 }); },
+    rotate() { tone(now(), 520, .08, { type: 'triangle', to: 860, gain: .1, attack: .005 }); },
+    land({ hard }) {
+      const t = now();
+      tone(t, hard ? 170 : 150, .11, { to: 70, gain: hard ? .22 : .15, attack: .003 });
+      noise(t, .07, { filter: 'lowpass', freq: 450, gain: hard ? .08 : .05 });
+    },
+    lines({ count }) { // one more note for every extra row
+      const t = now(), notes = [N.C5, N.E5, N.G5, N.C6, N.E6, N.G6].slice(0, Math.min(6, count + 2));
+      notes.forEach((m, i) => {
+        tone(t + i * .06, hz(m), .35, { gain: .1, attack: .004 });
+        tone(t + i * .06, hz(m), .25, { type: 'triangle', gain: .05, attack: .004 });
+      });
+    },
+    cheer() { // "Super!" / "Amazing!": a sparkly run and a happy chord
+      const t = now() + .12;
+      for (let i = 0; i < 9; i++) tone(t + i * .035, hz(penta(N.G5, i)), .2, { gain: .05, attack: .003, pan: -.6 + i * .15 });
+      [N.C5, N.E5, N.G5, N.C6].forEach(m => tone(t + .32, hz(m), .5, { type: 'triangle', hold: true, attack: .02, release: .35, gain: .045 }));
+    },
+    drop() { // whoosh
+      const t = now();
+      noise(t, .16, { freq: 2600, to: 380, q: 1.2, gain: .22 });
+      tone(t, 700, .12, { to: 220, gain: .07 });
+    },
+    bomb() { // a soft, round boom – low-passed, never a crack
+      const t = now();
+      noise(t, .6, { filter: 'lowpass', freq: 900, to: 120, gain: .35, attack: .01 });
+      tone(t, 120, .45, { to: 38, gain: .3, attack: .005 });
+      [N.C7, N.G6, N.E6].forEach((m, i) => tone(t + .25 + i * .07, hz(m), .2, { gain: .025 }));
+    },
+    swap() { // poof!
+      const t = now();
+      noise(t, .2, { freq: 1300, q: .8, gain: .25, attack: .01 });
+      tone(t + .05, 420, .12, { type: 'triangle', to: 950, gain: .12 });
+    },
+    slowMo() { // everything slows down: a wobbly slide down
+      const t = now();
+      tone(t, 660, .8, { to: 250, glide: .8, gain: .11, vib: [6, 14], hold: true, attack: .02, release: .2 });
+      tone(t, 990, .8, { to: 375, glide: .8, gain: .03, hold: true, attack: .02, release: .2 });
+    },
+    magic() { // twinkly bells going up
+      const t = now();
+      for (let i = 0; i < 7; i++) tone(t + i * .055, hz(penta(N.C6, i)), .4, { gain: .1, attack: .003, pan: i % 2 ? .5 : -.5 });
+    },
+    sweep() { // swish from left to right
+      const t = now();
+      noise(t, .45, { freq: 700, to: 3200, q: 1.2, gain: .45, attack: .06, pan: -.8, panTo: .8 });
+      noise(t + .08, .3, { filter: 'highpass', freq: 3000, gain: .08, attack: .05, pan: -.4, panTo: .9 });
+    },
+    secondChance() { // a heartbeat, then a warm rising chord
+      const t = now();
+      tone(t, 95, .12, { gain: .22 }); tone(t + .2, 90, .15, { gain: .18 });
+      [N.C5, N.E5, N.G5, N.C6].forEach((m, i) => tone(t + .45 + i * .09, hz(m), .5, { type: 'triangle', gain: .08, attack: .01 }));
+    },
+    special() { // a special animal arrives
+      const t = now();
+      [N.C7, 100, 103].forEach((m, i) => tone(t + i * .07, hz(m), .3, { gain: .06 }));
+    },
+    levelComplete() { // fanfare
+      const t = now();
+      [N.C5, N.E5, N.G5].forEach((m, i) => tone(t + i * .12, hz(m), .1, { type: 'triangle', hold: true, gain: .1, release: .06 }));
+      [N.C5, N.E5, N.G5, N.C6].forEach(m => tone(t + .38, hz(m), .7, { type: 'triangle', hold: true, attack: .01, release: .5, gain: .06 }));
+      tone(t + .38, hz(48), .7, { type: 'triangle', hold: true, release: .4, gain: .12 });
+    },
+    // "Well done!" panel: a ding for every star as it pops in, then the chest.
+    winScreen({ stars, chest }) {
+      const t = now();
+      for (let i = 0; i < stars; i++) {
+        const at = t + .5 + i * .25;
+        tone(at, hz([N.C6, N.E6, N.G6][i]), .6, { gain: .1, attack: .003 });
+        tone(at, hz([N.C6, N.E6, N.G6][i] + 12), .25, { gain: .025, attack: .002 });
+      }
+      if (!chest) return;
+      for (const d of [.55, .7, .85, 1]) tone(t + d, 260, .05, { type: 'triangle', gain: .06 }); // rattle
+      tone(t + 1.1, 300, .14, { type: 'triangle', to: 900, gain: .09 }); // the lid pops
+      for (let i = 0; i < 6; i++) tone(t + 1.15 + i * .04, hz(penta(N.G6, i)), .25, { gain: .03 });
+      for (let i = 0; i < 3; i++) tone(t + 1.35 + i * .15, 600, .07, { to: 1250, gain: .06 }); // items pop out
+      // New friend: ta-da!
+      [N.G5, N.C6].forEach((m, i) => tone(t + 1.95 + i * .12, hz(m), .12, { type: 'triangle', hold: true, gain: .09 }));
+      [N.C6, N.E6, N.G6].forEach(m => tone(t + 2.2, hz(m), .6, { gain: .05, attack: .01 }));
+    },
+    coins({ amount }) { // ching-ching while the number counts up (same easing as the counter)
+      const t = now() + .02, n = Math.max(3, Math.min(12, Math.round(amount / 20)));
+      for (let k = 0; k < n; k++) {
+        const at = t + .9 * (1 - Math.cbrt(1 - k / n));
+        tone(at, 1568 + k * 30, .06, { gain: .06, attack: .002 });
+        tone(at + .03, 2093 + k * 40, .09, { gain: .05, attack: .002 });
+      }
+    },
+    oops() { // "uh-oh" – soft and friendly
+      const t = now();
+      tone(t, hz(67), .18, { type: 'triangle', hold: true, attack: .02, release: .08, gain: .11 });
+      tone(t + .24, hz(64), .3, { type: 'triangle', hold: true, attack: .02, release: .25, gain: .1, to: hz(62), glide: .45, vib: [5, 4] });
+    },
+    tap() { tone(now(), 620, .05, { to: 900, gain: .055, attack: .003 }); },
+  };
+  const now = () => ctx.currentTime + .005;
+  function play(name, data = {}) {
+    if (!ctx || ctx.state !== 'running' || !S('sfx') || !SFX[name]) return;
+    SFX[name](data);
+  }
+
+  // ----- Vibration (Android; quietly skipped where phones don't support it) -----
+  const BUZZ = { land: 8, drop: 15, lines: 30, bomb: [40, 30, 60], secondChance: [20, 60, 20], levelComplete: [30, 40, 30, 40, 60], oops: 40 };
+  function buzz(name) {
+    if (!BUZZ[name] || !S('vibrate') || !navigator.vibrate) return;
+    try { navigator.vibrate(BUZZ[name]); } catch (e) { /* not allowed – ignore */ }
+  }
+
+  ['pointerdown', 'touchend', 'mousedown', 'keydown'].forEach(ev => window.addEventListener(ev, unlock, true));
+  document.addEventListener('visibilitychange', () => { // silence in the background
+    if (!ctx) return;
+    if (document.hidden) ctx.suspend().catch(() => {}); else ctx.resume().catch(() => {});
+  });
+  Events.on('fx', ({ name, ...data }) => { play(name, data); buzz(name); });
+  Events.on('move', ({ dx }) => { if (dx) play('move'); });
+  Events.on('rotate', () => play('rotate'));
+  // A soft pop for every button (boosters have their own sounds).
+  document.addEventListener('click', e => { const b = e.target.closest('button'); if (b && !b.classList.contains('booster')) play('tap'); }, true);
+  return { play, applyVolumes, unlock, state: () => (ctx ? ctx.state : 'off'), tune: () => (track ? track.name : null), TUNES };
+})();
+
 /* ---------- 8. Scene ---------- */
 // World backgrounds, painted in code: a static picture plus a few gently
 // moving things (petals, dust, bubbles, snow, twinkling stars).
@@ -2562,6 +3102,9 @@ const Input = (() => {
   const playing = () => Game.state.status === 'playing' && Game.state.piece;
   const act = (action, ok) => { if (ok !== false) Events.emit('input', { action, via: mode() }); return ok; };
   const toLogical = (sx, sy) => { const v = Render.view(); return [v.a * sx + v.b * sy, v.c * sx + v.d * sy]; };
+  // Touch sensitivity (Settings): scales how far a finger must move per column
+  // and how quick a flick must be. 1.5× at the lowest, 0.5× at the highest.
+  const reach = () => 1.5 - Store.setting('sensitivity');
 
   function onDown(e) {
     if (e.target.closest('button, .overlay')) return; // HUD and booster buttons keep working
@@ -2581,16 +3124,16 @@ const Input = (() => {
   // finger still moving fast when it lifts. All four must hold, so a slow
   // swipe or a held finger (fast fall) never turns into an instant drop.
   function isFlick(gest, x, y) {
-    const cell = Render.cellSize();
+    const cell = Render.cellSize(), k = reach();
     const dx = x - gest.x0, dy = y - gest.y0, dt = performance.now() - gest.t0;
     if (dt > CONFIG.flick.maxTime) return false;
-    if (dy < Math.max(CONFIG.flick.minPx, cell * CONFIG.flick.minCells)) return false;
+    if (dy < Math.max(CONFIG.flick.minPx, cell * CONFIG.flick.minCells) * k) return false;
     if (dy < Math.abs(dx) * 2) return false;
     const s = gest.samples, last = s[s.length - 1];
     let first = s[0];
     for (const smp of s) if (last[2] - smp[2] <= 80) { first = smp; break; }
     const v = last[2] > first[2] ? (last[1] - first[1]) / (last[2] - first[2]) : 0;
-    return v >= CONFIG.flick.minSpeed;
+    return v >= CONFIG.flick.minSpeed * k;
   }
   function fastFall(on) {
     if (g.fast === on) return;
@@ -2608,7 +3151,7 @@ const Input = (() => {
     g.samples.push([x, y, performance.now()]);
     if (g.samples.length > 10) g.samples.shift();
     if (Math.abs(dx) > 10 || Math.abs(dy) > 10) g.moved = true;
-    const cell = Render.cellSize();
+    const cell = Render.cellSize() * reach(); // one column = this many pixels of finger travel
     if (mode() === 'drag') dragMove(dx, y, cell); else swipeMove(dx, dy, cell);
   }
   // Free drag: the piece follows the finger across the fall direction cell by
@@ -2620,7 +3163,7 @@ const Input = (() => {
     for (let i = col - g.col; i > 0 && Game.move(1, 0); i--) act('move');
     for (let i = col - g.col; i < 0 && Game.move(-1, 0); i++) act('move');
     g.col = col;
-    const th = Math.max(24, cell * .8);
+    const th = Math.max(24 * reach(), cell * .8);
     if (!g.fast) {
       g.refY = Math.min(g.refY, y); // measure from the farthest-back point since the last stop
       if (y - g.refY > th) { g.peakY = y; fastFall(true); }
@@ -2633,7 +3176,7 @@ const Input = (() => {
   // fast fall for as long as the finger stays on the screen.
   function swipeMove(dx, dy, cell) {
     if (g.fast) return;
-    const th = Math.max(24, cell * .8);
+    const th = Math.max(24 * reach(), cell * .8);
     const ax = Math.abs(dx), ay = Math.abs(dy);
     if (ax > ay && ax >= th) { g.done = true; act('move', Game.move(dx > 0 ? 1 : -1, 0)); }
     else if (ay > ax && dy >= th) fastFall(true);
@@ -2654,25 +3197,28 @@ const Input = (() => {
     g = null;
   }
 
-  // Arrows follow the board: across the fall = move, toward the fall = fast
-  // fall while held, against the fall = rotate. Space = instant drop.
-  const KEY_VEC = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
+  // Keys come from Settings (defaults: arrows, Space, Esc). The four arrow-like
+  // actions are screen directions that follow the board on key levels: across
+  // the fall = move, toward the fall = fast fall while held, against the fall
+  // = rotate – so on sideways levels "move left" may rotate, as the arrows do.
+  const KEY_VEC = { left: [-1, 0], right: [1, 0], rotate: [0, -1], speed: [0, 1] };
+  const actionOf = code => Object.keys(Store.get().settings.keys).find(a => Store.get().settings.keys[a] === code);
   function onKey(e) {
-    if (UI.current !== 'game') return;
-    if (e.key === 'Escape' || e.key === 'p' || e.key === 'P') { UI.togglePause(); e.preventDefault(); return; }
-    if (!playing()) return;
-    if (KEY_VEC[e.key]) {
-      const [x, y] = toLogical(...KEY_VEC[e.key]);
-      if (x) Game.move(x, 0);
-      else if (y > 0) Game.setFastFall(true);
-      else Game.rotate();
-    } else if (e.key === 'x' || e.key === 'X') Game.rotate();
-    else if (e.key === ' ') { if (!e.repeat) Game.hardDrop(); } // holding space never drops twice
-    else return;
+    if (UI.current !== 'game' || UI.capturing) return;
+    const action = actionOf(e.code);
+    if (!action) return;
     e.preventDefault();
+    if (action === 'pause') { if (!e.repeat) UI.togglePause(); return; }
+    if (!playing()) return;
+    if (action === 'drop') { if (!e.repeat) Game.hardDrop(); return; } // holding never drops twice
+    const [x, y] = toLogical(...KEY_VEC[action]);
+    if (x) Game.move(x, 0);
+    else if (y > 0) Game.setFastFall(true);
+    else Game.rotate();
   }
   function onKeyUp(e) {
-    if (KEY_VEC[e.key] && toLogical(...KEY_VEC[e.key])[1] > 0) Game.setFastFall(false);
+    const action = actionOf(e.code);
+    if (KEY_VEC[action] && toLogical(...KEY_VEC[action])[1] > 0) Game.setFastFall(false);
   }
   function init() {
     const area = document.getElementById('game'); // the whole game screen is the touch area
@@ -2888,12 +3434,105 @@ const UI = (() => {
   }
 
   // ----- Settings -----
+  // Every change is saved on the device right away (Store).
+  const KEY_ACTIONS = [ // action, icon, short name
+    ['left', '⬅️', 'Left'], ['right', '➡️', 'Right'], ['rotate', '🔄', 'Turn'],
+    ['speed', '⏬', 'Faster'], ['drop', '⤵️', 'Drop'], ['pause', '⏸️', 'Pause'],
+  ];
+  const KEY_NAMES = { ArrowLeft: '←', ArrowRight: '→', ArrowUp: '↑', ArrowDown: '↓', Space: 'Space', Escape: 'Esc', Enter: 'Enter', Backspace: '⌫' };
+  const keyName = code => KEY_NAMES[code] || code.replace(/^(Key|Digit)/, '').replace(/^Numpad/, 'Num ').replace(/(Left|Right)$/, '');
+  let settingsFrom = 'home';
+  ui.capturing = null; // the action waiting for a new key
+  function openSettings() {
+    settingsFrom = ui.current;
+    if (ui.current === 'game') { stopAim(); if (Game.pause()) $('pauseOverlay').hidden = false; }
+    show('settings');
+  }
+  function closeSettings() {
+    stopCapture();
+    $('eraseOverlay').hidden = true;
+    show(settingsFrom === 'game' || settingsFrom === 'map' ? settingsFrom : 'home');
+  }
   function renderSettings() {
-    const m = Store.get().settings.control;
-    document.querySelectorAll('[data-control]').forEach(b => b.setAttribute('aria-checked', String(b.dataset.control === m)));
-    const r = $('resetBtn');
-    r.classList.remove('armed');
-    r.textContent = 'Erase all progress';
+    const set = Store.get().settings;
+    document.querySelectorAll('[data-control]').forEach(b => b.setAttribute('aria-checked', String(b.dataset.control === set.control)));
+    document.querySelectorAll('[data-switch]').forEach(b => b.setAttribute('aria-checked', String(!!set[b.dataset.switch])));
+    document.querySelectorAll('[data-volume]').forEach(r => {
+      r.value = Math.round(set[r.dataset.volume] * 100);
+      r.disabled = !set[r.dataset.volume === 'musicVol' ? 'music' : 'sfx'];
+    });
+    $('sensitivity').value = Math.round(set.sensitivity * 100);
+    renderKeys();
+  }
+  function renderKeys(note = '') {
+    const keys = Store.get().settings.keys;
+    $('keyList').innerHTML = KEY_ACTIONS.map(([a, ico, name]) => {
+      const wait = ui.capturing === a;
+      return `<button class="key-row${wait ? ' waiting' : ''}" data-action="${a}" aria-label="${name}: ${wait ? 'press a new key' : keyName(keys[a])}">` +
+        `<span class="ico" aria-hidden="true">${ico}</span><span class="name">${name}</span><kbd>${wait ? '…' : keyName(keys[a])}</kbd></button>`;
+    }).join('');
+    $('keyNote').textContent = note || (ui.capturing ? 'Press a key' : '');
+  }
+  function stopCapture() { if (ui.capturing) { ui.capturing = null; renderKeys(); } }
+  // While waiting for a key: the next key press becomes the action's key,
+  // unless another action already uses it.
+  function onCaptureKey(e) {
+    if (!ui.capturing || ui.current !== 'settings') return;
+    e.preventDefault(); e.stopPropagation();
+    if (e.code === 'Tab' || !e.code) return;
+    const keys = Store.get().settings.keys;
+    const taken = KEY_ACTIONS.find(([a]) => a !== ui.capturing && keys[a] === e.code);
+    if (taken) {
+      renderKeys(`${keyName(e.code)} is already used for ${taken[2]}`);
+      const row = document.querySelector(`.key-row[data-action="${ui.capturing}"]`);
+      row.classList.remove('nope'); void row.offsetWidth; row.classList.add('nope');
+      return;
+    }
+    Store.setKey(ui.capturing, e.code);
+    ui.capturing = null;
+    renderKeys();
+  }
+  function applyLayout() { document.body.classList.toggle('left-handed', !!Store.setting('leftHanded')); }
+  function initSettings() {
+    document.querySelectorAll('[data-settings]').forEach(b => b.addEventListener('click', openSettings));
+    $('settingsBack').addEventListener('click', closeSettings);
+    document.querySelectorAll('[data-control]').forEach(b => b.addEventListener('click', () => {
+      Store.setControl(b.dataset.control); renderSettings();
+    }));
+    document.querySelectorAll('[data-switch]').forEach(b => b.addEventListener('click', () => {
+      const name = b.dataset.switch;
+      Store.set(name, !Store.setting(name));
+      Sound.applyVolumes(); applyLayout(); renderSettings();
+      if (name === 'vibrate' && Store.setting('vibrate') && navigator.vibrate) navigator.vibrate(30);
+    }));
+    document.querySelectorAll('[data-volume]').forEach(r => {
+      r.addEventListener('input', () => { Store.set(r.dataset.volume, r.value / 100); Sound.applyVolumes(); });
+      if (r.dataset.volume === 'sfxVol') r.addEventListener('change', () => Sound.play('coins', { amount: 60 })); // hear the new volume
+    });
+    $('sensitivity').addEventListener('input', e => Store.set('sensitivity', e.target.value / 100));
+    $('keyList').addEventListener('click', e => {
+      const row = e.target.closest('.key-row');
+      if (!row) return;
+      ui.capturing = ui.capturing === row.dataset.action ? null : row.dataset.action; // tap again to cancel
+      renderKeys();
+    });
+    window.addEventListener('keydown', onCaptureKey, true);
+    $('resetKeys').addEventListener('click', () => { ui.capturing = null; Store.resetKeys(); renderKeys('Default keys are back'); });
+    // Keys only matter with a keyboard: hidden on touch-only phones and tablets.
+    const fine = window.matchMedia && matchMedia('(any-pointer: fine)').matches;
+    $('keysCard').hidden = !fine;
+    // Erase all progress: a clear "Are you sure?" step first.
+    $('resetBtn').addEventListener('click', () => { stopCapture(); $('eraseOverlay').hidden = false; });
+    $('eraseNo').addEventListener('click', () => { $('eraseOverlay').hidden = true; });
+    $('eraseYes').addEventListener('click', () => {
+      Store.reset();
+      $('eraseOverlay').hidden = true;
+      const r = $('resetBtn');
+      r.textContent = '✔ Progress erased';
+      setTimeout(() => { r.textContent = '🗑️ Erase all progress'; }, 2500);
+      if (settingsFrom === 'game') settingsFrom = 'map'; // the level in progress is gone too
+    });
+    applyLayout();
   }
 
   // ----- Game -----
@@ -3035,7 +3674,7 @@ const UI = (() => {
     coinLine.hidden = !coins;
     coinLine.firstElementChild.textContent = '0';
     coinLine.setAttribute('aria-label', `${coins} coins earned`);
-    if (coins) setTimeout(() => { countUp(coinLine.firstElementChild, coins); Effects.coinRain(coinLine, coins); }, 700);
+    if (coins) setTimeout(() => { countUp(coinLine.firstElementChild, coins); Effects.coinRain(coinLine, coins); Events.emit('fx', { name: 'coins', amount: coins }); }, 700);
     // Key levels, first time: a treasure chest of boosters and a new special animal.
     const prize = $('winPrize');
     prize.hidden = !(first && Levels.isKey(level));
@@ -3064,7 +3703,8 @@ const UI = (() => {
       lockNote.setAttribute('aria-label', `Next world locked: ${p.have} of ${p.need} stars`);
       lockNote.hidden = false;
     } else lockNote.hidden = true;
-    setTimeout(() => { $('winOverlay').hidden = false; }, 350);
+    const chest = !prize.hidden;
+    setTimeout(() => { $('winOverlay').hidden = false; Events.emit('fx', { name: 'winScreen', stars: got, chest }); }, 350);
   }
   function onGameOver({ score }) {
     stopAim();
@@ -3076,19 +3716,12 @@ const UI = (() => {
     const buddy = $('overBuddy'); // a smiling animal, never a scary screen
     buddy.innerHTML = '';
     buddy.appendChild(Art.pieceCanvas('O', 52));
-    setTimeout(() => { $('overOverlay').hidden = false; }, 350);
+    setTimeout(() => { $('overOverlay').hidden = false; Events.emit('fx', { name: 'oops' }); }, 350);
   }
 
   function init() {
     document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => show(b.dataset.go)));
-    document.querySelectorAll('[data-control]').forEach(b => b.addEventListener('click', () => {
-      Store.setControl(b.dataset.control); renderSettings();
-    }));
-    $('resetBtn').addEventListener('click', e => {
-      const btn = e.currentTarget;
-      if (btn.classList.contains('armed')) { Store.reset(); btn.classList.remove('armed'); btn.textContent = 'Progress erased'; }
-      else { btn.classList.add('armed'); btn.textContent = 'Sure? Tap again to erase'; }
-    });
+    initSettings();
     $('pauseBtn').addEventListener('click', togglePause);
     $('resumeBtn').addEventListener('click', togglePause);
     $('pauseRestart').addEventListener('click', () => startLevel(lastLevel));
