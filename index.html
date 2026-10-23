@@ -114,6 +114,7 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 .home-foot { display: flex; flex-direction: column; align-items: center; gap: 14px; }
 .home-stars { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 1.05rem; min-height: 1.5em; }
 .home-stars svg { width: 24px; height: 24px; }
+.home-stars .trophy { margin-inline-start: 14px; fill: var(--star); stroke: var(--ink); stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
 
 /* ---------- Map ---------- */
 .map-scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; margin: 0 -16px; touch-action: pan-y; }
@@ -136,24 +137,23 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 @keyframes hop { 0%, 100% { translate: 0 0; } 50% { translate: 0 -6px; } }
 
 /* ---------- Settings ---------- */
-#settings h3 { font-size: 1.25rem; font-weight: 900; margin: 8px 0 12px; }
-.choice { display: flex; flex-direction: column; gap: 14px; }
+.choice { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
 .option {
-  display: flex; align-items: center; gap: 14px; text-align: right;
-  background: var(--cream); border: 3px solid var(--ink); border-radius: 24px;
-  padding: 14px; box-shadow: 0 5px 0 var(--ink);
+  position: relative; aspect-ratio: 1;
+  background: var(--cream); border: 3px solid var(--ink); border-radius: 30px;
+  padding: 12px; box-shadow: 0 6px 0 var(--ink);
 }
-.option[aria-checked="true"] { background: #fff; outline: 4px solid var(--berry); outline-offset: -9px; }
-.option svg { width: 64px; height: 64px; flex: none; }
-.option b { display: block; font-size: 1.25rem; font-weight: 900; margin-bottom: 4px; }
-.option span { display: block; font-size: .98rem; line-height: 1.4; font-weight: 600; }
-.option .tick { width: 30px; height: 30px; flex: none; border-radius: 50%; border: 3px solid var(--ink); margin-inline-start: auto; display: grid; place-items: center; }
+.option[aria-checked="true"] { background: #fff; outline: 5px solid var(--berry); outline-offset: 4px; }
+.option svg { width: 100%; height: 100%; display: block; }
+.option .tick { position: absolute; top: -12px; inset-inline-start: -12px; width: 36px; height: 36px; border-radius: 50%; border: 3px solid var(--ink); background: var(--cream); display: grid; place-items: center; }
 .option[aria-checked="true"] .tick { background: var(--berry); }
-.option[aria-checked="true"] .tick::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: #fff; }
+.option[aria-checked="true"] .tick::after { content: ""; width: 12px; height: 7px; border: solid #fff; border-width: 0 0 4px 4px; transform: translateY(-2px) rotate(-45deg); }
+.hand-outline { fill: var(--ink); stroke: var(--ink); stroke-width: 5; stroke-linejoin: round; }
+.hand-fill { fill: var(--cream); }
 .settings-foot { margin-top: auto; display: flex; justify-content: center; padding-top: 20px; }
 
 /* ---------- Game ---------- */
-#game { padding-left: 10px; padding-right: 10px; }
+#game { padding-left: 10px; padding-right: 10px; touch-action: none; }
 .hud { display: flex; align-items: stretch; gap: 8px; height: 64px; flex: none; }
 .hud-box {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -200,6 +200,19 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 .big-stars { display: flex; gap: 6px; align-items: flex-end; }
 .big-stars svg { width: 76px; height: 76px; }
 .big-stars svg:nth-child(2) { width: 92px; height: 92px; }
+.panel .panel-score { font-size: 1.6rem; font-weight: 900; font-variant-numeric: tabular-nums; }
+.btn.icon-only { display: grid; place-items: center; padding: .5em; }
+.ico { width: 30px; height: 30px; fill: none; stroke: currentColor; stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; }
+.btn.big .ico { width: 40px; height: 40px; }
+.ico.fill { fill: currentColor; stroke: none; }
+.buddy { margin-top: -70px; transform: rotate(-6deg); }
+
+/* Portrait only: on a phone held sideways, ask to turn it */
+.turn-phone { display: none; }
+@media (orientation: landscape) and (max-height: 500px) {
+  .turn-phone { display: grid; place-items: center; position: fixed; inset: 0; z-index: 50; background: var(--sun); }
+  .turn-phone svg { width: 120px; height: 120px; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .node.current { animation: none; }
@@ -208,6 +221,28 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 </style>
 </head>
 <body>
+
+<!-- Shared icon shapes -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="hand" viewBox="0 0 40 48">
+    <rect x="12" y="2" width="10" height="28" rx="5"/>
+    <rect x="6" y="20" width="28" height="26" rx="10"/>
+    <circle cx="27" cy="23" r="5"/>
+    <circle cx="33" cy="27" r="4.5"/>
+    <ellipse cx="7" cy="31" rx="4.5" ry="8" transform="rotate(-28 7 31)"/>
+  </symbol>
+  <symbol id="i-retry" viewBox="0 0 24 24"><path d="M5 12a7 7 0 1 0 2.2-5.1M5 4v4h4"/></symbol>
+  <symbol id="i-map" viewBox="0 0 24 24"><path d="M3.5 6.5 9 4l6 2.5L20.5 4v13.5L15 20l-6-2.5-5.5 2.5zM9 4v13.5M15 6.5V20"/></symbol>
+</svg>
+
+<!-- Shown only when a phone is held sideways -->
+<div class="turn-phone" aria-label="סובבו את הטלפון">
+  <svg viewBox="0 0 96 96" aria-hidden="true">
+    <rect x="30" y="12" width="36" height="64" rx="8" fill="#FFF7E3" stroke="#2E2152" stroke-width="4"/>
+    <circle cx="48" cy="66" r="3" fill="#2E2152"/>
+    <path d="M14 56a34 34 0 0 1 6-30m-6 1 6-1 1 6" fill="none" stroke="#2E2152" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</div>
 
 <!-- ============ HOME ============ -->
 <section class="screen" id="home">
@@ -242,23 +277,28 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
     </button>
     <h2>הגדרות</h2>
   </header>
-  <h3>איך מזיזים את החיות?</h3>
-  <div class="choice" role="radiogroup">
-    <button class="option" role="radio" data-control="drag">
-      <svg viewBox="0 0 64 64" aria-hidden="true">
-        <rect x="4" y="4" width="56" height="56" rx="16" fill="#43C46E" stroke="#2E2152" stroke-width="3"/>
-        <path d="M14 46c8-4 18-4 26-14" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="1 7" stroke-linecap="round"/>
-        <circle cx="42" cy="28" r="9" fill="#FFF7E3" stroke="#2E2152" stroke-width="3"/>
+  <div class="choice" role="radiogroup" aria-label="איך מזיזים את החיות">
+    <!-- Mode 1: dragging hand -->
+    <button class="option" role="radio" data-control="drag" aria-label="גרירה חופשית">
+      <svg viewBox="0 0 96 96" aria-hidden="true">
+        <rect x="3" y="3" width="90" height="90" rx="24" fill="#43C46E"/>
+        <path d="M18 84C22 66 30 58 44 54" fill="none" stroke="#FFF7E3" stroke-width="5" stroke-dasharray="0.5 10" stroke-linecap="round"/>
+        <rect x="44" y="12" width="24" height="24" rx="7" fill="#FFB33C" stroke="#2E2152" stroke-width="3"/>
+        <circle cx="52" cy="22" r="2.4" fill="#2E2152"/><circle cx="60" cy="22" r="2.4" fill="#2E2152"/>
+        <use href="#hand" x="36" y="32" width="40" height="48" class="hand-outline"/>
+        <use href="#hand" x="36" y="32" width="40" height="48" class="hand-fill"/>
       </svg>
-      <div><b>גרירה חופשית</b><span>החיה הולכת אחרי האצבע. נגיעה קצרה מסובבת, משיכה מהירה למטה מפילה.</span></div>
       <i class="tick" aria-hidden="true"></i>
     </button>
-    <button class="option" role="radio" data-control="swipe">
-      <svg viewBox="0 0 64 64" aria-hidden="true">
-        <rect x="4" y="4" width="56" height="56" rx="16" fill="#4C8DF6" stroke="#2E2152" stroke-width="3"/>
-        <path d="M14 26h14m-5-5 5 5-5 5M50 26H36m5-5-5 5 5 5M32 36v14m-5-5 5 5 5-5" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Mode 2: swiping hand -->
+    <button class="option" role="radio" data-control="swipe" aria-label="החלקות">
+      <svg viewBox="0 0 96 96" aria-hidden="true">
+        <rect x="3" y="3" width="90" height="90" rx="24" fill="#4C8DF6"/>
+        <path d="M36 26H14m7-7-7 7 7 7M60 26h22m-7-7 7 7-7 7" fill="none" stroke="#FFF7E3" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M22 50h10M18 60h12M20 70h8" fill="none" stroke="#FFF7E3" stroke-width="4" stroke-linecap="round" opacity=".7"/>
+        <use href="#hand" x="30" y="30" width="40" height="48" class="hand-outline" transform="rotate(-14 50 54)"/>
+        <use href="#hand" x="30" y="30" width="40" height="48" class="hand-fill" transform="rotate(-14 50 54)"/>
       </svg>
-      <div><b>החלקות</b><span>החלקה לצד זזה צעד אחד. החלקה למטה מפילה. נגיעה או החלקה למעלה מסובבת.</span></div>
       <i class="tick" aria-hidden="true"></i>
     </button>
   </div>
@@ -283,34 +323,35 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
   <div class="overlay" id="pauseOverlay" hidden>
     <div class="panel">
       <h2>הפסקה</h2>
-      <button class="btn primary" id="resumeBtn">להמשיך</button>
+      <button class="btn primary big icon-only" id="resumeBtn" aria-label="להמשיך">
+        <svg viewBox="0 0 24 24" class="ico fill"><path d="M8 5.5v13l10.5-6.5z"/></svg>
+      </button>
       <div class="row">
-        <button class="btn small" id="pauseRestart">מההתחלה</button>
-        <button class="btn small" id="pauseMap">למפה</button>
+        <button class="btn icon-only" id="pauseRestart" aria-label="מההתחלה"><svg viewBox="0 0 24 24" class="ico"><use href="#i-retry"/></svg></button>
+        <button class="btn icon-only" id="pauseMap" aria-label="למפה"><svg viewBox="0 0 24 24" class="ico"><use href="#i-map"/></svg></button>
       </div>
     </div>
   </div>
 
   <div class="overlay" id="winOverlay" hidden>
     <div class="panel">
-      <h2 id="winTitle">כל הכבוד!</h2>
+      <h2>כל הכבוד!</h2>
       <div class="big-stars" id="winStars"></div>
-      <p>ניקוד: <b id="winScore">0</b></p>
-      <p class="hint" id="winHint"></p>
-      <button class="btn primary" id="nextLevelBtn">לשלב הבא</button>
+      <p class="panel-score"><span id="winScore">0</span></p>
+      <button class="btn primary big" id="nextLevelBtn">לשלב הבא</button>
       <div class="row">
-        <button class="btn small" id="winRetry">לשחק שוב</button>
-        <button class="btn small" id="winMap">למפה</button>
+        <button class="btn icon-only" id="winRetry" aria-label="לשחק שוב"><svg viewBox="0 0 24 24" class="ico"><use href="#i-retry"/></svg></button>
+        <button class="btn icon-only" id="winMap" aria-label="למפה"><svg viewBox="0 0 24 24" class="ico"><use href="#i-map"/></svg></button>
       </div>
     </div>
   </div>
 
   <div class="overlay" id="overOverlay" hidden>
     <div class="panel">
-      <h2>אוי! נגמר המקום</h2>
-      <p id="overText"></p>
-      <button class="btn primary" id="overRetry">לנסות שוב</button>
-      <button class="btn small" id="overMap">למפה</button>
+      <div class="buddy" id="overBuddy"></div>
+      <h2>אופס! ננסה שוב?</h2>
+      <button class="btn primary big icon-only" id="overRetry" aria-label="ננסה שוב"><svg viewBox="0 0 24 24" class="ico"><use href="#i-retry"/></svg></button>
+      <button class="btn icon-only" id="overMap" aria-label="למפה"><svg viewBox="0 0 24 24" class="ico"><use href="#i-map"/></svg></button>
     </div>
   </div>
 </section>
@@ -332,6 +373,10 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
      8. Input      – touch (drag / swipe) and keyboard
      9. UI         – screens, map, overlays, settings
     10. Boot       – main loop
+
+   Phase 2 tutorial plugs in through: Game.freeze(on), Game.pause(),
+   Input.setModeOverride(mode) and the 'spawn' / 'input' / 'lines'
+   events. Effects, sounds and animal unlocking listen to the same events.
    ========================================================= */
 
 /* ---------- 1. CONFIG ---------- */
@@ -344,6 +389,7 @@ const CONFIG = {
   speedFactor: 0.95,        // each level is 5% faster
   minInterval: 100,         // cap: 10 steps/sec
   lineScores: [0, 100, 300, 500, 800], // × level number
+  softDropInterval: 40,     // ms per step after a slow swipe down
   lockDelay: 500,           // ms a landed animal waits before locking
   maxLockResets: 15,
   // Stars: level points divided by the level number.
@@ -361,7 +407,7 @@ const Events = {
 /* ---------- 3. Store ---------- */
 const Store = (() => {
   const KEY = 'animalBlocks.v1';
-  const defaults = () => ({ unlocked: 1, stars: {}, best: {}, settings: { control: 'drag' } });
+  const defaults = () => ({ unlocked: 1, lastLevel: 1, highScore: 0, stars: {}, best: {}, settings: { control: 'drag' } });
   let data = load();
 
   function load() {
@@ -383,9 +429,12 @@ const Store = (() => {
     recordLevel(level, stars, score) {
       if (stars > (data.stars[level] || 0)) data.stars[level] = stars;
       if (score > (data.best[level] || 0)) data.best[level] = score;
+      data.highScore = Math.max(data.highScore, score);
       data.unlocked = Math.max(data.unlocked, Math.min(level + 1, CONFIG.levelCount));
       save();
     },
+    recordScore(score) { if (score > data.highScore) { data.highScore = score; save(); } },
+    setLastLevel(level) { data.lastLevel = level; save(); },
     setControl(mode) { data.settings.control = mode; save(); },
     reset() { const control = data.settings.control; data = defaults(); data.settings.control = control; save(); },
   };
@@ -614,6 +663,8 @@ const Game = (() => {
     board: null, piece: null, next: null, bag: [], pieceId: 0,
     level: 1, score: 0, lines: 0, interval: 1000,
     fallT: 0, lockT: 0, lockResets: 0, status: 'idle', // idle | playing | paused | won | over
+    soft: false,   // soft drop active for the current animal
+    frozen: false, // Phase 2 tutorial: stops falling while still accepting input
   };
   const KICKS = [[0, 0], [-1, 0], [1, 0], [0, -1], [-2, 0], [2, 0], [-1, -1], [1, -1]];
 
@@ -644,14 +695,14 @@ const Game = (() => {
     const minY = Math.min(...SHAPES[t][0].map(c => c[1]));
     S.piece = { t, r: 0, x: Math.floor((CONFIG.cols - PIECES[t].n) / 2), y: -minY };
     S.pieceId++;
-    S.fallT = 0; S.lockT = 0; S.lockResets = 0;
+    S.fallT = 0; S.lockT = 0; S.lockResets = 0; S.soft = false;
     if (collides(t, 0, S.piece.x, S.piece.y)) { end('over'); return; }
     Events.emit('spawn', { type: t, next: S.next });
   }
   function start(level) {
     Object.assign(S, {
       board: emptyBoard(), bag: [], level, score: 0, lines: 0,
-      interval: intervalFor(level), status: 'playing',
+      interval: intervalFor(level), status: 'playing', frozen: false,
     });
     S.next = fromBag();
     Events.emit('start', { level });
@@ -733,23 +784,26 @@ const Game = (() => {
     Events.emit(result === 'won' ? 'levelComplete' : 'gameOver', { level: S.level, score: S.score, lines: S.lines });
   }
   function update(dt) {
-    if (S.status !== 'playing' || !S.piece) return;
+    if (S.status !== 'playing' || !S.piece || S.frozen) return;
     if (grounded()) {
       S.lockT += dt;
       if (S.lockT >= CONFIG.lockDelay) lock();
     } else {
       S.lockT = 0;
       S.fallT += dt;
-      if (S.fallT >= S.interval) { S.fallT = 0; S.piece.y++; }
+      const interval = S.soft ? Math.min(S.interval, CONFIG.softDropInterval) : S.interval;
+      if (S.fallT >= interval) { S.fallT = 0; S.piece.y++; }
     }
   }
+  function softDrop() { if (S.status === 'playing' && S.piece) S.soft = true; }
+  function freeze(on) { S.frozen = !!on; }
   function pause() { if (S.status === 'playing') { S.status = 'paused'; return true; } return false; }
   function resume() { if (S.status === 'paused') S.status = 'playing'; }
   function stars(score, level) {
     const per = score / level;
     return per >= CONFIG.starThresholds.three ? 3 : per >= CONFIG.starThresholds.two ? 2 : 1;
   }
-  return { state: S, start, move, rotate, hardDrop, ghostY, update, pause, resume, stars };
+  return { state: S, start, move, rotate, hardDrop, softDrop, freeze, ghostY, update, pause, resume, stars };
 })();
 
 /* ---------- 7. Render ---------- */
@@ -817,20 +871,25 @@ const Render = (() => {
 })();
 
 /* ---------- 8. Input ---------- */
+// Every player action is announced as Events 'input' { action, via } so the
+// Phase 2 tutorial can watch which control mode the player succeeds with.
 const Input = (() => {
   let g = null; // current gesture
-  const mode = () => Store.get().settings.control;
+  let modeOverride = null; // Phase 2: the tutorial may pick the mode for level 1
+  const mode = () => modeOverride || Store.get().settings.control;
   const playing = () => Game.state.status === 'playing' && Game.state.piece;
+  const act = (action, ok) => { if (ok !== false) Events.emit('input', { action, via: mode() }); return ok; };
 
   function onDown(e) {
     if (!playing() || g) return;
+    if (e.target.closest('button, .overlay')) return; // HUD buttons keep working
     e.preventDefault();
     try { e.currentTarget.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
     const now = performance.now();
     g = {
       id: e.pointerId, x0: e.clientX, y0: e.clientY, t0: now,
-      px0: Game.state.piece.x, pieceId: Game.state.pieceId,
-      drops: 0, moved: false, done: false, samples: [[e.clientY, now]],
+      col: 0, row: 0, pieceId: Game.state.pieceId,
+      moved: false, done: false, down: false, samples: [[e.clientY, now]],
     };
   }
   function onMove(e) {
@@ -845,22 +904,22 @@ const Input = (() => {
     const cell = Render.cellSize();
     if (mode() === 'drag') dragMove(dx, dy, cell); else swipeMove(dx, dy, cell);
   }
+  // Free drag: the animal follows the finger cell by cell, relative to where
+  // the finger started. It never goes up and stops flush against walls/animals.
   function dragMove(dx, dy, cell) {
-    const p = Game.state.piece;
-    const target = g.px0 + Math.round(dx / (cell * .9));
-    let guard = CONFIG.cols;
-    while (p.x < target && guard-- > 0 && Game.move(1, 0));
-    while (p.x > target && guard-- > 0 && Game.move(-1, 0));
-    const want = Math.floor(Math.max(0, dy - cell * .4) / (cell * .8));
-    while (g.drops < want && Game.move(0, 1)) g.drops++;
-    g.drops = Math.max(g.drops, want);
+    const col = Math.round(dx / cell), row = Math.round(dy / cell);
+    for (let i = col - g.col; i > 0 && Game.move(1, 0); i--) act('move');
+    for (let i = col - g.col; i < 0 && Game.move(-1, 0); i++) act('move');
+    for (let i = row - g.row; i > 0 && Game.move(0, 1); i--) act('drag-down');
+    g.col = col; g.row = row;
   }
+  // Swipes: sideways moves one column right away; down is decided on release
+  // (slow = soft drop, fast = hard drop).
   function swipeMove(dx, dy, cell) {
     const th = Math.max(24, cell * .8);
     const ax = Math.abs(dx), ay = Math.abs(dy);
-    if (ax > ay && ax >= th) { g.done = true; Game.move(dx > 0 ? 1 : -1, 0); }
-    else if (ay > ax && dy >= th * 1.3) { g.done = true; Game.hardDrop(); }
-    else if (ay > ax && dy <= -th) { g.done = true; Game.rotate(); }
+    if (ax > ay && ax >= th) { g.done = true; act('move', Game.move(dx > 0 ? 1 : -1, 0)); }
+    else if (ay > ax && dy >= th) g.down = true;
   }
   function velocityY(gest) { // px per ms over the last ~100ms
     const s = gest.samples, last = s[s.length - 1];
@@ -873,14 +932,12 @@ const Input = (() => {
     if (!g || e.pointerId !== g.id) return;
     const gest = g; g = null;
     if (gest.done || !playing() || Game.state.pieceId !== gest.pieceId) return;
-    const dt = performance.now() - gest.t0;
-    const dx = e.clientX - gest.x0, dy = e.clientY - gest.y0;
-    if (!gest.moved && dt < 350) { Game.rotate(); return; }
-    if (mode() === 'drag') {
-      const cell = Render.cellSize();
-      if (velocityY(gest) > .9 && dy > cell * 1.2) Game.hardDrop();
-      else if (dy < -cell * 1.5 && Math.abs(dy) > Math.abs(dx)) Game.rotate();
+    if (!gest.moved && performance.now() - gest.t0 < 350) { act('rotate', Game.rotate()); return; }
+    if (mode() === 'swipe' && gest.down) {
+      if (velocityY(gest) > 1.1) { Game.hardDrop(); act('hard-drop'); }
+      else { Game.softDrop(); act('soft-drop'); }
     }
+    // Drag mode: when the finger lifts, the animal keeps falling at the normal pace.
   }
   function onCancel(e) { if (g && e.pointerId === g.id) g = null; }
 
@@ -899,7 +956,7 @@ const Input = (() => {
     e.preventDefault();
   }
   function init() {
-    const area = document.getElementById('play');
+    const area = document.getElementById('game'); // the whole game screen is the touch area
     area.addEventListener('pointerdown', onDown);
     area.addEventListener('pointermove', onMove);
     area.addEventListener('pointerup', onUp);
@@ -907,7 +964,7 @@ const Input = (() => {
     area.addEventListener('touchmove', e => e.preventDefault(), { passive: false }); // stop iOS scroll/bounce
     window.addEventListener('keydown', onKey);
   }
-  return { init };
+  return { init, setModeOverride: m => { modeOverride = m; } };
 })();
 
 /* ---------- 9. UI ---------- */
@@ -941,8 +998,10 @@ const UI = (() => {
       fig.appendChild(cap);
       cast.appendChild(fig);
     });
-    const total = Store.totalStars();
-    $('homeStars').innerHTML = total ? `${star(true)} <span>${total} כוכבים</span>` : '';
+    const total = Store.totalStars(), high = Store.get().highScore;
+    $('homeStars').innerHTML = total
+      ? `${star(true)}<span>${total}</span><svg class="trophy" viewBox="0 0 24 24" aria-label="שיא"><path d="M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3M12 14v4M8 20h8"/></svg><span>${high}</span>`
+      : '';
   }
 
   // ----- Map -----
@@ -969,7 +1028,7 @@ const UI = (() => {
         <path d="${d}" fill="none" stroke="#FFF7E3" stroke-width="9" stroke-dasharray="1 20" stroke-linecap="round"/>
       </svg>`);
 
-    let currentNode = null;
+    let currentNode = null, scrollY = 0;
     pts.forEach(([x, y], i) => {
       const level = i + 1;
       const got = data.stars[level] || 0;
@@ -989,6 +1048,11 @@ const UI = (() => {
       }
       wrap.appendChild(btn);
       if (level === data.unlocked) currentNode = { btn, x, y };
+      if (level === data.lastLevel) scrollY = y;
+    });
+    requestAnimationFrame(() => { // open the map where the player last played
+      const sc = $('mapScroll');
+      sc.scrollTop = scrollY - sc.clientHeight / 2;
     });
 
     if (currentNode) { // a little panda waits next to the level to play
@@ -998,10 +1062,6 @@ const UI = (() => {
       buddy.style.left = (currentNode.x + side * 72) + 'px';
       buddy.style.top = currentNode.y + 'px';
       wrap.appendChild(buddy);
-      requestAnimationFrame(() => {
-        const sc = $('mapScroll');
-        sc.scrollTop = currentNode.y - sc.clientHeight / 2;
-      });
     }
   }
 
@@ -1018,6 +1078,7 @@ const UI = (() => {
   let lastLevel = 1;
   function startLevel(level) {
     lastLevel = level;
+    Store.setLastLevel(level);
     ['pauseOverlay', 'winOverlay', 'overOverlay'].forEach(id => { $(id).hidden = true; });
     show('game');
     Game.start(level);
@@ -1047,15 +1108,16 @@ const UI = (() => {
     const got = Game.stars(score, level);
     Store.recordLevel(level, got, score);
     updateHud();
-    $('winTitle').textContent = got === 3 ? 'מושלם!' : got === 2 ? 'יופי של משחק!' : 'כל הכבוד!';
     $('winStars').innerHTML = star(got >= 1) + star(got >= 2) + star(got >= 3);
     $('winScore').textContent = score;
-    $('winHint').textContent = got < 3 ? 'טיפ: כמה שורות ביחד נותנות יותר נקודות ויותר כוכבים.' : '';
     $('nextLevelBtn').hidden = level >= CONFIG.levelCount;
     setTimeout(() => { $('winOverlay').hidden = false; }, 350);
   }
-  function onGameOver({ lines }) {
-    $('overText').textContent = `ניקית ${Math.min(lines, CONFIG.rowsPerLevel)} שורות מתוך ${CONFIG.rowsPerLevel}. עוד ניסיון?`;
+  function onGameOver({ score }) {
+    Store.recordScore(score);
+    const buddy = $('overBuddy'); // a smiling animal, never a scary screen
+    buddy.innerHTML = '';
+    buddy.appendChild(Art.pieceCanvas('O', 52));
     setTimeout(() => { $('overOverlay').hidden = false; }, 350);
   }
 
