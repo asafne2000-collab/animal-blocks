@@ -431,9 +431,9 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 
    Phase 2 tutorial plugs in through: Game.freeze(on), Game.pause(),
    Input.setModeOverride(mode) and the 'spawn' / 'input' / 'lines'
-   events. Tutorial pauses: move, rotate and "speed up the fall" (there is
-   no instant drop) – watch for 'input' actions 'move', 'rotate' and
-   'fast-fall'. Effects, sounds and animal unlocking listen to the same events.
+   events. Tutorial pauses: move, rotate, "speed up the fall" and "instant
+   drop" – watch for 'input' actions 'move', 'rotate', 'fast-fall' and
+   'hard-drop'. Effects, sounds and animal unlocking listen to the same events.
    ========================================================= */
 
 /* ---------- 1. CONFIG ---------- */
@@ -448,6 +448,9 @@ const CONFIG = {
   lineScores: [0, 100, 300, 500, 800], // × level number
   fastFallInterval: 100,    // fast fall: about 10 rows per second...
   fastFallFactor: 0.6,      // ...or 40% faster than normal if the level is already that fast
+  // Instant drop by touch: a quick flick down. Strict on purpose so a slow
+  // swipe or a held finger never drops an animal by accident.
+  flick: { maxTime: 300, minCells: 2.5, minPx: 60, minSpeed: 0.8 }, // ms, cells, px, px per ms
   clearDelay: 180,          // ms full rows flash before they disappear
   lockDelay: 500,           // ms a landed animal waits before locking
   maxLockResets: 15,
@@ -845,6 +848,15 @@ const Game = (() => {
     while (!collides(p.t, p.r, p.x, y + 1)) y++;
     return y;
   }
+  // Instant drop (an extra option next to fast fall).
+  function hardDrop() {
+    if (S.status !== 'playing' || !S.piece) return false;
+    const p = S.piece, from = p.y, to = ghostY();
+    p.y = to;
+    Events.emit('hardDrop', { type: p.t, r: p.r, x: p.x, from, to });
+    lock();
+    return true;
+  }
   function lock() {
     const p = S.piece;
     let toppedOut = false;
@@ -903,7 +915,7 @@ const Game = (() => {
       if (S.fallT >= interval) { S.fallT = 0; S.piece.y++; }
     }
   }
-  // There is no instant drop: the player can only make the animal fall faster.
+  // Fast fall while held: the animal still falls step by step, just quicker.
   function setFastFall(on) {
     on = !!on && S.status === 'playing' && !!S.piece;
     if (on && !S.fast) S.fallT = Math.max(S.fallT, CONFIG.fastFallInterval); // react right away
@@ -916,7 +928,7 @@ const Game = (() => {
     const per = score / level;
     return per >= CONFIG.starThresholds.three ? 3 : per >= CONFIG.starThresholds.two ? 2 : 1;
   }
-  return { state: S, start, move, rotate, setFastFall, freeze, ghostY, update, pause, resume, stars };
+  return { state: S, start, move, rotate, setFastFall, hardDrop, freeze, ghostY, update, pause, resume, stars };
 })();
 
 /* ---------- 7. Effects ---------- */
@@ -924,7 +936,7 @@ const Game = (() => {
 // events and never change the rules, so the game never waits for them.
 const Effects = (() => {
   const parts = [];
-  let landing = null, flash = null, shake = 0;
+  let landing = null, flash = null, shake = 0, trail = null, dropped = false;
   const reduced = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
   const rand = (a, b) => a + Math.random() * (b - a);
   const key = (x, y) => y * CONFIG.cols + x;
@@ -935,11 +947,13 @@ const Effects = (() => {
     if (!cells.length) return;
     const set = new Set(cells.map(([x, y]) => key(x, y)));
     const xs = cells.map(c => c[0]), ys = cells.map(c => c[1]);
-    landing = { set, t: 0, cx: (Math.min(...xs) + Math.max(...xs) + 1) / 2, by: Math.max(...ys) + 1 };
+    const power = dropped ? 1.6 : 1; // instant drop lands a bit harder
+    dropped = false;
+    landing = { set, t: 0, power, cx: (Math.min(...xs) + Math.max(...xs) + 1) / 2, by: Math.max(...ys) + 1 };
     for (const [x, y] of cells) { // a puff of dust from under the animal
       if (set.has(key(x, y + 1))) continue;
-      for (let i = 0; i < 3; i++) {
-        add({ kind: 'dust', x: x + .5 + rand(-.35, .35), y: y + .95, vx: rand(-1.8, 1.8), vy: rand(-1.4, -.4), max: rand(260, 380), size: rand(.13, .22) });
+      for (let i = 0; i < (power > 1 ? 5 : 3); i++) {
+        add({ kind: 'dust', x: x + .5 + rand(-.35, .35), y: y + .95, vx: rand(-1.8, 1.8) * power, vy: rand(-1.4, -.4) * power, max: rand(260, 380), size: rand(.13, .22) });
       }
     }
     for (let i = 0; i < 2; i++) { // and a couple of sparkles
@@ -964,11 +978,19 @@ const Effects = (() => {
     }
     if (n >= 2 && !reduced) shake = 120 + n * 40;
   }
-  function reset() { parts.length = 0; landing = null; flash = null; shake = 0; }
+  function onHardDrop({ type, r, x, from, to }) { // a quick streak behind the dropping animal
+    dropped = true;
+    if (to - from < 1) return;
+    const cols = new Map(); // column -> top-most cell row of the animal (in its box)
+    for (const [lx, ly] of SHAPES[type][r]) if (!cols.has(lx) || ly < cols.get(lx)) cols.set(lx, ly);
+    trail = { t: 0, color: PIECES[type].color, streaks: [...cols].map(([lx, ly]) => ({ x: x + lx, y0: Math.max(0, from + ly), y1: to + ly })) };
+  }
+  function reset() { parts.length = 0; landing = null; flash = null; shake = 0; trail = null; dropped = false; }
 
   function update(dt) {
     if (landing && (landing.t += dt) > 420) landing = null;
     if (flash && (flash.t += dt) > CONFIG.clearDelay) flash = null;
+    if (trail && (trail.t += dt) > 260) trail = null;
     shake = Math.max(0, shake - dt);
     const s = dt / 1000;
     for (let i = parts.length - 1; i >= 0; i--) {
@@ -984,8 +1006,28 @@ const Effects = (() => {
     if (!landing || reduced) return null;
     const p = landing.t / 230;
     if (p >= 1) return null;
-    const a = p < .4 ? .2 * Math.sin(Math.PI * p / .4) : -.07 * Math.sin(Math.PI * (p - .4) / .6);
+    const a = (p < .4 ? .2 * Math.sin(Math.PI * p / .4) : -.07 * Math.sin(Math.PI * (p - .4) / .6)) * landing.power;
     return { sx: 1 + a * .7, sy: 1 - a };
+  }
+  // Drawn under the animals: the instant-drop trail.
+  function drawUnder(ctx, cell) {
+    if (!trail) return;
+    const q = trail.t / 260;
+    ctx.save();
+    ctx.globalAlpha = 1 - q;
+    for (const s of trail.streaks) {
+      const top = s.y0 * cell, bottom = s.y1 * cell + cell * .5;
+      if (bottom <= top) continue;
+      const gr = ctx.createLinearGradient(0, top, 0, bottom);
+      gr.addColorStop(0, 'rgba(255, 255, 255, 0)');
+      gr.addColorStop(.7, trail.color);
+      gr.addColorStop(1, '#fff');
+      ctx.fillStyle = gr;
+      const w = cell * (.62 - .3 * q), x = s.x * cell + (cell - w) / 2;
+      ctx.beginPath(); ctx.moveTo(x + w / 2, top);
+      ctx.lineTo(x + w, bottom); ctx.lineTo(x, bottom); ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
   }
   function starPath(ctx, r) {
     ctx.beginPath();
@@ -1021,11 +1063,12 @@ const Effects = (() => {
       ctx.restore();
     }
   }
+  Events.on('hardDrop', onHardDrop); // fires just before 'lock'
   Events.on('lock', onLock);
   Events.on('rowsFull', onRowsFull);
   Events.on('lines', () => { landing = null; }); // rows moved – the landed animal may be gone
   Events.on('start', reset);
-  return { update, draw, squash, landing: () => landing, shaking: () => shake > 0 };
+  return { update, draw, drawUnder, squash, landing: () => landing, shaking: () => shake > 0 };
 })();
 
 /* ---------- 8. Render ---------- */
@@ -1100,6 +1143,7 @@ const Render = (() => {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.drawImage(bg, 0, 0);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    Effects.drawUnder(ctx, cell);
     const land = Effects.landing();
     const landed = (x, y) => land && land.set.has(y * CONFIG.cols + x);
     for (let y = 0; y < CONFIG.rows; y++) for (let x = 0; x < CONFIG.cols; x++) {
@@ -1159,7 +1203,23 @@ const Input = (() => {
       id: e.pointerId, x0: e.clientX, y0: e.clientY, t0: now,
       col: 0, pieceId: Game.state.pieceId,
       moved: false, done: false, fast: false, refY: e.clientY, peakY: e.clientY,
+      samples: [[e.clientX, e.clientY, now]],
     };
+  }
+  // A flick = a short, quick, mostly-downward stroke with the finger still
+  // moving fast when it lifts. All four must hold, so a slow swipe or a
+  // held finger (fast fall) never turns into an instant drop by accident.
+  function isFlick(gest, x, y) {
+    const cell = Render.cellSize();
+    const dx = x - gest.x0, dy = y - gest.y0, dt = performance.now() - gest.t0;
+    if (dt > CONFIG.flick.maxTime) return false;
+    if (dy < Math.max(CONFIG.flick.minPx, cell * CONFIG.flick.minCells)) return false;
+    if (dy < Math.abs(dx) * 2) return false;
+    const s = gest.samples, last = s[s.length - 1];
+    let first = s[0];
+    for (const smp of s) if (last[2] - smp[2] <= 80) { first = smp; break; }
+    const v = last[2] > first[2] ? (last[1] - first[1]) / (last[2] - first[2]) : 0;
+    return v >= CONFIG.flick.minSpeed;
   }
   function fastFall(on) {
     if (g.fast === on) return;
@@ -1173,6 +1233,8 @@ const Input = (() => {
     if (g.done || !playing()) return;
     if (Game.state.pieceId !== g.pieceId) { g.done = true; return; } // a new animal arrived – finish this gesture
     const dx = e.clientX - g.x0, dy = e.clientY - g.y0;
+    g.samples.push([e.clientX, e.clientY, performance.now()]);
+    if (g.samples.length > 10) g.samples.shift();
     if (Math.abs(dx) > 10 || Math.abs(dy) > 10) g.moved = true;
     const cell = Render.cellSize();
     if (mode() === 'drag') dragMove(dx, e.clientY, cell); else swipeMove(dx, dy, cell);
@@ -1209,7 +1271,9 @@ const Input = (() => {
     const gest = g; g = null;
     if (gest.fast) Game.setFastFall(false); // lifting the finger: back to normal speed
     if (gest.done || !playing() || Game.state.pieceId !== gest.pieceId) return;
+    gest.samples.push([e.clientX, e.clientY, performance.now()]);
     if (!gest.moved && performance.now() - gest.t0 < 350) act('rotate', Game.rotate());
+    else if (isFlick(gest, e.clientX, e.clientY)) act('hard-drop', Game.hardDrop());
   }
   function onCancel(e) {
     if (!g || e.pointerId !== g.id) return;
@@ -1226,6 +1290,7 @@ const Input = (() => {
       case 'ArrowRight': Game.move(1, 0); break;
       case 'ArrowDown': Game.setFastFall(true); break; // fast fall while held
       case 'ArrowUp': case 'x': case 'X': Game.rotate(); break;
+      case ' ': if (!e.repeat) Game.hardDrop(); break; // holding space never drops twice
       default: return;
     }
     e.preventDefault();
