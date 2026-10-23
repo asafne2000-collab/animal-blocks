@@ -431,7 +431,9 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 
    Phase 2 tutorial plugs in through: Game.freeze(on), Game.pause(),
    Input.setModeOverride(mode) and the 'spawn' / 'input' / 'lines'
-   events. Effects, sounds and animal unlocking listen to the same events.
+   events. Tutorial pauses: move, rotate and "speed up the fall" (there is
+   no instant drop) – watch for 'input' actions 'move', 'rotate' and
+   'fast-fall'. Effects, sounds and animal unlocking listen to the same events.
    ========================================================= */
 
 /* ---------- 1. CONFIG ---------- */
@@ -444,7 +446,8 @@ const CONFIG = {
   speedFactor: 0.95,        // each level is 5% faster
   minInterval: 100,         // cap: 10 steps/sec
   lineScores: [0, 100, 300, 500, 800], // × level number
-  softDropInterval: 40,     // ms per step after a slow swipe down
+  fastFallInterval: 100,    // fast fall: about 10 rows per second...
+  fastFallFactor: 0.6,      // ...or 40% faster than normal if the level is already that fast
   clearDelay: 180,          // ms full rows flash before they disappear
   lockDelay: 500,           // ms a landed animal waits before locking
   maxLockResets: 15,
@@ -765,7 +768,7 @@ const Game = (() => {
     level: 1, score: 0, lines: 0, interval: 1000,
     fallT: 0, lockT: 0, lockResets: 0, status: 'idle', // idle | playing | paused | won | over
     clearing: null, // { rows, t } while full rows flash before clearing
-    soft: false,   // soft drop active for the current animal
+    fast: false,   // fast fall on while the player holds it
     frozen: false, // Phase 2 tutorial: stops falling while still accepting input
   };
   const KICKS = [[0, 0], [-1, 0], [1, 0], [0, -1], [-2, 0], [2, 0], [-1, -1], [1, -1]];
@@ -797,7 +800,7 @@ const Game = (() => {
     const minY = Math.min(...SHAPES[t][0].map(c => c[1]));
     S.piece = { t, r: 0, x: Math.floor((CONFIG.cols - PIECES[t].n) / 2), y: -minY };
     S.pieceId++;
-    S.fallT = 0; S.lockT = 0; S.lockResets = 0; S.soft = false;
+    S.fallT = 0; S.lockT = 0; S.lockResets = 0; S.fast = false; // each new animal starts at normal speed
     if (collides(t, 0, S.piece.x, S.piece.y)) { end('over'); return; }
     Events.emit('spawn', { type: t, next: S.next });
   }
@@ -841,13 +844,6 @@ const Game = (() => {
     let y = p.y;
     while (!collides(p.t, p.r, p.x, y + 1)) y++;
     return y;
-  }
-  function hardDrop() {
-    if (S.status !== 'playing' || !S.piece) return;
-    const y = ghostY(), distance = y - S.piece.y;
-    S.piece.y = y;
-    Events.emit('hardDrop', { distance });
-    lock();
   }
   function lock() {
     const p = S.piece;
@@ -903,11 +899,16 @@ const Game = (() => {
     } else {
       S.lockT = 0;
       S.fallT += dt;
-      const interval = S.soft ? Math.min(S.interval, CONFIG.softDropInterval) : S.interval;
+      const interval = S.fast ? Math.min(CONFIG.fastFallInterval, S.interval * CONFIG.fastFallFactor) : S.interval;
       if (S.fallT >= interval) { S.fallT = 0; S.piece.y++; }
     }
   }
-  function softDrop() { if (S.status === 'playing' && S.piece) S.soft = true; }
+  // There is no instant drop: the player can only make the animal fall faster.
+  function setFastFall(on) {
+    on = !!on && S.status === 'playing' && !!S.piece;
+    if (on && !S.fast) S.fallT = Math.max(S.fallT, CONFIG.fastFallInterval); // react right away
+    S.fast = on;
+  }
   function freeze(on) { S.frozen = !!on; }
   function pause() { if (S.status === 'playing') { S.status = 'paused'; return true; } return false; }
   function resume() { if (S.status === 'paused') S.status = 'playing'; }
@@ -915,7 +916,7 @@ const Game = (() => {
     const per = score / level;
     return per >= CONFIG.starThresholds.three ? 3 : per >= CONFIG.starThresholds.two ? 2 : 1;
   }
-  return { state: S, start, move, rotate, hardDrop, softDrop, freeze, ghostY, update, pause, resume, stars };
+  return { state: S, start, move, rotate, setFastFall, freeze, ghostY, update, pause, resume, stars };
 })();
 
 /* ---------- 7. Effects ---------- */
@@ -1157,57 +1158,64 @@ const Input = (() => {
     g = {
       id: e.pointerId, x0: e.clientX, y0: e.clientY, t0: now,
       col: 0, pieceId: Game.state.pieceId,
-      moved: false, done: false, down: false, samples: [[e.clientY, now]],
+      moved: false, done: false, fast: false, refY: e.clientY, peakY: e.clientY,
     };
+  }
+  function fastFall(on) {
+    if (g.fast === on) return;
+    g.fast = on;
+    Game.setFastFall(on);
+    if (on) act('fast-fall');
   }
   function onMove(e) {
     if (!g || e.pointerId !== g.id) return;
     e.preventDefault();
     if (g.done || !playing()) return;
     if (Game.state.pieceId !== g.pieceId) { g.done = true; return; } // a new animal arrived – finish this gesture
-    const dx = e.clientX - g.x0, dy = e.clientY - g.y0, now = performance.now();
-    g.samples.push([e.clientY, now]);
-    if (g.samples.length > 8) g.samples.shift();
+    const dx = e.clientX - g.x0, dy = e.clientY - g.y0;
     if (Math.abs(dx) > 10 || Math.abs(dy) > 10) g.moved = true;
     const cell = Render.cellSize();
-    if (mode() === 'drag') dragMove(dx, dy, cell); else swipeMove(dx, dy, cell);
+    if (mode() === 'drag') dragMove(dx, e.clientY, cell); else swipeMove(dx, dy, cell);
   }
   // Free drag: the animal follows the finger left/right cell by cell, relative
   // to where the finger started, and stops flush against walls/animals.
-  // Moving the finger down does nothing – the animal falls on its own.
-  function dragMove(dx, dy, cell) {
+  // Moving the finger down turns on fast fall (the animal does not follow it
+  // down); moving back up or lifting the finger returns to normal speed.
+  function dragMove(dx, y, cell) {
     const col = Math.round(dx / cell);
     for (let i = col - g.col; i > 0 && Game.move(1, 0); i--) act('move');
     for (let i = col - g.col; i < 0 && Game.move(-1, 0); i++) act('move');
     g.col = col;
+    const th = Math.max(24, cell * .8);
+    if (!g.fast) {
+      g.refY = Math.min(g.refY, y); // measure from the highest point since the last stop
+      if (y - g.refY > th) { g.peakY = y; fastFall(true); }
+    } else {
+      g.peakY = Math.max(g.peakY, y);
+      if (g.peakY - y > th * .6) { g.refY = y; fastFall(false); }
+    }
   }
-  // Swipes: sideways moves one column right away; down is decided on release
-  // (slow = soft drop, fast = hard drop).
+  // Swipes: sideways moves one column right away; down = fast fall for as
+  // long as the finger stays on the screen.
   function swipeMove(dx, dy, cell) {
+    if (g.fast) return;
     const th = Math.max(24, cell * .8);
     const ax = Math.abs(dx), ay = Math.abs(dy);
     if (ax > ay && ax >= th) { g.done = true; act('move', Game.move(dx > 0 ? 1 : -1, 0)); }
-    else if (ay > ax && dy >= th) g.down = true;
-  }
-  function velocityY(gest) { // px per ms over the last ~100ms
-    const s = gest.samples, last = s[s.length - 1];
-    let first = s[0];
-    for (const smp of s) if (last[1] - smp[1] <= 100) { first = smp; break; }
-    const dt = last[1] - first[1];
-    return dt > 0 ? (last[0] - first[0]) / dt : 0;
+    else if (ay > ax && dy >= th) fastFall(true);
   }
   function onUp(e) {
     if (!g || e.pointerId !== g.id) return;
     const gest = g; g = null;
+    if (gest.fast) Game.setFastFall(false); // lifting the finger: back to normal speed
     if (gest.done || !playing() || Game.state.pieceId !== gest.pieceId) return;
-    if (!gest.moved && performance.now() - gest.t0 < 350) { act('rotate', Game.rotate()); return; }
-    if (mode() === 'swipe' && gest.down) {
-      if (velocityY(gest) > 1.1) { Game.hardDrop(); act('hard-drop'); }
-      else { Game.softDrop(); act('soft-drop'); }
-    }
-    // Drag mode: when the finger lifts, the animal keeps falling at the normal pace.
+    if (!gest.moved && performance.now() - gest.t0 < 350) act('rotate', Game.rotate());
   }
-  function onCancel(e) { if (g && e.pointerId === g.id) g = null; }
+  function onCancel(e) {
+    if (!g || e.pointerId !== g.id) return;
+    if (g.fast) Game.setFastFall(false);
+    g = null;
+  }
 
   function onKey(e) {
     if (UI.current !== 'game') return;
@@ -1216,12 +1224,14 @@ const Input = (() => {
     switch (e.key) {
       case 'ArrowLeft': Game.move(-1, 0); break;
       case 'ArrowRight': Game.move(1, 0); break;
-      case 'ArrowDown': Game.move(0, 1); break;
+      case 'ArrowDown': Game.setFastFall(true); break; // fast fall while held
       case 'ArrowUp': case 'x': case 'X': Game.rotate(); break;
-      case ' ': Game.hardDrop(); break;
       default: return;
     }
     e.preventDefault();
+  }
+  function onKeyUp(e) {
+    if (e.key === 'ArrowDown') Game.setFastFall(false);
   }
   function init() {
     const area = document.getElementById('game'); // the whole game screen is the touch area
@@ -1231,6 +1241,7 @@ const Input = (() => {
     area.addEventListener('pointercancel', onCancel);
     area.addEventListener('touchmove', e => e.preventDefault(), { passive: false }); // stop iOS scroll/bounce
     window.addEventListener('keydown', onKey);
+    window.addEventListener('keyup', onKeyUp);
   }
   return { init, setModeOverride: m => { modeOverride = m; } };
 })();
