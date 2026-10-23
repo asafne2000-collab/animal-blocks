@@ -13,7 +13,8 @@
 /* =========================================================
    DESIGN TOKENS
    Sunny yellow page, deep plum "ink" for outlines & text,
-   chunky sticker-style buttons. The animals bring the color.
+   chunky glossy toy-like buttons and panels with depth.
+   The animals bring the color.
    ========================================================= */
 :root {
   --sun: #FFD84D;
@@ -24,6 +25,13 @@
   --cream: #FFF7E3;
   --berry: #E8336D;
   --star: #FFB400;
+  /* glossy surfaces: light top, deeper bottom */
+  --gloss-cream: linear-gradient(180deg, #FFFFFF 0%, #FFF4D6 46%, #F5D994 100%);
+  --gloss-berry: linear-gradient(180deg, #FF8DB2 0%, #F2477C 46%, #C91D57 100%);
+  --gloss-plum: linear-gradient(180deg, #9A83EA 0%, #6D55C4 45%, #4B3896 100%);
+  /* depth: top highlight, bottom inner shade, solid ink base, soft drop shadow */
+  --depth: inset 0 3px 0 rgba(255, 255, 255, .85), inset 0 -5px 0 rgba(46, 33, 82, .16), 0 6px 0 var(--ink), 0 12px 18px rgba(46, 33, 82, .28);
+  --depth-pressed: inset 0 3px 0 rgba(255, 255, 255, .6), inset 0 -2px 0 rgba(46, 33, 82, .16), 0 2px 0 var(--ink), 0 4px 8px rgba(46, 33, 82, .25);
   --font: "Rubik", "Varela Round", "Arial Rounded MT Bold", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
   --safe-t: env(safe-area-inset-top, 0px);
   --safe-b: env(safe-area-inset-bottom, 0px);
@@ -34,8 +42,11 @@ html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
 body {
   position: fixed; inset: 0;
   background-color: var(--sun);
-  background-image: radial-gradient(circle at 2px 2px, rgba(46, 33, 82, .07) 2px, transparent 2.6px);
-  background-size: 24px 24px;
+  background-image:
+    radial-gradient(ellipse 90% 55% at 50% 0%, rgba(255, 250, 215, .9), rgba(255, 250, 215, 0) 70%),
+    radial-gradient(ellipse 80% 50% at 50% 110%, rgba(242, 160, 40, .35), rgba(242, 160, 40, 0) 70%),
+    radial-gradient(circle at 2px 2px, rgba(46, 33, 82, .07) 2px, transparent 2.6px);
+  background-size: 100% 100%, 100% 100%, 24px 24px;
   color: var(--ink);
   font-family: var(--font);
   -webkit-user-select: none; user-select: none;
@@ -56,32 +67,39 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 .screen.active { display: flex; }
 
 /* ---------- Buttons ---------- */
-.btn {
-  font-weight: 800; font-size: 1.3rem; line-height: 1.1;
-  background: var(--cream); color: var(--ink);
-  border: 3px solid var(--ink); border-radius: 999px;
-  padding: .75em 1.5em; min-height: 56px;
-  box-shadow: 0 6px 0 var(--ink);
+.btn, .icon-btn {
+  position: relative; overflow: hidden; isolation: isolate;
+  background: var(--gloss-cream); color: var(--ink);
+  border: 4px solid var(--ink);
+  box-shadow: var(--depth);
   transition: transform .08s, box-shadow .08s;
 }
-.btn:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--ink); }
-.btn.primary { background: var(--berry); color: #fff; }
-.btn.big { font-size: 1.7rem; padding: .7em 2.4em; }
+/* the glossy shine across the top of every button */
+.btn::before, .icon-btn::before {
+  content: ""; position: absolute; left: 14%; right: 14%; top: 4px; height: 36%;
+  border-radius: 999px; pointer-events: none; z-index: -1;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .85), rgba(255, 255, 255, 0));
+}
+.btn:active, .icon-btn:active { transform: translateY(4px); box-shadow: var(--depth-pressed); }
+.btn {
+  font-weight: 900; font-size: 1.3rem; line-height: 1.1;
+  border-radius: 999px; padding: .75em 1.5em; min-height: 58px;
+}
+.btn.primary { background: var(--gloss-berry); color: #fff; text-shadow: 0 2px 0 rgba(46, 33, 82, .45); }
+.btn.primary::before { background: linear-gradient(180deg, rgba(255, 255, 255, .6), rgba(255, 255, 255, 0)); }
+.btn.big { font-size: 1.75rem; padding: .7em 2.4em; min-height: 70px; }
 .btn.small { font-size: 1.05rem; padding: .6em 1.1em; min-height: 48px; }
-.btn.quiet { background: transparent; box-shadow: none; border-style: dashed; font-size: 1rem; }
+.btn.quiet { background: transparent; box-shadow: none; border-style: dashed; border-width: 3px; font-size: 1rem; }
+.btn.quiet::before { display: none; }
 .btn.quiet:active { transform: none; }
-.btn.quiet.armed { background: var(--berry); color: #fff; border-style: solid; }
+.btn.quiet.armed { background: var(--gloss-berry); color: #fff; border-style: solid; }
 
 .icon-btn {
-  width: 52px; height: 52px; flex: none;
+  width: 54px; height: 54px; flex: none;
   display: grid; place-items: center;
-  background: var(--cream);
-  border: 3px solid var(--ink); border-radius: 18px;
-  box-shadow: 0 5px 0 var(--ink);
-  transition: transform .08s, box-shadow .08s;
+  border-radius: 18px;
 }
-.icon-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--ink); }
-.icon-btn svg { width: 26px; height: 26px; stroke: var(--ink); stroke-width: 3; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.icon-btn svg { position: relative; width: 26px; height: 26px; stroke: var(--ink); stroke-width: 3.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 
 /* ---------- Top bar (map / settings) ---------- */
 .bar { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; }
@@ -90,8 +108,10 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 .star-count svg { width: 26px; height: 26px; }
 
 /* ---------- Stars ---------- */
-.star path { fill: var(--cream); stroke: var(--ink); stroke-width: 1.7; stroke-linejoin: round; }
-.star.on path { fill: var(--star); }
+.star path { fill: #F1E4C0; stroke: var(--ink); stroke-width: 1.7; stroke-linejoin: round; }
+.star.on path { fill: url(#starGloss); }
+.star .glint { fill: #fff; opacity: 0; }
+.star.on .glint { opacity: .85; }
 
 /* ---------- Home ---------- */
 #home { align-items: center; justify-content: space-between; text-align: center; }
@@ -111,6 +131,7 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 }
 .cast figure { display: flex; flex-direction: column; align-items: center; gap: 6px; transform: rotate(var(--tilt, 0deg)); }
 .cast figcaption { font-weight: 800; font-size: .95rem; }
+.cast canvas, .map-buddy, .buddy canvas { filter: drop-shadow(0 4px 2px rgba(46, 33, 82, .3)); }
 .home-foot { display: flex; flex-direction: column; align-items: center; gap: 14px; }
 .home-stars { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 1.05rem; min-height: 1.5em; }
 .home-stars svg { width: 24px; height: 24px; }
@@ -123,13 +144,13 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 .node {
   position: absolute; transform: translate(-50%, -50%);
   width: 66px; height: 66px; border-radius: 50%;
-  border: 3px solid var(--ink); background: var(--cream);
-  box-shadow: 0 5px 0 var(--ink);
+  border: 4px solid var(--ink); background: var(--gloss-cream);
+  box-shadow: var(--depth);
   font-weight: 900; font-size: 1.5rem;
 }
-.node:active { box-shadow: 0 2px 0 var(--ink); margin-top: 3px; }
-.node.current { width: 80px; height: 80px; font-size: 1.9rem; background: var(--berry); color: #fff; animation: hop 1.4s ease-in-out infinite; }
-.node.locked { background: #F6E3A0; color: rgba(46, 33, 82, .4); border-color: rgba(46, 33, 82, .35); box-shadow: 0 5px 0 rgba(46, 33, 82, .2); }
+.node:active { box-shadow: var(--depth-pressed); margin-top: 3px; }
+.node.current { width: 80px; height: 80px; font-size: 1.9rem; background: var(--gloss-berry); color: #fff; text-shadow: 0 2px 0 rgba(46, 33, 82, .45); animation: hop 1.4s ease-in-out infinite; }
+.node.locked { background: linear-gradient(180deg, #FBEFC4, #EBD38A); color: rgba(46, 33, 82, .4); border-color: rgba(46, 33, 82, .35); box-shadow: inset 0 3px 0 rgba(255, 255, 255, .6), 0 5px 0 rgba(46, 33, 82, .2); }
 .node .mini { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); display: flex; gap: 1px; margin-top: 6px; }
 .node .mini svg { width: 18px; height: 18px; }
 .node .lock { width: 22px; height: 22px; stroke: currentColor; stroke-width: 3; fill: none; }
@@ -140,10 +161,10 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 .choice { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
 .option {
   position: relative; aspect-ratio: 1;
-  background: var(--cream); border: 3px solid var(--ink); border-radius: 30px;
-  padding: 12px; box-shadow: 0 6px 0 var(--ink);
+  background: var(--gloss-cream); border: 4px solid var(--ink); border-radius: 30px;
+  padding: 12px; box-shadow: var(--depth);
 }
-.option[aria-checked="true"] { background: #fff; outline: 5px solid var(--berry); outline-offset: 4px; }
+.option[aria-checked="true"] { outline: 5px solid var(--berry); outline-offset: 4px; }
 .option svg { width: 100%; height: 100%; display: block; }
 .option .tick { position: absolute; top: -12px; inset-inline-start: -12px; width: 36px; height: 36px; border-radius: 50%; border: 3px solid var(--ink); background: var(--cream); display: grid; place-items: center; }
 .option[aria-checked="true"] .tick { background: var(--berry); }
@@ -154,29 +175,58 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 
 /* ---------- Game ---------- */
 #game { padding-left: 10px; padding-right: 10px; touch-action: none; }
-.hud { display: flex; align-items: stretch; gap: 8px; height: 64px; flex: none; }
+/* Top bar: solid game panels with a plum name tab on top */
+.hud { display: flex; align-items: stretch; gap: 8px; height: 64px; flex: none; margin-top: 8px; }
 .hud-box {
+  position: relative;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  background: var(--cream); border: 3px solid var(--ink); border-radius: 18px;
-  padding: 2px 12px; min-width: 64px;
+  background: var(--gloss-cream); border: 4px solid var(--ink); border-radius: 18px;
+  box-shadow: var(--depth);
+  padding: 6px 12px 2px; min-width: 64px;
 }
 .hud-box.grow { flex: 1; }
-.hud-label { font-size: .8rem; font-weight: 800; color: var(--ink-soft); }
-.hud-box b { font-size: 1.5rem; font-weight: 900; line-height: 1.05; font-variant-numeric: tabular-nums; }
-.hud-box.next { padding: 2px 8px; }
+.hud-label {
+  position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
+  background: var(--gloss-plum); color: #fff; border: 2.5px solid var(--ink); border-radius: 999px;
+  font-size: .72rem; font-weight: 900; line-height: 1; padding: 3px 9px; white-space: nowrap;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, .35);
+}
+.hud-box b {
+  font-size: 1.65rem; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums;
+  color: var(--ink); text-shadow: 0 2px 0 rgba(255, 255, 255, .9);
+}
+.hud-box.next { padding: 8px 8px 2px; }
 #next { width: 56px; height: 36px; display: block; }
 .hud .icon-btn { height: 64px; width: 56px; }
 .play {
   flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center;
-  padding: 10px 0 14px; touch-action: none;
+  padding: 12px 0 14px; touch-action: none;
+}
+/* Board frame: a chunky plum toy frame with golden bolts in the corners */
+.frame {
+  position: relative; padding: 10px; border-radius: 28px;
+  border: 4px solid var(--ink);
+  background:
+    radial-gradient(circle at 11px 11px, #FFE780 2.5px, #C98A00 3.5px, var(--ink) 4.5px, transparent 5px),
+    radial-gradient(circle at calc(100% - 11px) 11px, #FFE780 2.5px, #C98A00 3.5px, var(--ink) 4.5px, transparent 5px),
+    radial-gradient(circle at 11px calc(100% - 11px), #FFE780 2.5px, #C98A00 3.5px, var(--ink) 4.5px, transparent 5px),
+    radial-gradient(circle at calc(100% - 11px) calc(100% - 11px), #FFE780 2.5px, #C98A00 3.5px, var(--ink) 4.5px, transparent 5px),
+    var(--gloss-plum);
+  box-shadow: inset 0 4px 0 rgba(255, 255, 255, .4), inset 0 -6px 0 rgba(20, 10, 50, .25), 0 7px 0 var(--ink), 0 14px 24px rgba(46, 33, 82, .35);
 }
 #board {
-  display: block; border: 4px solid var(--ink); border-radius: 16px;
-  box-shadow: 0 6px 0 var(--ink); background: var(--board);
+  display: block; border: 3px solid var(--ink); border-radius: 16px; background: #3A2C6B;
 }
-.rows { display: flex; justify-content: center; gap: 6px; flex: none; height: 22px; direction: ltr; }
-.rows i { width: 22px; height: 22px; border-radius: 7px; border: 3px solid var(--ink); background: var(--cream); }
-.rows i.on { background: var(--c); }
+.rows { display: flex; justify-content: center; gap: 6px; flex: none; height: 24px; direction: ltr; }
+.rows i {
+  width: 22px; height: 22px; border-radius: 8px; border: 3px solid var(--ink);
+  background: linear-gradient(180deg, #F3E6C2, #E2CD92);
+  box-shadow: inset 0 2px 3px rgba(46, 33, 82, .25);
+}
+.rows i.on {
+  background: linear-gradient(180deg, rgba(255, 255, 255, .55), rgba(255, 255, 255, 0) 55%, rgba(0, 0, 0, .15)), var(--c);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, .6), 0 2px 0 var(--ink);
+}
 
 /* ---------- Overlays ---------- */
 .overlay {
@@ -187,8 +237,9 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 .overlay[hidden] { display: none; }
 .panel {
   width: 100%; max-width: 360px; text-align: center;
-  background: var(--cream); border: 4px solid var(--ink); border-radius: 32px;
-  box-shadow: 0 8px 0 var(--ink); padding: 26px 22px 28px;
+  background: var(--gloss-cream); border: 4px solid var(--ink); border-radius: 32px;
+  box-shadow: inset 0 4px 0 #fff, inset 0 -6px 0 rgba(46, 33, 82, .12), 0 8px 0 var(--ink), 0 18px 30px rgba(20, 10, 50, .35);
+  padding: 26px 22px 28px;
   display: flex; flex-direction: column; align-items: center; gap: 14px;
 }
 .panel h2 { font-size: 2.1rem; font-weight: 900; line-height: 1.1; }
@@ -231,6 +282,9 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
     <circle cx="33" cy="27" r="4.5"/>
     <ellipse cx="7" cy="31" rx="4.5" ry="8" transform="rotate(-28 7 31)"/>
   </symbol>
+  <linearGradient id="starGloss" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#FFE780"/><stop offset=".5" stop-color="#FFC21A"/><stop offset="1" stop-color="#F08C00"/>
+  </linearGradient>
   <symbol id="i-retry" viewBox="0 0 24 24"><path d="M5 12a7 7 0 1 0 2.2-5.1M5 4v4h4"/></symbol>
   <symbol id="i-map" viewBox="0 0 24 24"><path d="M3.5 6.5 9 4l6 2.5L20.5 4v13.5L15 20l-6-2.5-5.5 2.5zM9 4v13.5M15 6.5V20"/></symbol>
 </svg>
@@ -282,7 +336,7 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
     <button class="option" role="radio" data-control="drag" aria-label="גרירה חופשית">
       <svg viewBox="0 0 96 96" aria-hidden="true">
         <rect x="3" y="3" width="90" height="90" rx="24" fill="#43C46E"/>
-        <path d="M18 84C22 66 30 58 44 54" fill="none" stroke="#FFF7E3" stroke-width="5" stroke-dasharray="0.5 10" stroke-linecap="round"/>
+        <path d="M12 58h24M60 58h24" fill="none" stroke="#FFF7E3" stroke-width="5" stroke-dasharray="0.5 9" stroke-linecap="round"/>
         <rect x="44" y="12" width="24" height="24" rx="7" fill="#FFB33C" stroke="#2E2152" stroke-width="3"/>
         <circle cx="52" cy="22" r="2.4" fill="#2E2152"/><circle cx="60" cy="22" r="2.4" fill="#2E2152"/>
         <use href="#hand" x="36" y="32" width="40" height="48" class="hand-outline"/>
@@ -317,7 +371,7 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
     <div class="hud-box grow"><span class="hud-label">ניקוד</span><b id="hudScore">0</b></div>
     <div class="hud-box next"><span class="hud-label">הבא</span><canvas id="next"></canvas></div>
   </header>
-  <div class="play" id="play"><canvas id="board"></canvas></div>
+  <div class="play" id="play"><div class="frame" id="frame"><canvas id="board"></canvas></div></div>
   <div class="rows" id="rows" role="img" aria-label="שורות שנוקו"></div>
 
   <div class="overlay" id="pauseOverlay" hidden>
@@ -369,10 +423,11 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
      4. Pieces     – the 7 animal shapes + rotation
      5. Art        – drawing the animals on canvas
      6. Game       – pure game rules (board, falling, scoring)
-     7. Render     – draws the board and next preview
-     8. Input      – touch (drag / swipe) and keyboard
-     9. UI         – screens, map, overlays, settings
-    10. Boot       – main loop
+     7. Effects    – landing squash, dust, row flash, particles
+     8. Render     – draws the board and next preview
+     9. Input      – touch (drag / swipe) and keyboard
+    10. UI         – screens, map, overlays, settings
+    11. Boot       – main loop
 
    Phase 2 tutorial plugs in through: Game.freeze(on), Game.pause(),
    Input.setModeOverride(mode) and the 'spawn' / 'input' / 'lines'
@@ -390,6 +445,7 @@ const CONFIG = {
   minInterval: 100,         // cap: 10 steps/sec
   lineScores: [0, 100, 300, 500, 800], // × level number
   softDropInterval: 40,     // ms per step after a slow swipe down
+  clearDelay: 180,          // ms full rows flash before they disappear
   lockDelay: 500,           // ms a landed animal waits before locking
   maxLockResets: 15,
   // Stars: level points divided by the level number.
@@ -475,31 +531,68 @@ const Art = (() => {
     g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r);
     g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath();
   }
-  function tiles(g, t, color, edge) {
+  // Mix a hex color with white (amt > 0) or black (amt < 0).
+  function shade(hex, amt) {
+    const n = parseInt(hex.slice(1), 16), to = amt > 0 ? 255 : 0, a = Math.abs(amt);
+    const ch = s => Math.round(((n >> s) & 255) * (1 - a) + to * a);
+    return `rgb(${ch(16)}, ${ch(8)}, ${ch(0)})`;
+  }
+  // A point of the rotated piece, in the upright (unrotated) frame.
+  const toBase = (g, base, x, y) => base.inverse().transformPoint(g.getTransform().transformPoint(new DOMPoint(x, y)));
+
+  // Glossy body tiles: light always comes from the top, whatever the rotation.
+  function tiles(g, base, t, color) {
+    const light = shade(color, .5), dark = shade(color, -.2);
     for (const [x, y] of PIECES[t].cells) {
+      const c = toBase(g, base, x + .5, y + .5);
       rr(g, x + .05, y + .05, .9, .9, .26);
-      fill(g, color); g.lineWidth = .07; g.strokeStyle = edge; g.stroke();
+      g.save(); g.setTransform(base);
+      const gr = g.createLinearGradient(0, c.y - .45, 0, c.y + .45);
+      gr.addColorStop(0, light); gr.addColorStop(.42, color); gr.addColorStop(1, dark);
+      g.fillStyle = gr; g.fill();
+      g.lineWidth = .08; g.strokeStyle = INK; g.stroke();
+      g.restore();
+    }
+  }
+  // Shine on top of every tile, drawn last.
+  function shine(g, base, t) {
+    for (const [x, y] of PIECES[t].cells) {
+      const c = toBase(g, base, x + .5, y + .5);
+      g.save(); g.setTransform(base);
+      rr(g, c.x - .28, c.y - .39, .5, .12, .06); fill(g, 'rgba(255, 255, 255, .6)');
+      circle(g, c.x + .3, c.y - .33, .045); g.fill();
+      g.restore();
     }
   }
   // Draws `fn` at (x, y) of the rotated piece, but keeps it upright so faces never go upside down.
   function upright(g, base, x, y, fn) {
-    const p = g.getTransform().transformPoint(new DOMPoint(x, y));
-    const q = base.inverse().transformPoint(p);
+    const q = toBase(g, base, x, y);
     g.save(); g.setTransform(base); g.translate(q.x, q.y); fn(); g.restore();
   }
+  let MOOD = ''; // '' or 'happy' (just landed: closed smiling eyes)
   // Big cute eyes, rosy cheeks, smile. Origin = face center, k = size.
   function face(g, k = 1, opt = {}) {
     const ex = .19 * k, ey = -.06 * k, er = .15 * k;
     g.lineWidth = .035 * k; g.strokeStyle = INK;
-    for (const s of [-1, 1]) {
-      circle(g, s * ex, ey, er); fill(g, '#fff'); g.stroke();
-      circle(g, s * ex + .015 * k, ey + .025 * k, er * .62); fill(g, INK);
-      circle(g, s * ex + .05 * k, ey - .025 * k, er * .25); fill(g, '#fff');
+    if (MOOD === 'happy') {
+      g.lineWidth = .055 * k; g.lineCap = 'round';
+      for (const s of [-1, 1]) { g.beginPath(); g.arc(s * ex, ey + .06 * k, er * .7, 1.15 * Math.PI, 1.85 * Math.PI); g.stroke(); }
+    } else {
+      for (const s of [-1, 1]) {
+        circle(g, s * ex, ey, er); fill(g, '#fff'); g.stroke();
+        circle(g, s * ex + .015 * k, ey + .025 * k, er * .62); fill(g, INK);
+        circle(g, s * ex + .05 * k, ey - .025 * k, er * .25); fill(g, '#fff');
+      }
     }
     g.fillStyle = 'rgba(255, 92, 138, .55)';
     ell(g, -.34 * k, .13 * k, .08 * k, .05 * k); g.fill();
     ell(g, .34 * k, .13 * k, .08 * k, .05 * k); g.fill();
     g.lineCap = 'round'; g.lineWidth = .045 * k; g.strokeStyle = INK;
+    if (MOOD === 'happy') { // big open smile
+      g.beginPath(); g.arc(0, .08 * k, .1 * k, 0, Math.PI); g.closePath(); fill(g, INK);
+      ell(g, 0, .15 * k, .05 * k, .025 * k); fill(g, '#FF7AA2');
+      return;
+    }
     g.beginPath(); g.arc(0, .1 * k, .07 * k, .2 * Math.PI, .8 * Math.PI); g.stroke();
     if (opt.tongue) {
       g.strokeStyle = '#E8336D'; g.lineWidth = .04 * k; g.beginPath();
@@ -512,7 +605,7 @@ const Art = (() => {
   // One function per animal, drawn in its base orientation.
   const DRAW = {
     I(g, base) { // Snake
-      tiles(g, 'I', '#43C46E', '#23884A');
+      tiles(g, base, 'I', '#43C46E');
       for (let i = 0; i < 3; i++) {
         ell(g, i + .5, 1.5, .17, .17, Math.PI / 4); fill(g, '#FFE066');
         circle(g, i + .2, 1.25, .05); fill(g, '#23884A');
@@ -520,14 +613,19 @@ const Art = (() => {
       }
       upright(g, base, 3.5, 1.47, () => face(g, .95, { tongue: true }));
     },
-    O(g) { // Panda (never rotates)
-      tiles(g, 'O', '#FFD3E0', '#F09AB7');
+    O(g, base) { // Panda (never rotates)
+      tiles(g, base, 'O', '#FFD3E0');
       circle(g, .42, .4, .24); fill(g, INK);
       circle(g, 1.58, .4, .24); fill(g, INK);
       ell(g, 1, 1.05, .8, .72); fill(g, '#fff'); g.lineWidth = .06; g.strokeStyle = INK; g.stroke();
       ell(g, .68, .98, .2, .25, .5); fill(g, INK);
       ell(g, 1.32, .98, .2, .25, -.5); fill(g, INK);
       for (const x of [.7, 1.3]) {
+        if (MOOD === 'happy') {
+          g.strokeStyle = '#fff'; g.lineWidth = .055; g.lineCap = 'round';
+          g.beginPath(); g.arc(x, 1.02, .08, 1.15 * Math.PI, 1.85 * Math.PI); g.stroke();
+          continue;
+        }
         circle(g, x, .96, .1); fill(g, '#fff');
         circle(g, x + .01, .98, .06); fill(g, INK);
         circle(g, x + .03, .94, .025); fill(g, '#fff');
@@ -540,7 +638,7 @@ const Art = (() => {
       ell(g, .48, 1.28, .1, .06); g.fill(); ell(g, 1.52, 1.28, .1, .06); g.fill();
     },
     T(g, base) { // Turtle
-      tiles(g, 'T', '#2CC7BE', '#16948C');
+      tiles(g, base, 'T', '#2CC7BE');
       for (const [x, y, r] of [[.3, 1.24, -.5], [2.7, 1.24, .5], [.3, 1.78, .5], [2.7, 1.78, -.5]]) {
         ell(g, x, y, .17, .11, r); fill(g, '#9BEDE5');
       }
@@ -549,7 +647,7 @@ const Art = (() => {
       upright(g, base, 1.5, .52, () => face(g, .9));
     },
     L(g, base) { // Giraffe
-      tiles(g, 'L', '#FFB33C', '#D9861A');
+      tiles(g, base, 'L', '#FFB33C');
       g.fillStyle = '#A65E1C';
       for (const [x, y, r] of [[.38, 1.32, .13], [.72, 1.7, .1], [1.28, 1.38, .15], [1.72, 1.72, .1], [2.3, 1.6, .13], [2.75, 1.28, .08], [2.28, .9, .07]]) {
         ell(g, x, y, r, r * .85, .6); g.fill();
@@ -565,7 +663,7 @@ const Art = (() => {
       });
     },
     J(g, base) { // Elephant
-      tiles(g, 'J', '#5B9BF8', '#2F6BD0');
+      tiles(g, base, 'J', '#5B9BF8');
       for (const x of [.5, 1.5, 2.5]) { ell(g, x, 1.87, .13, .06); fill(g, '#E9F2FF'); }
       g.strokeStyle = '#2F6BD0'; g.lineWidth = .06; g.lineCap = 'round';
       g.beginPath(); g.moveTo(2.86, 1.35); g.quadraticCurveTo(2.93, 1.5, 2.86, 1.62); g.stroke();
@@ -576,7 +674,7 @@ const Art = (() => {
       upright(g, base, .42, .42, () => face(g, .75));
     },
     S(g, base) { // Caterpillar
-      tiles(g, 'S', '#A8DE3C', '#6FA81E');
+      tiles(g, base, 'S', '#A8DE3C');
       for (const [x, y] of [[1, 0], [0, 1], [1, 1]]) {
         circle(g, x + .5, y + .5, .26); fill(g, '#C9F07C');
         circle(g, x + .5, y + .5, .08); fill(g, '#FF9F43');
@@ -592,7 +690,7 @@ const Art = (() => {
       });
     },
     Z(g, base) { // Crab
-      tiles(g, 'Z', '#F7646A', '#C73A42');
+      tiles(g, base, 'Z', '#F7646A');
       const claw = (x, y, a) => {
         circle(g, x, y, .28); fill(g, '#D93C45');
         g.beginPath(); g.moveTo(x, y); g.arc(x, y, .31, a - .5, a + .5); g.closePath(); fill(g, '#F7646A');
@@ -607,7 +705,7 @@ const Art = (() => {
     },
   };
 
-  function render(t, r, size, dpr) {
+  function render(t, r, size, dpr, mood) {
     const n = PIECES[t].n;
     const c = document.createElement('canvas');
     c.width = c.height = Math.max(1, Math.round(n * size * dpr));
@@ -619,19 +717,22 @@ const Art = (() => {
     g.beginPath();
     for (const [x, y] of PIECES[t].cells) g.rect(x, y, 1, 1);
     g.clip();
+    MOOD = mood;
     DRAW[t](g, base);
+    MOOD = '';
+    shine(g, base, t);
     return c;
   }
-  function get(t, r, size) {
+  function get(t, r, size, mood = '') {
     const dpr = Math.min(window.devicePixelRatio || 1, 3);
-    const key = `${t}${r}@${size}x${dpr}`;
+    const key = `${t}${r}@${size}x${dpr}${mood}`;
     let c = cache.get(key);
-    if (!c) { c = render(t, r, size, dpr); cache.set(key, c); }
+    if (!c) { c = render(t, r, size, dpr, mood); cache.set(key, c); }
     return c;
   }
   // Draw one cell (lx, ly) of a piece image at canvas position (px, py).
-  function drawCell(ctx, t, r, lx, ly, px, py, size) {
-    const c = get(t, r, size), d = c.width / PIECES[t].n;
+  function drawCell(ctx, t, r, lx, ly, px, py, size, mood) {
+    const c = get(t, r, size, mood), d = c.width / PIECES[t].n;
     ctx.drawImage(c, lx * d, ly * d, d, d, px, py, size, size);
   }
   function bounds(t) {
@@ -663,6 +764,7 @@ const Game = (() => {
     board: null, piece: null, next: null, bag: [], pieceId: 0,
     level: 1, score: 0, lines: 0, interval: 1000,
     fallT: 0, lockT: 0, lockResets: 0, status: 'idle', // idle | playing | paused | won | over
+    clearing: null, // { rows, t } while full rows flash before clearing
     soft: false,   // soft drop active for the current animal
     frozen: false, // Phase 2 tutorial: stops falling while still accepting input
   };
@@ -702,7 +804,7 @@ const Game = (() => {
   function start(level) {
     Object.assign(S, {
       board: emptyBoard(), bag: [], level, score: 0, lines: 0,
-      interval: intervalFor(level), status: 'playing', frozen: false,
+      interval: intervalFor(level), status: 'playing', frozen: false, clearing: null,
     });
     S.next = fromBag();
     Events.emit('start', { level });
@@ -747,34 +849,38 @@ const Game = (() => {
     Events.emit('hardDrop', { distance });
     lock();
   }
-  function clearLines() {
-    let count = 0;
-    for (let y = CONFIG.rows - 1; y >= 0; y--) {
-      if (S.board[y].every(Boolean)) {
-        S.board.splice(y, 1);
-        S.board.unshift(Array(CONFIG.cols).fill(null));
-        count++; y++;
-      }
-    }
-    return count;
-  }
   function lock() {
     const p = S.piece;
     let toppedOut = false;
+    const cells = [];
     for (const [lx, ly] of SHAPES[p.t][p.r]) {
       const bx = p.x + lx, by = p.y + ly;
       if (by < 0) { toppedOut = true; continue; }
       S.board[by][bx] = { t: p.t, r: p.r, lx, ly };
+      cells.push([bx, by]);
     }
     S.piece = null;
-    Events.emit('lock', { type: p.t });
+    Events.emit('lock', { type: p.t, cells });
     if (toppedOut) { end('over'); return; }
-    const cleared = clearLines();
-    if (cleared) {
-      S.score += CONFIG.lineScores[cleared] * S.level;
-      S.lines += cleared;
-      Events.emit('lines', { count: cleared, total: S.lines, score: S.score });
+    const rows = [];
+    for (let y = 0; y < CONFIG.rows; y++) if (S.board[y].every(Boolean)) rows.push(y);
+    if (rows.length) { // full rows flash briefly, then clear (see update)
+      S.clearing = { rows, t: 0 };
+      Events.emit('rowsFull', { rows });
+      return;
     }
+    spawn();
+  }
+  function finishClear() {
+    const { rows } = S.clearing;
+    S.clearing = null;
+    for (const y of rows) { // rows are sorted top to bottom
+      S.board.splice(y, 1);
+      S.board.unshift(Array(CONFIG.cols).fill(null));
+    }
+    S.score += CONFIG.lineScores[rows.length] * S.level;
+    S.lines += rows.length;
+    Events.emit('lines', { count: rows.length, total: S.lines, score: S.score });
     if (S.lines >= CONFIG.rowsPerLevel) { end('won'); return; }
     spawn();
   }
@@ -784,7 +890,13 @@ const Game = (() => {
     Events.emit(result === 'won' ? 'levelComplete' : 'gameOver', { level: S.level, score: S.score, lines: S.lines });
   }
   function update(dt) {
-    if (S.status !== 'playing' || !S.piece || S.frozen) return;
+    if (S.status !== 'playing' || S.frozen) return;
+    if (S.clearing) {
+      S.clearing.t += dt;
+      if (S.clearing.t >= CONFIG.clearDelay) finishClear();
+      return;
+    }
+    if (!S.piece) return;
     if (grounded()) {
       S.lockT += dt;
       if (S.lockT >= CONFIG.lockDelay) lock();
@@ -806,20 +918,131 @@ const Game = (() => {
   return { state: S, start, move, rotate, hardDrop, softDrop, freeze, ghostY, update, pause, resume, stars };
 })();
 
-/* ---------- 7. Render ---------- */
+/* ---------- 7. Effects ---------- */
+// Short (under half a second) visual effects. They only listen to game
+// events and never change the rules, so the game never waits for them.
+const Effects = (() => {
+  const parts = [];
+  let landing = null, flash = null, shake = 0;
+  const reduced = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const rand = (a, b) => a + Math.random() * (b - a);
+  const key = (x, y) => y * CONFIG.cols + x;
+  const MAX_PARTS = 260;
+  const add = p => { if (parts.length < MAX_PARTS) parts.push({ life: 0, g: 0, spin: 0, rot: 0, ...p }); };
+
+  function onLock({ cells }) {
+    if (!cells.length) return;
+    const set = new Set(cells.map(([x, y]) => key(x, y)));
+    const xs = cells.map(c => c[0]), ys = cells.map(c => c[1]);
+    landing = { set, t: 0, cx: (Math.min(...xs) + Math.max(...xs) + 1) / 2, by: Math.max(...ys) + 1 };
+    for (const [x, y] of cells) { // a puff of dust from under the animal
+      if (set.has(key(x, y + 1))) continue;
+      for (let i = 0; i < 3; i++) {
+        add({ kind: 'dust', x: x + .5 + rand(-.35, .35), y: y + .95, vx: rand(-1.8, 1.8), vy: rand(-1.4, -.4), max: rand(260, 380), size: rand(.13, .22) });
+      }
+    }
+    for (let i = 0; i < 2; i++) { // and a couple of sparkles
+      const [x, y] = cells[Math.floor(Math.random() * cells.length)];
+      add({ kind: 'spark', x: x + rand(.1, .9), y: y + rand(.1, .5), vx: rand(-.8, .8), vy: rand(-2.2, -1.2), max: rand(300, 420), size: rand(.16, .24), color: '#FFF3A0' });
+    }
+  }
+  function onRowsFull({ rows }) { // more rows at once = more, faster particles
+    const n = rows.length, board = Game.state.board;
+    const per = 1 + n, power = 1 + n * .35;
+    flash = { rows, t: 0 };
+    for (const y of rows) for (let x = 0; x < CONFIG.cols; x++) {
+      const c = board[y][x], color = c ? PIECES[c.t].color : '#fff';
+      for (let i = 0; i < per; i++) {
+        const spark = Math.random() < .3;
+        add({
+          kind: spark ? 'spark' : 'bit', x: x + .5, y: y + .5,
+          vx: rand(-3, 3) * power, vy: rand(-6, -1.5) * (1 + n * .15), g: 16, spin: rand(-8, 8),
+          max: rand(360, 480), size: rand(.14, .24) * (1 + n * .08), color: spark ? '#FFF3A0' : color,
+        });
+      }
+    }
+    if (n >= 2 && !reduced) shake = 120 + n * 40;
+  }
+  function reset() { parts.length = 0; landing = null; flash = null; shake = 0; }
+
+  function update(dt) {
+    if (landing && (landing.t += dt) > 420) landing = null;
+    if (flash && (flash.t += dt) > CONFIG.clearDelay) flash = null;
+    shake = Math.max(0, shake - dt);
+    const s = dt / 1000;
+    for (let i = parts.length - 1; i >= 0; i--) {
+      const p = parts[i];
+      p.life += dt;
+      if (p.life >= p.max) { parts.splice(i, 1); continue; }
+      p.vy += p.g * s; p.x += p.vx * s; p.y += p.vy * s; p.rot += p.spin * s;
+      if (p.kind === 'dust') { p.vx *= .92; p.vy *= .92; }
+    }
+  }
+  // Squash on impact, then a small stretch back up.
+  function squash() {
+    if (!landing || reduced) return null;
+    const p = landing.t / 230;
+    if (p >= 1) return null;
+    const a = p < .4 ? .2 * Math.sin(Math.PI * p / .4) : -.07 * Math.sin(Math.PI * (p - .4) / .6);
+    return { sx: 1 + a * .7, sy: 1 - a };
+  }
+  function starPath(ctx, r) {
+    ctx.beginPath();
+    for (let i = 0; i < 8; i++) {
+      const a = i * Math.PI / 4, rad = i % 2 ? r * .38 : r;
+      ctx.lineTo(Math.cos(a) * rad, Math.sin(a) * rad);
+    }
+    ctx.closePath();
+  }
+  function draw(ctx, cell) {
+    if (flash) {
+      const q = flash.t / CONFIG.clearDelay;
+      ctx.fillStyle = `rgba(255, 255, 255, ${(.85 * Math.abs(Math.sin(q * Math.PI * 2))).toFixed(3)})`;
+      for (const y of flash.rows) ctx.fillRect(0, y * cell, CONFIG.cols * cell, cell);
+    }
+    for (const p of parts) {
+      const q = p.life / p.max, r = p.size * cell;
+      ctx.save();
+      ctx.translate(p.x * cell, p.y * cell); ctx.rotate(p.rot);
+      if (p.kind === 'dust') {
+        ctx.globalAlpha = .8 * (1 - q); ctx.fillStyle = '#FFF7E3';
+        ctx.beginPath(); ctx.arc(0, 0, r * (1 + q), 0, Math.PI * 2); ctx.fill();
+      } else if (p.kind === 'spark') {
+        ctx.globalAlpha = 1 - q * q; ctx.fillStyle = p.color;
+        starPath(ctx, r * (1.2 - q * .5)); ctx.fill();
+      } else {
+        ctx.globalAlpha = q > .7 ? (1 - q) / .3 : 1;
+        ctx.fillStyle = p.color; ctx.strokeStyle = '#2E2152'; ctx.lineWidth = Math.max(1, r * .28);
+        ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = 'rgba(255, 255, 255, .6)';
+        ctx.beginPath(); ctx.arc(-r * .3, -r * .3, r * .3, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.restore();
+    }
+  }
+  Events.on('lock', onLock);
+  Events.on('rowsFull', onRowsFull);
+  Events.on('lines', () => { landing = null; }); // rows moved – the landed animal may be gone
+  Events.on('start', reset);
+  return { update, draw, squash, landing: () => landing, shaking: () => shake > 0 };
+})();
+
+/* ---------- 8. Render ---------- */
 const Render = (() => {
-  let board, ctx, next, nctx, bg = null, cell = 24, dpr = 1;
+  let board, ctx, next, nctx, frame, bg = null, cell = 24, dpr = 1, shook = false;
   const NEXT_W = 56, NEXT_H = 36;
+  const CHROME = 34, FRAME_SHADOW = 12; // frame padding + borders, frame drop shadow
 
   function init() {
     board = document.getElementById('board'); ctx = board.getContext('2d');
     next = document.getElementById('next'); nctx = next.getContext('2d');
+    frame = document.getElementById('frame');
   }
   function resize() {
     const play = document.getElementById('play');
     const cs = getComputedStyle(play);
-    const w = play.clientWidth - 8;
-    const h = play.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - 8;
+    const w = play.clientWidth - CHROME;
+    const h = play.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - CHROME - FRAME_SHADOW;
     dpr = Math.min(window.devicePixelRatio || 1, 3);
     cell = Math.max(10, Math.floor(Math.min(w / CONFIG.cols, h / CONFIG.rows)));
     const W = cell * CONFIG.cols, H = cell * CONFIG.rows;
@@ -827,39 +1050,84 @@ const Render = (() => {
     board.width = Math.round(W * dpr); board.height = Math.round(H * dpr);
     next.width = Math.round(NEXT_W * dpr); next.height = Math.round(NEXT_H * dpr);
     Art.clear();
-    // Pre-draw the empty board background with dots at grid corners.
+    // Pre-draw the empty board: deep gradient, soft checker, dots, inner shadow.
     bg = document.createElement('canvas');
     bg.width = board.width; bg.height = board.height;
     const b = bg.getContext('2d');
     b.scale(dpr, dpr);
-    b.fillStyle = '#3A2C6B'; b.fillRect(0, 0, W, H);
-    b.fillStyle = 'rgba(255, 255, 255, .13)';
+    const grad = b.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, '#4D3C92'); grad.addColorStop(1, '#2B2058');
+    b.fillStyle = grad; b.fillRect(0, 0, W, H);
+    b.fillStyle = 'rgba(255, 255, 255, .04)';
+    for (let y = 0; y < CONFIG.rows; y++) for (let x = 0; x < CONFIG.cols; x++) {
+      if ((x + y) % 2) b.fillRect(x * cell, y * cell, cell, cell);
+    }
+    b.fillStyle = 'rgba(255, 255, 255, .14)';
     for (let y = 1; y < CONFIG.rows; y++) for (let x = 1; x < CONFIG.cols; x++) {
       b.beginPath(); b.arc(x * cell, y * cell, Math.max(1, cell * .06), 0, Math.PI * 2); b.fill();
     }
+    const top = b.createLinearGradient(0, 0, 0, cell);
+    top.addColorStop(0, 'rgba(16, 8, 40, .45)'); top.addColorStop(1, 'rgba(16, 8, 40, 0)');
+    b.fillStyle = top; b.fillRect(0, 0, W, cell);
+    const vig = b.createRadialGradient(W / 2, H / 2, Math.min(W, H) * .35, W / 2, H / 2, Math.max(W, H) * .75);
+    vig.addColorStop(0, 'rgba(16, 8, 40, 0)'); vig.addColorStop(1, 'rgba(16, 8, 40, .4)');
+    b.fillStyle = vig; b.fillRect(0, 0, W, H);
+  }
+  function cellShadow(x, y) { // soft shadow under an animal tile
+    const r = cell * .26, px = (x + .1) * cell, py = (y + .16) * cell, s = cell * .9;
+    ctx.fillStyle = 'rgba(16, 8, 40, .38)';
+    ctx.beginPath(); ctx.moveTo(px + r, py);
+    ctx.arcTo(px + s, py, px + s, py + s, r); ctx.arcTo(px + s, py + s, px, py + s, r);
+    ctx.arcTo(px, py + s, px, py, r); ctx.arcTo(px, py, px + s, py, r);
+    ctx.fill();
   }
   function drawPiece(p, y, alpha) {
+    const cells = SHAPES[p.t][p.r].filter(([, ly]) => y + ly >= 0);
     ctx.globalAlpha = alpha;
-    for (const [lx, ly] of SHAPES[p.t][p.r]) {
-      if (y + ly < 0) continue;
-      Art.drawCell(ctx, p.t, p.r, lx, ly, (p.x + lx) * cell, (y + ly) * cell, cell);
-    }
+    if (alpha === 1) for (const [lx, ly] of cells) cellShadow(p.x + lx, y + ly);
+    for (const [lx, ly] of cells) Art.drawCell(ctx, p.t, p.r, lx, ly, (p.x + lx) * cell, (y + ly) * cell, cell);
     ctx.globalAlpha = 1;
   }
   function draw() {
     const S = Game.state;
     if (!bg || !S.board) return;
+    const shaking = Effects.shaking();
+    if (shaking || shook) { // a quick board shake for big clears
+      frame.style.transform = shaking ? `translate(${(Math.random() * 5 - 2.5).toFixed(1)}px, ${(Math.random() * 5 - 2.5).toFixed(1)}px)` : '';
+      shook = shaking;
+    }
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.drawImage(bg, 0, 0);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const land = Effects.landing();
+    const landed = (x, y) => land && land.set.has(y * CONFIG.cols + x);
+    for (let y = 0; y < CONFIG.rows; y++) for (let x = 0; x < CONFIG.cols; x++) {
+      if (S.board[y][x] && !landed(x, y)) cellShadow(x, y);
+    }
     for (let y = 0; y < CONFIG.rows; y++) for (let x = 0; x < CONFIG.cols; x++) {
       const c = S.board[y][x];
-      if (c) Art.drawCell(ctx, c.t, c.r, c.lx, c.ly, x * cell, y * cell, cell);
+      if (c && !landed(x, y)) Art.drawCell(ctx, c.t, c.r, c.lx, c.ly, x * cell, y * cell, cell);
+    }
+    if (land) { // the animal that just landed: squash & bounce, happy face
+      const sq = Effects.squash(), cells = [];
+      for (const k of land.set) {
+        const x = k % CONFIG.cols, y = (k - x) / CONFIG.cols;
+        if (S.board[y][x]) cells.push([x, y, S.board[y][x]]);
+      }
+      ctx.save();
+      if (sq) {
+        const ax = land.cx * cell, ay = land.by * cell;
+        ctx.translate(ax, ay); ctx.scale(sq.sx, sq.sy); ctx.translate(-ax, -ay);
+      }
+      for (const [x, y] of cells) cellShadow(x, y);
+      for (const [x, y, c] of cells) Art.drawCell(ctx, c.t, c.r, c.lx, c.ly, x * cell, y * cell, cell, 'happy');
+      ctx.restore();
     }
     if (S.piece) {
       drawPiece(S.piece, Game.ghostY(), .28);
       drawPiece(S.piece, S.piece.y, 1);
     }
+    Effects.draw(ctx, cell);
     nctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     nctx.clearRect(0, 0, NEXT_W, NEXT_H);
     if (S.next) {
@@ -870,7 +1138,7 @@ const Render = (() => {
   return { init, resize, draw, cellSize: () => cell };
 })();
 
-/* ---------- 8. Input ---------- */
+/* ---------- 9. Input ---------- */
 // Every player action is announced as Events 'input' { action, via } so the
 // Phase 2 tutorial can watch which control mode the player succeeds with.
 const Input = (() => {
@@ -888,7 +1156,7 @@ const Input = (() => {
     const now = performance.now();
     g = {
       id: e.pointerId, x0: e.clientX, y0: e.clientY, t0: now,
-      col: 0, row: 0, pieceId: Game.state.pieceId,
+      col: 0, pieceId: Game.state.pieceId,
       moved: false, done: false, down: false, samples: [[e.clientY, now]],
     };
   }
@@ -904,14 +1172,14 @@ const Input = (() => {
     const cell = Render.cellSize();
     if (mode() === 'drag') dragMove(dx, dy, cell); else swipeMove(dx, dy, cell);
   }
-  // Free drag: the animal follows the finger cell by cell, relative to where
-  // the finger started. It never goes up and stops flush against walls/animals.
+  // Free drag: the animal follows the finger left/right cell by cell, relative
+  // to where the finger started, and stops flush against walls/animals.
+  // Moving the finger down does nothing – the animal falls on its own.
   function dragMove(dx, dy, cell) {
-    const col = Math.round(dx / cell), row = Math.round(dy / cell);
+    const col = Math.round(dx / cell);
     for (let i = col - g.col; i > 0 && Game.move(1, 0); i--) act('move');
     for (let i = col - g.col; i < 0 && Game.move(-1, 0); i++) act('move');
-    for (let i = row - g.row; i > 0 && Game.move(0, 1); i--) act('drag-down');
-    g.col = col; g.row = row;
+    g.col = col;
   }
   // Swipes: sideways moves one column right away; down is decided on release
   // (slow = soft drop, fast = hard drop).
@@ -967,11 +1235,11 @@ const Input = (() => {
   return { init, setModeOverride: m => { modeOverride = m; } };
 })();
 
-/* ---------- 9. UI ---------- */
+/* ---------- 10. UI ---------- */
 const UI = (() => {
   const $ = id => document.getElementById(id);
   const STAR_PATH = 'M12 2.6l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.5l-5.9 3.1 1.2-6.5-4.8-4.6 6.6-.9z';
-  const star = on => `<svg class="star${on ? ' on' : ''}" viewBox="0 0 24 24" aria-hidden="true"><path d="${STAR_PATH}"/></svg>`;
+  const star = on => `<svg class="star${on ? ' on' : ''}" viewBox="0 0 24 24" aria-hidden="true"><path d="${STAR_PATH}"/><ellipse class="glint" cx="9.6" cy="9" rx="1.6" ry="1" transform="rotate(-35 9.6 9)"/></svg>`;
   const ui = { current: null };
 
   function show(name) {
@@ -1157,7 +1425,7 @@ const UI = (() => {
   return Object.assign(ui, { init, show, togglePause, startLevel });
 })();
 
-/* ---------- 10. Boot ---------- */
+/* ---------- 11. Boot ---------- */
 (function boot() {
   Render.init();
   Input.init();
@@ -1167,7 +1435,7 @@ const UI = (() => {
   function frame(now) {
     const dt = Math.min(100, now - last);
     last = now;
-    if (UI.current === 'game') { Game.update(dt); Render.draw(); }
+    if (UI.current === 'game') { Game.update(dt); Effects.update(dt); Render.draw(); }
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
