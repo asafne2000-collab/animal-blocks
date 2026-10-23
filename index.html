@@ -154,7 +154,37 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 .node .mini { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); display: flex; gap: 1px; margin-top: 6px; }
 .node .mini svg { width: 18px; height: 18px; }
 .node .lock { width: 22px; height: 22px; stroke: currentColor; stroke-width: 3; fill: none; }
-.map-buddy { position: absolute; pointer-events: none; transform: translate(-50%, -50%) rotate(-8deg); }
+.map-buddy { position: absolute; z-index: 1; pointer-events: none; transform: translate(-50%, -50%) rotate(-8deg); }
+/* World sections: painted background + a glossy name banner */
+.world-bg { position: absolute; left: 0; width: 100%; display: block; }
+.world-veil { position: absolute; left: 0; width: 100%; background: rgba(46, 33, 82, .3); pointer-events: none; }
+.map-path svg.road, .node, .map-buddy { z-index: 1; }
+.world-banner {
+  position: absolute; left: 50%; z-index: 2; transform: translate(-50%, -50%);
+  display: flex; align-items: center; gap: 10px; white-space: nowrap;
+  padding: 10px 14px 10px 18px; border-radius: 22px;
+  background: var(--gloss-cream); border: 4px solid var(--ink); box-shadow: var(--depth);
+}
+.world-banner b { font-size: 1.2rem; font-weight: 900; }
+.world-banner .count {
+  display: flex; align-items: center; gap: 3px; padding: 3px 10px; border-radius: 999px;
+  background: var(--ink); color: #fff; font-weight: 900; font-size: .95rem; font-variant-numeric: tabular-nums;
+}
+.world-banner .count svg { width: 18px; height: 18px; }
+.world-banner .lock { width: 24px; height: 24px; stroke: var(--ink); stroke-width: 3; fill: none; }
+.world-banner.locked { background: linear-gradient(180deg, #F4EEF9, #D9CFE6); }
+/* Key levels: a bigger plum node with a golden key */
+.node.key { width: 86px; height: 86px; background: var(--gloss-plum); }
+.node.key .key-ico { width: 46px; height: 46px; display: block; margin: auto; }
+.node.key .num {
+  position: absolute; right: -10px; bottom: -6px; min-width: 32px; height: 32px; padding: 0 6px;
+  display: grid; place-items: center; border-radius: 999px;
+  background: var(--gloss-cream); border: 3px solid var(--ink); color: var(--ink); font-size: 1rem;
+}
+.node.key.current { background: var(--gloss-plum); outline: 5px solid var(--berry); outline-offset: 3px; }
+.node.key.locked { background: linear-gradient(180deg, #B9AED6, #8D80B3); }
+.node.key.locked .key-ico { opacity: .5; }
+.node.key .mini { margin-top: 10px; }
 @keyframes hop { 0%, 100% { translate: 0 0; } 50% { translate: 0 -6px; } }
 
 /* ---------- Settings ---------- */
@@ -196,6 +226,25 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
   color: var(--ink); text-shadow: 0 2px 0 rgba(255, 255, 255, .9);
 }
 .hud-box.next { padding: 8px 8px 2px; }
+.hud-box.key { background: linear-gradient(180deg, #FFF6C8, #FFD54A 55%, #F0A818); }
+.hud-box b .key-ico { width: 22px; height: 22px; vertical-align: -3px; margin-right: 2px; }
+/* World background behind the game screen */
+#scene { position: fixed; inset: 0; width: 100%; height: 100%; display: none; }
+body.in-game #scene { display: block; }
+/* Key levels: a short arrow shows the fall direction */
+.play { position: relative; }
+.dir-intro { position: absolute; inset: 0; z-index: 3; display: grid; place-items: center; pointer-events: none; }
+.dir-intro[hidden] { display: none; }
+.dir-intro.left { transform: scaleX(-1); }
+.dir-intro svg { width: 52%; max-width: 220px; filter: drop-shadow(0 6px 0 rgba(46, 33, 82, .9)); animation: dirSlide .7s ease-in-out 2 both; }
+@keyframes dirSlide {
+  0% { opacity: 0; transform: translateX(-45%); }
+  25%, 70% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(45%); }
+}
+.panel .world-lock { display: flex; align-items: center; gap: 6px; font-size: 1.4rem; font-weight: 900; }
+.world-lock svg { width: 30px; height: 30px; }
+.world-lock .lock { stroke: var(--ink); stroke-width: 3; fill: none; }
 #next { width: 56px; height: 36px; display: block; }
 .hud .icon-btn { height: 64px; width: 56px; }
 .play {
@@ -211,7 +260,7 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
     radial-gradient(circle at calc(100% - 11px) 11px, #FFE780 2.5px, #C98A00 3.5px, var(--ink) 4.5px, transparent 5px),
     radial-gradient(circle at 11px calc(100% - 11px), #FFE780 2.5px, #C98A00 3.5px, var(--ink) 4.5px, transparent 5px),
     radial-gradient(circle at calc(100% - 11px) calc(100% - 11px), #FFE780 2.5px, #C98A00 3.5px, var(--ink) 4.5px, transparent 5px),
-    var(--gloss-plum);
+    linear-gradient(180deg, var(--f1, #9A83EA) 0%, var(--f2, #6D55C4) 45%, var(--f3, #4B3896) 100%);
   box-shadow: inset 0 4px 0 rgba(255, 255, 255, .4), inset 0 -6px 0 rgba(20, 10, 50, .25), 0 7px 0 var(--ink), 0 14px 24px rgba(46, 33, 82, .35);
 }
 #board {
@@ -267,6 +316,7 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 
 @media (prefers-reduced-motion: reduce) {
   .node.current { animation: none; }
+  .dir-intro svg { animation: none; }
   .btn, .icon-btn { transition: none; }
 }
 </style>
@@ -285,9 +335,18 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
   <linearGradient id="starGloss" x1="0" y1="0" x2="0" y2="1">
     <stop offset="0" stop-color="#FFE780"/><stop offset=".5" stop-color="#FFC21A"/><stop offset="1" stop-color="#F08C00"/>
   </linearGradient>
+  <linearGradient id="keyGold" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#FFF1A0"/><stop offset=".5" stop-color="#FFC21A"/><stop offset="1" stop-color="#E08A00"/>
+  </linearGradient>
+  <linearGradient id="arrowGloss" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#FF9DBE"/><stop offset=".5" stop-color="#F2477C"/><stop offset="1" stop-color="#C91D57"/>
+  </linearGradient>
   <symbol id="i-retry" viewBox="0 0 24 24"><path d="M5 12a7 7 0 1 0 2.2-5.1M5 4v4h4"/></symbol>
   <symbol id="i-map" viewBox="0 0 24 24"><path d="M3.5 6.5 9 4l6 2.5L20.5 4v13.5L15 20l-6-2.5-5.5 2.5zM9 4v13.5M15 6.5V20"/></symbol>
 </svg>
+
+<!-- World background behind the game screen -->
+<canvas id="scene" aria-hidden="true"></canvas>
 
 <!-- Shown only when a phone is held sideways -->
 <div class="turn-phone" aria-label="Turn your phone upright">
@@ -367,11 +426,14 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
     <button class="icon-btn" id="pauseBtn" aria-label="Pause">
       <svg viewBox="0 0 24 24"><path d="M9 6v12M15 6v12"/></svg>
     </button>
-    <div class="hud-box"><span class="hud-label">Level</span><b id="hudLevel">1</b></div>
+    <div class="hud-box" id="hudLevelBox"><span class="hud-label">Level</span><b id="hudLevel">1</b></div>
     <div class="hud-box grow"><span class="hud-label">Score</span><b id="hudScore">0</b></div>
     <div class="hud-box next"><span class="hud-label">Next</span><canvas id="next"></canvas></div>
   </header>
-  <div class="play" id="play"><div class="frame" id="frame"><canvas id="board"></canvas></div></div>
+  <div class="play" id="play">
+    <div class="frame" id="frame"><canvas id="board"></canvas></div>
+    <div class="dir-intro" id="dirIntro" hidden aria-hidden="true"><svg viewBox="0 0 120 96"><path d="M10 34h58V14l44 34-44 34V62H10z" fill="url(#arrowGloss)" stroke="#2E2152" stroke-width="6" stroke-linejoin="round"/><path d="M18 40h56V30" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".7"/></svg></div>
+  </div>
   <div class="rows" id="rows" role="img" aria-label="Rows cleared"></div>
 
   <div class="overlay" id="pauseOverlay" hidden>
@@ -392,6 +454,7 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
       <h2>Well done!</h2>
       <div class="big-stars" id="winStars"></div>
       <p class="panel-score"><span id="winScore">0</span></p>
+      <p class="world-lock" id="winLock" hidden></p>
       <button class="btn primary big" id="nextLevelBtn">Next level</button>
       <div class="row">
         <button class="btn icon-only" id="winRetry" aria-label="Play again"><svg viewBox="0 0 24 24" class="ico"><use href="#i-retry"/></svg></button>
@@ -420,14 +483,16 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
                      effects, tutorial can listen without touching
                      game logic)
      3. Store      – progress & settings saved on the device
-     4. Pieces     – the 7 animal shapes + rotation
-     5. Art        – drawing the animals on canvas
+    3b. Levels     – worlds, key levels, speeds, unlocking
+     4. Pieces     – the 7 shapes + rotation
+     5. Art        – drawing the animals (and key-level gems) on canvas
      6. Game       – pure game rules (board, falling, scoring)
-     7. Effects    – landing squash, dust, row flash, particles
-     8. Render     – draws the board and next preview
-     9. Input      – touch (drag / swipe) and keyboard
-    10. UI         – screens, map, overlays, settings
-    11. Boot       – main loop
+     7. Effects    – landing squash, dust, line flash, particles
+     8. Scene      – painted world backgrounds
+     9. Render     – draws the board (turned for sideways key levels)
+    10. Input      – touch (drag / swipe) and keyboard
+    11. UI         – screens, map, overlays, settings
+    12. Boot       – main loop
 
    Phase 2 tutorial plugs in through: Game.freeze(on), Game.pause(),
    Input.setModeOverride(mode) and the 'spawn' / 'input' / 'lines'
@@ -438,14 +503,22 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 
 /* ---------- 1. CONFIG ---------- */
 const CONFIG = {
-  cols: 10,
+  cols: 10,                 // regular board
   rows: 20,
-  rowsPerLevel: 10,
+  rowsPerLevel: 10,         // lines to clear per level (rows, or columns on key levels)
   levelCount: 50,
+  worldSize: 10,            // 5 worlds × 10 levels
   baseInterval: 1000,       // ms per step at level 1 (1 step/sec)
   speedFactor: 0.95,        // each level is 5% faster
   minInterval: 100,         // cap: 10 steps/sec
   lineScores: [0, 100, 300, 500, 800], // × level number
+  // Key levels: every 5th level, sideways gravity on a square board.
+  keyEvery: 5,
+  keyBoard: 12,             // 12×12
+  keySpeedStep: 0.9,        // 10% faster than the previous key level...
+  keyVsRegular: 0.9,        // ...and at least 10% faster than the regular level after it
+  keyScoreBonus: 1.2,       // +20% points
+  worldUnlockStars: 2,      // stars needed on EVERY level of a world to open the next one
   fastFallInterval: 100,    // fast fall: about 10 rows per second...
   fastFallFactor: 0.6,      // ...or 40% faster than normal if the level is already that fast
   // Instant drop by touch: a quick flick down. Strict on purpose so a slow
@@ -454,9 +527,11 @@ const CONFIG = {
   clearDelay: 180,          // ms full rows flash before they disappear
   lockDelay: 500,           // ms a landed animal waits before locking
   maxLockResets: 15,
-  // Stars: level points divided by the level number.
-  // Finishing = 1 star; clearing several rows together earns more.
-  starThresholds: { two: 1200, three: 1600 },
+  // Stars use base line points (100 / 300 / 500 / 800 per clear, without the
+  // level multiplier or key bonus). Finishing (10 lines) = at least 1000.
+  // 2 stars = one double clear somewhere in the level (1100);
+  // 3 stars = a few multi-line clears (1500).
+  starThresholds: { two: 1100, three: 1500 },
 };
 
 /* ---------- 2. Events ---------- */
@@ -469,7 +544,7 @@ const Events = {
 /* ---------- 3. Store ---------- */
 const Store = (() => {
   const KEY = 'animalBlocks.v1';
-  const defaults = () => ({ unlocked: 1, lastLevel: 1, highScore: 0, stars: {}, best: {}, settings: { control: 'drag' } });
+  const defaults = () => ({ lastLevel: 1, highScore: 0, stars: {}, best: {}, settings: { control: 'drag' } });
   let data = load();
 
   function load() {
@@ -492,7 +567,6 @@ const Store = (() => {
       if (stars > (data.stars[level] || 0)) data.stars[level] = stars;
       if (score > (data.best[level] || 0)) data.best[level] = score;
       data.highScore = Math.max(data.highScore, score);
-      data.unlocked = Math.max(data.unlocked, Math.min(level + 1, CONFIG.levelCount));
       save();
     },
     recordScore(score) { if (score > data.highScore) { data.highScore = score; save(); } },
@@ -501,6 +575,54 @@ const Store = (() => {
     reset() { const control = data.settings.control; data = defaults(); data.settings.control = control; save(); },
   };
 })();
+
+/* ---------- 3b. Worlds & levels ---------- */
+// Each world: name, board frame gloss (top, middle, bottom) and board colors.
+const WORLDS = [
+  { name: 'Sunny Meadow', frame: ['#B6F27E', '#56C73C', '#2F8C2A'], board: ['#2F64B0', '#1B3A73'] },
+  { name: 'Animal Kingdom', frame: ['#FFD08A', '#F08A2A', '#A9501A'], board: ['#7A3A2C', '#45201A'] },
+  { name: 'Ocean Reef', frame: ['#8AF0FA', '#1FB3D6', '#0B6E9A'], board: ['#0F4F8E', '#062A57'] },
+  { name: 'Snowy Mountains', frame: ['#FFFFFF', '#BFE2FF', '#7AAEE0'], board: ['#3B5C8E', '#1E3357'] },
+  { name: 'Candy Sky', frame: ['#FFB8EA', '#D063DD', '#7A2FA8'], board: ['#4A2A7A', '#24124A'] },
+];
+const Levels = {
+  world: L => Math.floor((L - 1) / CONFIG.worldSize),
+  isKey: L => L % CONFIG.keyEvery === 0,
+  // Key levels alternate: 5 falls right, 10 left, 15 right, ...
+  direction(L) { return this.isKey(L) ? ((L / CONFIG.keyEvery) % 2 ? 'right' : 'left') : 'down'; },
+  setup(L) {
+    return this.isKey(L)
+      ? { cols: CONFIG.keyBoard, rows: CONFIG.keyBoard, gravity: this.direction(L), key: true }
+      : { cols: CONFIG.cols, rows: CONFIG.rows, gravity: 'down', key: false };
+  },
+  rawRegular: L => CONFIG.baseInterval * Math.pow(CONFIG.speedFactor, L - 1),
+  interval(L) { // ms per step, never faster than the speed cap
+    if (!this.isKey(L)) return Math.max(CONFIG.minInterval, this.rawRegular(L));
+    let ms = Infinity;
+    for (let k = CONFIG.keyEvery; k <= L; k += CONFIG.keyEvery) {
+      ms = Math.min(ms * CONFIG.keySpeedStep, this.rawRegular(k + 1) * CONFIG.keyVsRegular);
+    }
+    return Math.max(CONFIG.minInterval, ms);
+  },
+  levelsOf: w => Array.from({ length: CONFIG.worldSize }, (_, i) => w * CONFIG.worldSize + i + 1),
+  stars: L => Store.get().stars[L] || 0,
+  worldStars(w) { return this.levelsOf(w).reduce((a, L) => a + this.stars(L), 0); },
+  // Progress toward opening world w: stars (up to 2 per level) in the world before it.
+  unlockProgress(w) {
+    const need = CONFIG.worldUnlockStars;
+    return { have: this.levelsOf(w - 1).reduce((a, L) => a + Math.min(need, this.stars(L)), 0), need: need * CONFIG.worldSize };
+  },
+  worldUnlocked(w) {
+    if (w <= 0) return true;
+    const p = this.unlockProgress(w);
+    return p.have >= p.need;
+  },
+  unlocked(L) {
+    const w = this.world(L);
+    if (!this.worldUnlocked(w)) return false;
+    return (L - 1) % CONFIG.worldSize === 0 || this.stars(L - 1) >= 1;
+  },
+};
 
 /* ---------- 4. Pieces ---------- */
 // Cells are [x, y] inside an n×n box, in the base (spawn) orientation.
@@ -514,6 +636,16 @@ const PIECES = {
   Z: { n: 3, cells: [[0, 0], [1, 0], [1, 1], [2, 1]], name: 'Crab', color: '#FF3B4E' },
 };
 const TYPES = Object.keys(PIECES);
+// On key levels the same shapes are made of glossy geometric gems instead of animals.
+const GEMS = {
+  I: { shape: 'circle', color: '#1FD0F0' },
+  O: { shape: 'square', color: '#FFC21A' },
+  T: { shape: 'triangle', color: '#B45CFF' },
+  L: { shape: 'circle', color: '#FF8A1F' },
+  J: { shape: 'triangle', color: '#3B7BFF' },
+  S: { shape: 'square', color: '#3DDC5A' },
+  Z: { shape: 'circle', color: '#FF3B6B' },
+};
 
 // SHAPES[type][rotation] = cells after rotating clockwise `rotation` times.
 const SHAPES = {};
@@ -792,25 +924,60 @@ const Art = (() => {
     drawCentered(ctx, t, size, b.w * size, b.h * size);
     return el;
   }
-  return { get, drawCell, drawCentered, pieceCanvas, clear: () => cache.clear() };
+  // One glossy gem (circle, square or triangle) filling a cell, always upright.
+  function gemPath(g, shape, s = 1) {
+    const o = .5 - .5 * s; // shrink around the center
+    g.beginPath();
+    if (shape === 'circle') g.arc(.5, .5, .42 * s, 0, Math.PI * 2);
+    else if (shape === 'square') rr(g, o + .08 * s, o + .08 * s, .84 * s, .84 * s, .2 * s);
+    else { g.moveTo(.5, o + .08 * s); g.lineTo(o + .93 * s, o + .88 * s); g.lineTo(o + .07 * s, o + .88 * s); g.closePath(); }
+  }
+  function gem(t, size) {
+    const dpr = Math.min(window.devicePixelRatio || 1, 3);
+    const key = `gem${t}@${size}x${dpr}`;
+    let c = cache.get(key);
+    if (c) return c;
+    const { shape, color } = GEMS[t];
+    c = document.createElement('canvas');
+    c.width = c.height = Math.max(1, Math.round(size * dpr));
+    const g = c.getContext('2d');
+    g.scale(c.width, c.width);
+    g.lineJoin = 'round';
+    const gr = g.createLinearGradient(0, .08, 0, .92);
+    gr.addColorStop(0, shade(color, .55)); gr.addColorStop(.45, color); gr.addColorStop(1, shade(color, -.25));
+    gemPath(g, shape); g.fillStyle = gr; g.fill();
+    g.lineWidth = .08; g.strokeStyle = INK; g.stroke();
+    gemPath(g, shape, .6); g.lineWidth = .04; g.strokeStyle = 'rgba(255, 255, 255, .45)'; g.stroke(); // inner facet
+    const sy = shape === 'triangle' ? .5 : .3;
+    ell(g, .4, sy, .15, .07, -.5); fill(g, 'rgba(255, 255, 255, .75)');
+    circle(g, .62, sy - .05, .035); g.fill();
+    cache.set(key, c);
+    return c;
+  }
+  // The main color of a piece: animal color, or gem color on key levels.
+  const colorOf = (t, key) => (key ? GEMS[t].color : PIECES[t].color);
+  return { get, drawCell, drawCentered, pieceCanvas, gem, colorOf, clear: () => cache.clear() };
 })();
 
 /* ---------- 6. Game ---------- */
+// Rules work in a "logical" frame where pieces always fall down. On sideways
+// key levels the board is only turned on screen (see Render.view) – the rules
+// stay the same, and full logical rows show up as full columns.
 const Game = (() => {
   const S = {
     board: null, piece: null, next: null, bag: [], pieceId: 0,
-    level: 1, score: 0, lines: 0, interval: 1000,
+    cols: CONFIG.cols, rows: CONFIG.rows, gravity: 'down', key: false,
+    level: 1, score: 0, base: 0, lines: 0, interval: 1000,
     fallT: 0, lockT: 0, lockResets: 0, status: 'idle', // idle | playing | paused | won | over
     clearing: null, // { rows, t } while full rows flash before clearing
     fast: false,   // fast fall on while the player holds it
-    frozen: false, // Phase 2 tutorial: stops falling while still accepting input
+    frozen: false, // stops falling while still accepting input (direction intro, Phase 2 tutorial)
   };
   const KICKS = [[0, 0], [-1, 0], [1, 0], [0, -1], [-2, 0], [2, 0], [-1, -1], [1, -1]];
 
-  const emptyBoard = () => Array.from({ length: CONFIG.rows }, () => Array(CONFIG.cols).fill(null));
-  const intervalFor = level => Math.max(CONFIG.minInterval, CONFIG.baseInterval * Math.pow(CONFIG.speedFactor, level - 1));
+  const emptyBoard = () => Array.from({ length: S.rows }, () => Array(S.cols).fill(null));
 
-  function fromBag() { // "7-bag": every animal appears once before any repeats
+  function fromBag() { // "7-bag": every piece appears once before any repeats
     if (!S.bag.length) {
       S.bag = TYPES.slice();
       for (let i = S.bag.length - 1; i > 0; i--) {
@@ -823,7 +990,7 @@ const Game = (() => {
   function collides(t, r, x, y) {
     for (const [cx, cy] of SHAPES[t][r]) {
       const bx = x + cx, by = y + cy;
-      if (bx < 0 || bx >= CONFIG.cols || by >= CONFIG.rows) return true;
+      if (bx < 0 || bx >= S.cols || by >= S.rows) return true;
       if (by >= 0 && S.board[by][bx]) return true;
     }
     return false;
@@ -832,19 +999,20 @@ const Game = (() => {
     const t = S.next;
     S.next = fromBag();
     const minY = Math.min(...SHAPES[t][0].map(c => c[1]));
-    S.piece = { t, r: 0, x: Math.floor((CONFIG.cols - PIECES[t].n) / 2), y: -minY };
+    S.piece = { t, r: 0, x: Math.floor((S.cols - PIECES[t].n) / 2), y: -minY };
     S.pieceId++;
-    S.fallT = 0; S.lockT = 0; S.lockResets = 0; S.fast = false; // each new animal starts at normal speed
+    S.fallT = 0; S.lockT = 0; S.lockResets = 0; S.fast = false; // each new piece starts at normal speed
     if (collides(t, 0, S.piece.x, S.piece.y)) { end('over'); return; }
     Events.emit('spawn', { type: t, next: S.next });
   }
   function start(level) {
-    Object.assign(S, {
-      board: emptyBoard(), bag: [], level, score: 0, lines: 0,
-      interval: intervalFor(level), status: 'playing', frozen: false, clearing: null,
+    Object.assign(S, Levels.setup(level), {
+      bag: [], level, score: 0, base: 0, lines: 0,
+      interval: Levels.interval(level), status: 'playing', frozen: false, clearing: null,
     });
+    S.board = emptyBoard();
     S.next = fromBag();
-    Events.emit('start', { level });
+    Events.emit('start', { level, key: S.key, gravity: S.gravity });
     spawn();
   }
   const grounded = () => collides(S.piece.t, S.piece.r, S.piece.x, S.piece.y + 1);
@@ -902,8 +1070,8 @@ const Game = (() => {
     Events.emit('lock', { type: p.t, cells });
     if (toppedOut) { end('over'); return; }
     const rows = [];
-    for (let y = 0; y < CONFIG.rows; y++) if (S.board[y].every(Boolean)) rows.push(y);
-    if (rows.length) { // full rows flash briefly, then clear (see update)
+    for (let y = 0; y < S.rows; y++) if (S.board[y].every(Boolean)) rows.push(y);
+    if (rows.length) { // full lines flash briefly, then clear (see update)
       S.clearing = { rows, t: 0 };
       Events.emit('rowsFull', { rows });
       return;
@@ -915,9 +1083,11 @@ const Game = (() => {
     S.clearing = null;
     for (const y of rows) { // rows are sorted top to bottom
       S.board.splice(y, 1);
-      S.board.unshift(Array(CONFIG.cols).fill(null));
+      S.board.unshift(Array(S.cols).fill(null));
     }
-    S.score += CONFIG.lineScores[rows.length] * S.level;
+    const points = CONFIG.lineScores[Math.min(rows.length, 4)];
+    S.base += points;
+    S.score += Math.round(points * S.level * (S.key ? CONFIG.keyScoreBonus : 1));
     S.lines += rows.length;
     Events.emit('lines', { count: rows.length, total: S.lines, score: S.score });
     if (S.lines >= CONFIG.rowsPerLevel) { end('won'); return; }
@@ -926,7 +1096,7 @@ const Game = (() => {
   function end(result) {
     S.status = result;
     S.piece = null;
-    Events.emit(result === 'won' ? 'levelComplete' : 'gameOver', { level: S.level, score: S.score, lines: S.lines });
+    Events.emit(result === 'won' ? 'levelComplete' : 'gameOver', { level: S.level, score: S.score, base: S.base, lines: S.lines });
   }
   function update(dt) {
     if (S.status !== 'playing' || S.frozen) return;
@@ -946,7 +1116,7 @@ const Game = (() => {
       if (S.fallT >= interval) { S.fallT = 0; S.piece.y++; }
     }
   }
-  // Fast fall while held: the animal still falls step by step, just quicker.
+  // Fast fall while held: the piece still falls step by step, just quicker.
   function setFastFall(on) {
     on = !!on && S.status === 'playing' && !!S.piece;
     if (on && !S.fast) S.fallT = Math.max(S.fallT, CONFIG.fastFallInterval); // react right away
@@ -955,9 +1125,9 @@ const Game = (() => {
   function freeze(on) { S.frozen = !!on; }
   function pause() { if (S.status === 'playing') { S.status = 'paused'; return true; } return false; }
   function resume() { if (S.status === 'paused') S.status = 'playing'; }
-  function stars(score, level) {
-    const per = score / level;
-    return per >= CONFIG.starThresholds.three ? 3 : per >= CONFIG.starThresholds.two ? 2 : 1;
+  function stars(base) {
+    const t = CONFIG.starThresholds;
+    return base >= t.three ? 3 : base >= t.two ? 2 : 1;
   }
   return { state: S, start, move, rotate, setFastFall, hardDrop, freeze, ghostY, update, pause, resume, stars };
 })();
@@ -965,12 +1135,13 @@ const Game = (() => {
 /* ---------- 7. Effects ---------- */
 // Short (under half a second) visual effects. They only listen to game
 // events and never change the rules, so the game never waits for them.
+// Everything is in the logical frame, so it turns with sideways boards.
 const Effects = (() => {
   const parts = [];
   let landing = null, flash = null, shake = 0, trail = null, dropped = false;
   const reduced = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
   const rand = (a, b) => a + Math.random() * (b - a);
-  const key = (x, y) => y * CONFIG.cols + x;
+  const key = (x, y) => y * Game.state.cols + x;
   const MAX_PARTS = 260;
   const add = p => { if (parts.length < MAX_PARTS) parts.push({ life: 0, g: 0, spin: 0, rot: 0, ...p }); };
 
@@ -981,7 +1152,7 @@ const Effects = (() => {
     const power = dropped ? 1.6 : 1; // instant drop lands a bit harder
     dropped = false;
     landing = { set, t: 0, power, cx: (Math.min(...xs) + Math.max(...xs) + 1) / 2, by: Math.max(...ys) + 1 };
-    for (const [x, y] of cells) { // a puff of dust from under the animal
+    for (const [x, y] of cells) { // a puff of dust from under the piece
       if (set.has(key(x, y + 1))) continue;
       for (let i = 0; i < (power > 1 ? 5 : 3); i++) {
         add({ kind: 'dust', x: x + .5 + rand(-.35, .35), y: y + .95, vx: rand(-1.8, 1.8) * power, vy: rand(-1.4, -.4) * power, max: rand(260, 380), size: rand(.13, .22) });
@@ -992,12 +1163,12 @@ const Effects = (() => {
       add({ kind: 'spark', x: x + rand(.1, .9), y: y + rand(.1, .5), vx: rand(-.8, .8), vy: rand(-2.2, -1.2), max: rand(300, 420), size: rand(.16, .24), color: '#FFF3A0' });
     }
   }
-  function onRowsFull({ rows }) { // more rows at once = more, faster particles
-    const n = rows.length, board = Game.state.board;
+  function onRowsFull({ rows }) { // more lines at once = more, faster particles
+    const S = Game.state, n = rows.length;
     const per = 1 + n, power = 1 + n * .35;
     flash = { rows, t: 0 };
-    for (const y of rows) for (let x = 0; x < CONFIG.cols; x++) {
-      const c = board[y][x], color = c ? PIECES[c.t].color : '#fff';
+    for (const y of rows) for (let x = 0; x < S.cols; x++) {
+      const c = S.board[y][x], color = c ? Art.colorOf(c.t, S.key) : '#fff';
       for (let i = 0; i < per; i++) {
         const spark = Math.random() < .3;
         add({
@@ -1009,12 +1180,13 @@ const Effects = (() => {
     }
     if (n >= 2 && !reduced) shake = 120 + n * 40;
   }
-  function onHardDrop({ type, r, x, from, to }) { // a quick streak behind the dropping animal
+  function onHardDrop({ type, r, x, from, to }) { // a quick streak behind the dropping piece
     dropped = true;
     if (to - from < 1) return;
-    const cols = new Map(); // column -> top-most cell row of the animal (in its box)
+    const cols = new Map(); // column -> top-most cell row of the piece (in its box)
     for (const [lx, ly] of SHAPES[type][r]) if (!cols.has(lx) || ly < cols.get(lx)) cols.set(lx, ly);
-    trail = { t: 0, color: PIECES[type].color, streaks: [...cols].map(([lx, ly]) => ({ x: x + lx, y0: Math.max(0, from + ly), y1: to + ly })) };
+    const color = Art.colorOf(type, Game.state.key);
+    trail = { t: 0, color, streaks: [...cols].map(([lx, ly]) => ({ x: x + lx, y0: Math.max(0, from + ly), y1: to + ly })) };
   }
   function reset() { parts.length = 0; landing = null; flash = null; shake = 0; trail = null; dropped = false; }
 
@@ -1032,7 +1204,7 @@ const Effects = (() => {
       if (p.kind === 'dust') { p.vx *= .92; p.vy *= .92; }
     }
   }
-  // Squash on impact, then a small stretch back up.
+  // Squash on impact, then a small stretch back (along the fall direction).
   function squash() {
     if (!landing || reduced) return null;
     const p = landing.t / 230;
@@ -1040,7 +1212,7 @@ const Effects = (() => {
     const a = (p < .4 ? .2 * Math.sin(Math.PI * p / .4) : -.07 * Math.sin(Math.PI * (p - .4) / .6)) * landing.power;
     return { sx: 1 + a * .7, sy: 1 - a };
   }
-  // Drawn under the animals: the instant-drop trail.
+  // Drawn under the pieces: the instant-drop trail.
   function drawUnder(ctx, cell) {
     if (!trail) return;
     const q = trail.t / 260;
@@ -1072,7 +1244,7 @@ const Effects = (() => {
     if (flash) {
       const q = flash.t / CONFIG.clearDelay;
       ctx.fillStyle = `rgba(255, 255, 255, ${(.85 * Math.abs(Math.sin(q * Math.PI * 2))).toFixed(3)})`;
-      for (const y of flash.rows) ctx.fillRect(0, y * cell, CONFIG.cols * cell, cell);
+      for (const y of flash.rows) ctx.fillRect(0, y * cell, Game.state.cols * cell, cell);
     }
     for (const p of parts) {
       const q = p.life / p.max, r = p.size * cell;
@@ -1097,71 +1269,294 @@ const Effects = (() => {
   Events.on('hardDrop', onHardDrop); // fires just before 'lock'
   Events.on('lock', onLock);
   Events.on('rowsFull', onRowsFull);
-  Events.on('lines', () => { landing = null; }); // rows moved – the landed animal may be gone
+  Events.on('lines', () => { landing = null; }); // lines moved – the landed piece may be gone
   Events.on('start', reset);
   return { update, draw, drawUnder, squash, landing: () => landing, shaking: () => shake > 0 };
 })();
 
-/* ---------- 8. Render ---------- */
+/* ---------- 8. Scene ---------- */
+// World backgrounds, painted in code: a static picture plus a few gently
+// moving things (petals, dust, bubbles, snow, twinkling stars).
+const Scene = (() => {
+  const TAU = Math.PI * 2;
+  const seeded = seed => () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const reduced = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  function vgrad(g, H, stops) {
+    const gr = g.createLinearGradient(0, 0, 0, H);
+    stops.forEach(([o, c]) => gr.addColorStop(o, c));
+    return gr;
+  }
+  function puff(g, x, y, r, color) { // a soft cartoon cloud
+    g.fillStyle = color;
+    for (const [dx, dy, k] of [[0, 0, 1], [-.9, .25, .7], [.9, .25, .72], [-.45, -.3, .75], [.45, -.35, .7]]) {
+      g.beginPath(); g.arc(x + dx * r, y + dy * r, r * k, 0, TAU); g.fill();
+    }
+  }
+  function hill(g, W, H, y0, y1, bump, fill) {
+    g.beginPath(); g.moveTo(0, y0);
+    g.bezierCurveTo(W * .3, y0 - bump, W * .6, y1 + bump * .4, W, y1);
+    g.lineTo(W, H); g.lineTo(0, H); g.closePath();
+    g.fillStyle = fill; g.fill();
+  }
+  function flower(g, x, y, r, petal) {
+    g.fillStyle = petal;
+    for (let i = 0; i < 5; i++) { const a = i * TAU / 5; g.beginPath(); g.arc(x + Math.cos(a) * r, y + Math.sin(a) * r, r * .75, 0, TAU); g.fill(); }
+    g.fillStyle = '#FFB000'; g.beginPath(); g.arc(x, y, r * .6, 0, TAU); g.fill();
+  }
+  function sun(g, x, y, r, inner, outer, glow) {
+    const gl = g.createRadialGradient(x, y, r * .5, x, y, r * 3);
+    gl.addColorStop(0, glow); gl.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    g.fillStyle = gl; g.beginPath(); g.arc(x, y, r * 3, 0, TAU); g.fill();
+    const s = g.createRadialGradient(x - r * .3, y - r * .3, r * .1, x, y, r);
+    s.addColorStop(0, inner); s.addColorStop(1, outer);
+    g.fillStyle = s; g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill();
+  }
+
+  const PAINT = [
+    function meadow(g, W, H, R) {
+      g.fillStyle = vgrad(g, H, [[0, '#3FB4FF'], [.55, '#A5E2FF'], [1, '#E2F7FF']]); g.fillRect(0, 0, W, H);
+      const u = Math.min(W, 420);
+      sun(g, W * .82, Math.min(H * .1, 90), u * .09, '#FFFBD0', '#FFC93C', 'rgba(255, 236, 140, .75)');
+      for (let i = 0; i < 4 + H / 300; i++) puff(g, R() * W, H * (.06 + R() * .5), u * (.05 + R() * .04), 'rgba(255, 255, 255, .95)');
+      hill(g, W, H, H * .7, H * .64, H * .05, '#8FE36A');
+      hill(g, W, H, H * .8, H * .77, H * .04, vgrad(g, H, [[.75, '#62D646'], [1, '#2F9E2A']]));
+      const petals = ['#FF6FB1', '#FFFFFF', '#FFD23F', '#B57CFF', '#FF8A3D'];
+      for (let i = 0; i < 26 + W / 12; i++) flower(g, R() * W, H * (.8 + R() * .19), 3 + R() * 4, petals[i % petals.length]);
+      g.strokeStyle = '#2F9E2A'; g.lineWidth = 2; g.lineCap = 'round';
+      for (let i = 0; i < 30; i++) { const x = R() * W, y = H * (.72 + R() * .27); g.beginPath(); g.moveTo(x, y); g.lineTo(x - 3, y - 8); g.moveTo(x, y); g.lineTo(x + 3, y - 9); g.stroke(); }
+    },
+    function kingdom(g, W, H, R) {
+      g.fillStyle = vgrad(g, H, [[0, '#FF5E8A'], [.35, '#FF8F4D'], [.62, '#FFC85A'], [.7, '#FFE08A']]); g.fillRect(0, 0, W, H);
+      const u = Math.min(W, 420);
+      sun(g, W * .5, H * .66, u * .2, '#FFF6C0', '#FFA23A', 'rgba(255, 200, 90, .7)');
+      g.fillStyle = 'rgba(196, 80, 110, .75)'; g.beginPath(); g.moveTo(0, H * .67);
+      for (let x = 0; x <= W; x += W / 6) g.quadraticCurveTo(x + W / 12, H * (.6 + R() * .04), x + W / 6, H * .67);
+      g.lineTo(W, H); g.lineTo(0, H); g.fill();
+      g.fillStyle = vgrad(g, H, [[.66, '#F6BC52'], [1, '#C9792B']]); g.fillRect(0, H * .68, W, H * .32);
+      g.strokeStyle = '#A85E1E'; g.lineWidth = 2; g.lineCap = 'round';
+      for (let i = 0; i < 40; i++) { const x = R() * W, y = H * (.7 + R() * .29); g.beginPath(); g.moveTo(x, y); g.lineTo(x + 2, y - 7); g.stroke(); }
+      for (const [fx, fy, k] of [[.18, .72, 1], [.8, .76, 1.25], [.55, .7, .7]]) { // acacia trees
+        const x = W * fx, y = H * fy, s = u * .11 * k;
+        g.strokeStyle = '#5A2E1A'; g.lineWidth = s * .14;
+        g.beginPath(); g.moveTo(x, y); g.lineTo(x, y - s * 1.1); g.lineTo(x - s * .5, y - s * 1.6); g.moveTo(x, y - s * 1.1); g.lineTo(x + s * .55, y - s * 1.65); g.stroke();
+        g.fillStyle = '#3F6B1F'; g.beginPath(); g.ellipse(x, y - s * 1.75, s * 1.2, s * .32, 0, 0, TAU); g.fill();
+        g.fillStyle = '#5E8F2A'; g.beginPath(); g.ellipse(x - s * .1, y - s * 1.85, s * 1.0, s * .22, 0, 0, TAU); g.fill();
+      }
+      g.strokeStyle = 'rgba(110, 40, 60, .8)'; g.lineWidth = 2;
+      for (let i = 0; i < 4; i++) { const x = W * (.2 + R() * .6), y = H * (.12 + R() * .3); g.beginPath(); g.moveTo(x - 6, y - 3); g.quadraticCurveTo(x - 3, y - 6, x, y); g.quadraticCurveTo(x + 3, y - 6, x + 6, y - 3); g.stroke(); }
+    },
+    function ocean(g, W, H, R) {
+      g.fillStyle = vgrad(g, H, [[0, '#3FDAF5'], [.4, '#1593D6'], [1, '#0A3E85']]); g.fillRect(0, 0, W, H);
+      g.fillStyle = 'rgba(255, 255, 255, .1)';
+      for (let i = 0; i < 5; i++) { const x = W * (i / 5 + R() * .1); g.beginPath(); g.moveTo(x, 0); g.lineTo(x + W * .08, 0); g.lineTo(x + W * .25, H * .8); g.lineTo(x + W * .1, H * .8); g.fill(); }
+      g.strokeStyle = 'rgba(255, 255, 255, .45)'; g.lineWidth = 1.5;
+      for (let i = 0; i < 18; i++) { g.beginPath(); g.arc(R() * W, R() * H * .8, 2 + R() * 6, 0, TAU); g.stroke(); }
+      const coral = (x, y, len, ang, w, color, depth) => {
+        if (depth === 0) return;
+        const x2 = x + Math.cos(ang) * len, y2 = y + Math.sin(ang) * len;
+        g.strokeStyle = color; g.lineWidth = w; g.lineCap = 'round';
+        g.beginPath(); g.moveTo(x, y); g.lineTo(x2, y2); g.stroke();
+        coral(x2, y2, len * .72, ang - .45, w * .72, color, depth - 1);
+        coral(x2, y2, len * .72, ang + .4, w * .72, color, depth - 1);
+      };
+      const u = Math.min(W, 420);
+      g.strokeStyle = '#2FCB6E'; g.lineWidth = 6; g.lineCap = 'round';
+      for (let i = 0; i < 6; i++) { const x = R() * W, y = H; g.beginPath(); g.moveTo(x, y); for (let k = 1; k <= 5; k++) g.quadraticCurveTo(x + (k % 2 ? 10 : -10), y - k * 18 + 9, x, y - k * 18); g.stroke(); }
+      g.fillStyle = vgrad(g, H, [[.85, '#F7D98B'], [1, '#E3B05A']]);
+      g.beginPath(); g.moveTo(0, H * .9); g.quadraticCurveTo(W * .3, H * .86, W * .55, H * .9); g.quadraticCurveTo(W * .8, H * .93, W, H * .88); g.lineTo(W, H); g.lineTo(0, H); g.fill();
+      const colors = ['#FF6F91', '#FF9F43', '#B57CFF', '#FF4F8B'];
+      for (let i = 0; i < 6; i++) coral(W * (.08 + i * .17 + R() * .05), H * .92, u * .07, -Math.PI / 2 + (R() - .5) * .5, 7, colors[i % 4], 4);
+      for (let i = 0; i < 3; i++) { const x = W * (.2 + i * .3), y = H * .93; g.fillStyle = '#FF8FB1'; g.beginPath(); g.arc(x, y, u * .035, Math.PI, 0); g.fill(); }
+      for (let i = 0; i < 3; i++) { // little fish
+        const x = W * (.15 + R() * .7), y = H * (.25 + R() * .45), s = 8 + R() * 6, dir = R() > .5 ? 1 : -1;
+        g.fillStyle = ['#FFD23F', '#FF8A3D', '#FF6FB1'][i];
+        g.beginPath(); g.ellipse(x, y, s, s * .6, 0, 0, TAU); g.fill();
+        g.beginPath(); g.moveTo(x - dir * s * .8, y); g.lineTo(x - dir * s * 1.6, y - s * .6); g.lineTo(x - dir * s * 1.6, y + s * .6); g.fill();
+        g.fillStyle = '#2E2152'; g.beginPath(); g.arc(x + dir * s * .45, y - s * .1, s * .14, 0, TAU); g.fill();
+      }
+    },
+    function snow(g, W, H, R) {
+      g.fillStyle = vgrad(g, H, [[0, '#7CC6FF'], [.6, '#CDEAFF'], [1, '#F3FAFF']]); g.fillRect(0, 0, W, H);
+      const peaks = (base, height, n, body, shadowC, capC) => {
+        for (let i = 0; i <= n; i++) {
+          const x = (i / n) * W + (R() - .5) * W * .08, top = base - height * (.7 + R() * .3), half = W / n * .75;
+          g.fillStyle = body; g.beginPath(); g.moveTo(x - half, base); g.lineTo(x, top); g.lineTo(x + half, base); g.fill();
+          g.fillStyle = shadowC; g.beginPath(); g.moveTo(x, top); g.lineTo(x + half, base); g.lineTo(x + half * .2, base); g.fill();
+          g.fillStyle = capC; g.beginPath(); g.moveTo(x - half * .3, top + (base - top) * .3); g.lineTo(x, top); g.lineTo(x + half * .3, top + (base - top) * .3);
+          g.lineTo(x + half * .1, top + (base - top) * .38); g.lineTo(x - half * .08, top + (base - top) * .28); g.closePath(); g.fill();
+        }
+      };
+      peaks(H * .72, H * .3, 3, '#9FBFE6', '#86A8D6', '#FFFFFF');
+      peaks(H * .84, H * .28, 2, '#E6F0FF', '#C3D7F2', '#FFFFFF');
+      g.fillStyle = '#FFFFFF'; g.beginPath(); g.moveTo(0, H * .86); g.quadraticCurveTo(W * .5, H * .82, W, H * .87); g.lineTo(W, H); g.lineTo(0, H); g.fill();
+      for (let i = 0; i < 7; i++) { // pine trees with snow
+        const x = R() * W, y = H * (.86 + R() * .12), s = 12 + R() * 12;
+        g.fillStyle = '#2E7D6B';
+        for (let k = 0; k < 3; k++) { g.beginPath(); g.moveTo(x, y - s * (1.6 + k * .55)); g.lineTo(x + s * (.8 - k * .18), y - s * (.4 + k * .55)); g.lineTo(x - s * (.8 - k * .18), y - s * (.4 + k * .55)); g.fill(); }
+        g.fillStyle = '#FFFFFF'; g.beginPath(); g.moveTo(x, y - s * 2.7); g.lineTo(x + s * .22, y - s * 2.35); g.lineTo(x - s * .22, y - s * 2.35); g.fill();
+      }
+      g.fillStyle = 'rgba(255, 255, 255, .8)';
+      for (let i = 0; i < 40; i++) { g.beginPath(); g.arc(R() * W, R() * H * .8, 1 + R() * 2, 0, TAU); g.fill(); }
+    },
+    function candy(g, W, H, R) {
+      g.fillStyle = vgrad(g, H, [[0, '#1E1450'], [.45, '#4B2A8C'], [.8, '#B455B6'], [1, '#FF9AC8']]); g.fillRect(0, 0, W, H);
+      for (let i = 0; i < 70; i++) { g.fillStyle = `rgba(255, 255, 255, ${.4 + R() * .6})`; g.beginPath(); g.arc(R() * W, R() * H * .7, .6 + R() * 1.6, 0, TAU); g.fill(); }
+      const u = Math.min(W, 420), mx = W * .78, my = Math.min(H * .1, 90), mr = u * .07;
+      sun(g, mx, my, mr, '#FFFBE0', '#FFE58A', 'rgba(255, 240, 180, .35)');
+      g.fillStyle = '#251856'; g.beginPath(); g.arc(mx + mr * .45, my - mr * .25, mr * .85, 0, TAU); g.fill(); // crescent
+      const pastel = ['#FFB8E1', '#B8F5E1', '#D7C2FF', '#FFD8B0', '#A8E6FF'];
+      for (let i = 0; i < 10 + H / 200; i++) puff(g, R() * W, H * (.55 + R() * .45), u * (.06 + R() * .05), pastel[i % pastel.length]);
+      for (let i = 0; i < 4; i++) puff(g, R() * W, H * (.15 + R() * .35), u * .04, 'rgba(215, 194, 255, .6)');
+    },
+  ];
+  function paint(g, w, W, H) { PAINT[w](g, W, H, seeded(w * 7919 + 17)); }
+
+  // The animated full-screen background behind the game screen.
+  let canvas, ctx, world = 0, layer = null, W = 0, H = 0, dpr = 1, parts = [];
+  function init() { canvas = document.getElementById('scene'); ctx = canvas.getContext('2d'); }
+  function setWorld(w) { world = w; resize(); }
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+    layer = document.createElement('canvas');
+    layer.width = canvas.width; layer.height = canvas.height;
+    const g = layer.getContext('2d'); g.scale(dpr, dpr);
+    paint(g, world, W, H);
+    parts = [];
+    const R = Math.random;
+    for (let i = 0; i < 34; i++) parts.push({ x: R() * W, y: R() * H, r: 1 + R() * 3, s: .3 + R() * .7, ph: R() * TAU });
+    draw(0);
+  }
+  function update(dt) {
+    if (reduced) return;
+    const s = dt / 1000;
+    for (const p of parts) {
+      p.ph += s * 2;
+      if (world === 0) { p.x += (14 + p.s * 18) * s; p.y += Math.sin(p.ph) * 12 * s + 6 * s; }   // drifting petals
+      else if (world === 1) { p.y -= (6 + p.s * 10) * s; p.x += Math.sin(p.ph) * 8 * s; }       // golden dust
+      else if (world === 2) { p.y -= (18 + p.s * 30) * s; p.x += Math.sin(p.ph) * 10 * s; }     // bubbles
+      else if (world === 3) { p.y += (20 + p.s * 30) * s; p.x += Math.sin(p.ph) * 14 * s; }     // snow
+      if (p.x > W + 10) p.x = -10; if (p.x < -10) p.x = W + 10;
+      if (p.y > H + 10) p.y = -10; if (p.y < -10) p.y = H + 10;
+    }
+  }
+  function draw() {
+    if (!layer) return;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.drawImage(layer, 0, 0);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    for (const p of parts) {
+      if (world === 0) { ctx.fillStyle = p.s > .6 ? 'rgba(255, 140, 190, .85)' : 'rgba(255, 255, 255, .9)'; ctx.beginPath(); ctx.ellipse(p.x, p.y, p.r * 1.6, p.r, p.ph, 0, TAU); ctx.fill(); }
+      else if (world === 1) { ctx.fillStyle = `rgba(255, 230, 150, ${.35 + .35 * Math.sin(p.ph)})`; ctx.beginPath(); ctx.arc(p.x, p.y, p.r * .8, 0, TAU); ctx.fill(); }
+      else if (world === 2) { ctx.strokeStyle = 'rgba(255, 255, 255, .6)'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 1.6, 0, TAU); ctx.stroke(); }
+      else if (world === 3) { ctx.fillStyle = 'rgba(255, 255, 255, .95)'; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, TAU); ctx.fill(); }
+      else { const a = .5 + .5 * Math.sin(p.ph * 1.5); ctx.fillStyle = `rgba(255, 245, 190, ${a.toFixed(2)})`; const r = p.r * 1.4; ctx.beginPath(); ctx.moveTo(p.x, p.y - r * 2); ctx.lineTo(p.x + r * .5, p.y - r * .5); ctx.lineTo(p.x + r * 2, p.y); ctx.lineTo(p.x + r * .5, p.y + r * .5); ctx.lineTo(p.x, p.y + r * 2); ctx.lineTo(p.x - r * .5, p.y + r * .5); ctx.lineTo(p.x - r * 2, p.y); ctx.lineTo(p.x - r * .5, p.y - r * .5); ctx.fill(); }
+    }
+  }
+  return { init, paint, setWorld, resize, update, draw };
+})();
+
+/* ---------- 9. Render ---------- */
 const Render = (() => {
   let board, ctx, next, nctx, frame, bg = null, cell = 24, dpr = 1, shook = false;
+  // Logical → screen mapping in cells: sx = a·x + c·y + e, sy = b·x + d·y + f.
+  let view = { a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 };
   const NEXT_W = 56, NEXT_H = 36;
   const CHROME = 34, FRAME_SHADOW = 12; // frame padding + borders, frame drop shadow
 
+  function viewFor(S) {
+    if (S.gravity === 'right') return { a: 0, b: -1, c: 1, d: 0, e: 0, f: S.cols }; // logical down → screen right
+    if (S.gravity === 'left') return { a: 0, b: 1, c: -1, d: 0, e: S.rows, f: 0 };  // logical down → screen left
+    return { a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 };
+  }
   function init() {
     board = document.getElementById('board'); ctx = board.getContext('2d');
     next = document.getElementById('next'); nctx = next.getContext('2d');
     frame = document.getElementById('frame');
   }
   function resize() {
+    const S = Game.state;
+    view = viewFor(S);
+    const sideways = S.gravity !== 'down';
+    const sc = sideways ? S.rows : S.cols, sr = sideways ? S.cols : S.rows; // screen columns / rows
     const play = document.getElementById('play');
     const cs = getComputedStyle(play);
     const w = play.clientWidth - CHROME;
     const h = play.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - CHROME - FRAME_SHADOW;
     dpr = Math.min(window.devicePixelRatio || 1, 3);
-    cell = Math.max(10, Math.floor(Math.min(w / CONFIG.cols, h / CONFIG.rows)));
-    const W = cell * CONFIG.cols, H = cell * CONFIG.rows;
+    cell = Math.max(10, Math.floor(Math.min(w / sc, h / sr)));
+    const W = cell * sc, H = cell * sr;
     board.style.width = W + 'px'; board.style.height = H + 'px';
     board.width = Math.round(W * dpr); board.height = Math.round(H * dpr);
     next.width = Math.round(NEXT_W * dpr); next.height = Math.round(NEXT_H * dpr);
     Art.clear();
-    // Pre-draw the empty board: deep gradient, soft checker, dots, inner shadow.
+    // Pre-draw the empty board in the world's colors: gradient, soft checker,
+    // dots, and an inner shadow on the side the pieces come from.
+    const theme = WORLDS[Levels.world(S.level)];
     bg = document.createElement('canvas');
     bg.width = board.width; bg.height = board.height;
     const b = bg.getContext('2d');
     b.scale(dpr, dpr);
     const grad = b.createLinearGradient(0, 0, 0, H);
-    grad.addColorStop(0, '#4D3C92'); grad.addColorStop(1, '#2B2058');
+    grad.addColorStop(0, theme.board[0]); grad.addColorStop(1, theme.board[1]);
     b.fillStyle = grad; b.fillRect(0, 0, W, H);
-    b.fillStyle = 'rgba(255, 255, 255, .04)';
-    for (let y = 0; y < CONFIG.rows; y++) for (let x = 0; x < CONFIG.cols; x++) {
-      if ((x + y) % 2) b.fillRect(x * cell, y * cell, cell, cell);
-    }
-    b.fillStyle = 'rgba(255, 255, 255, .14)';
-    for (let y = 1; y < CONFIG.rows; y++) for (let x = 1; x < CONFIG.cols; x++) {
+    b.fillStyle = 'rgba(255, 255, 255, .05)';
+    for (let y = 0; y < sr; y++) for (let x = 0; x < sc; x++) if ((x + y) % 2) b.fillRect(x * cell, y * cell, cell, cell);
+    b.fillStyle = 'rgba(255, 255, 255, .15)';
+    for (let y = 1; y < sr; y++) for (let x = 1; x < sc; x++) {
       b.beginPath(); b.arc(x * cell, y * cell, Math.max(1, cell * .06), 0, Math.PI * 2); b.fill();
     }
-    const top = b.createLinearGradient(0, 0, 0, cell);
-    top.addColorStop(0, 'rgba(16, 8, 40, .45)'); top.addColorStop(1, 'rgba(16, 8, 40, 0)');
-    b.fillStyle = top; b.fillRect(0, 0, W, cell);
+    const entry = S.gravity === 'right' ? [0, 0, cell, 0] : S.gravity === 'left' ? [W, 0, W - cell, 0] : [0, 0, 0, cell];
+    const sh = b.createLinearGradient(...entry);
+    sh.addColorStop(0, 'rgba(16, 8, 40, .45)'); sh.addColorStop(1, 'rgba(16, 8, 40, 0)');
+    b.fillStyle = sh; b.fillRect(0, 0, W, H);
     const vig = b.createRadialGradient(W / 2, H / 2, Math.min(W, H) * .35, W / 2, H / 2, Math.max(W, H) * .75);
     vig.addColorStop(0, 'rgba(16, 8, 40, 0)'); vig.addColorStop(1, 'rgba(16, 8, 40, .4)');
     b.fillStyle = vig; b.fillRect(0, 0, W, H);
   }
-  function cellShadow(x, y) { // soft shadow under an animal tile
-    const r = cell * .26, px = (x + .1) * cell, py = (y + .16) * cell, s = cell * .9;
-    ctx.fillStyle = 'rgba(16, 8, 40, .38)';
-    ctx.beginPath(); ctx.moveTo(px + r, py);
-    ctx.arcTo(px + s, py, px + s, py + s, r); ctx.arcTo(px + s, py + s, px, py + s, r);
-    ctx.arcTo(px, py + s, px, py, r); ctx.arcTo(px, py, px + s, py, r);
-    ctx.fill();
+  // Draw screen-upright content centered on logical cell (x, y), so shading
+  // and shadows always fall the same way even on a turned board.
+  function atCell(x, y, fn) {
+    ctx.save();
+    ctx.translate((x + .5) * cell, (y + .5) * cell);
+    if (view.a !== 1) ctx.transform(view.a, view.c, view.b, view.d, 0, 0); // undo the board turn
+    fn();
+    ctx.restore();
+  }
+  function cellShadow(x, y) { // soft shadow under a tile
+    atCell(x, y, () => {
+      const r = cell * .26, px = -cell * .4, py = -cell * .34, s = cell * .9;
+      ctx.fillStyle = 'rgba(16, 8, 40, .38)';
+      ctx.beginPath(); ctx.moveTo(px + r, py);
+      ctx.arcTo(px + s, py, px + s, py + s, r); ctx.arcTo(px + s, py + s, px, py + s, r);
+      ctx.arcTo(px, py + s, px, py, r); ctx.arcTo(px, py, px + s, py, r);
+      ctx.fill();
+    });
+  }
+  function tile(c, x, y, mood) {
+    if (Game.state.key) atCell(x, y, () => ctx.drawImage(Art.gem(c.t, cell), -cell / 2, -cell / 2, cell, cell));
+    else Art.drawCell(ctx, c.t, c.r, c.lx, c.ly, x * cell, y * cell, cell, mood);
   }
   function drawPiece(p, y, alpha) {
     const cells = SHAPES[p.t][p.r].filter(([, ly]) => y + ly >= 0);
     ctx.globalAlpha = alpha;
     if (alpha === 1) for (const [lx, ly] of cells) cellShadow(p.x + lx, y + ly);
-    for (const [lx, ly] of cells) Art.drawCell(ctx, p.t, p.r, lx, ly, (p.x + lx) * cell, (y + ly) * cell, cell);
+    for (const [lx, ly] of cells) tile({ t: p.t, r: p.r, lx, ly }, p.x + lx, y + ly);
     ctx.globalAlpha = 1;
+  }
+  function drawNext(S) {
+    nctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    nctx.clearRect(0, 0, NEXT_W, NEXT_H);
+    if (!S.next) return;
+    if (!S.key) { Art.drawCentered(nctx, S.next, S.next === 'I' ? 13 : 16, NEXT_W, NEXT_H); return; }
+    // Gems, turned the way the piece will appear on the sideways board.
+    const pts = SHAPES[S.next][0].map(([x, y]) => [view.a * x + view.c * y, view.b * x + view.d * y]);
+    const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+    const w = Math.max(...xs) - Math.min(...xs) + 1, h = Math.max(...ys) - Math.min(...ys) + 1;
+    const s = Math.min(14, NEXT_W / w, NEXT_H / h);
+    const ox = (NEXT_W - w * s) / 2, oy = (NEXT_H - h * s) / 2;
+    for (const [x, y] of pts) nctx.drawImage(Art.gem(S.next, s), ox + (x - Math.min(...xs)) * s, oy + (y - Math.min(...ys)) * s, s, s);
   }
   function draw() {
     const S = Game.state;
@@ -1173,21 +1568,21 @@ const Render = (() => {
     }
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.drawImage(bg, 0, 0);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.setTransform(dpr * view.a, dpr * view.b, dpr * view.c, dpr * view.d, dpr * cell * view.e, dpr * cell * view.f);
     Effects.drawUnder(ctx, cell);
     const land = Effects.landing();
-    const landed = (x, y) => land && land.set.has(y * CONFIG.cols + x);
-    for (let y = 0; y < CONFIG.rows; y++) for (let x = 0; x < CONFIG.cols; x++) {
+    const landed = (x, y) => land && land.set.has(y * S.cols + x);
+    for (let y = 0; y < S.rows; y++) for (let x = 0; x < S.cols; x++) {
       if (S.board[y][x] && !landed(x, y)) cellShadow(x, y);
     }
-    for (let y = 0; y < CONFIG.rows; y++) for (let x = 0; x < CONFIG.cols; x++) {
+    for (let y = 0; y < S.rows; y++) for (let x = 0; x < S.cols; x++) {
       const c = S.board[y][x];
-      if (c && !landed(x, y)) Art.drawCell(ctx, c.t, c.r, c.lx, c.ly, x * cell, y * cell, cell);
+      if (c && !landed(x, y)) tile(c, x, y);
     }
-    if (land) { // the animal that just landed: squash & bounce, happy face
+    if (land) { // the piece that just landed: squash & bounce, happy face
       const sq = Effects.squash(), cells = [];
       for (const k of land.set) {
-        const x = k % CONFIG.cols, y = (k - x) / CONFIG.cols;
+        const x = k % S.cols, y = (k - x) / S.cols;
         if (S.board[y][x]) cells.push([x, y, S.board[y][x]]);
       }
       ctx.save();
@@ -1196,7 +1591,7 @@ const Render = (() => {
         ctx.translate(ax, ay); ctx.scale(sq.sx, sq.sy); ctx.translate(-ax, -ay);
       }
       for (const [x, y] of cells) cellShadow(x, y);
-      for (const [x, y, c] of cells) Art.drawCell(ctx, c.t, c.r, c.lx, c.ly, x * cell, y * cell, cell, 'happy');
+      for (const [x, y, c] of cells) tile(c, x, y, 'happy');
       ctx.restore();
     }
     if (S.piece) {
@@ -1204,17 +1599,14 @@ const Render = (() => {
       drawPiece(S.piece, S.piece.y, 1);
     }
     Effects.draw(ctx, cell);
-    nctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    nctx.clearRect(0, 0, NEXT_W, NEXT_H);
-    if (S.next) {
-      const size = S.next === 'I' ? 13 : 16;
-      Art.drawCentered(nctx, S.next, size, NEXT_W, NEXT_H);
-    }
+    drawNext(S);
   }
-  return { init, resize, draw, cellSize: () => cell };
+  return { init, resize, draw, cellSize: () => cell, view: () => view };
 })();
 
-/* ---------- 9. Input ---------- */
+/* ---------- 10. Input ---------- */
+// Gestures are turned into the logical frame first, so on sideways key levels
+// "along the fall" and "across the fall" work exactly like down and left/right.
 // Every player action is announced as Events 'input' { action, via } so the
 // Phase 2 tutorial can watch which control mode the player succeeds with.
 const Input = (() => {
@@ -1223,23 +1615,24 @@ const Input = (() => {
   const mode = () => modeOverride || Store.get().settings.control;
   const playing = () => Game.state.status === 'playing' && Game.state.piece;
   const act = (action, ok) => { if (ok !== false) Events.emit('input', { action, via: mode() }); return ok; };
+  const toLogical = (sx, sy) => { const v = Render.view(); return [v.a * sx + v.b * sy, v.c * sx + v.d * sy]; };
 
   function onDown(e) {
     if (!playing() || g) return;
     if (e.target.closest('button, .overlay')) return; // HUD buttons keep working
     e.preventDefault();
     try { e.currentTarget.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
-    const now = performance.now();
+    const now = performance.now(), [x, y] = toLogical(e.clientX, e.clientY);
     g = {
-      id: e.pointerId, x0: e.clientX, y0: e.clientY, t0: now,
+      id: e.pointerId, x0: x, y0: y, t0: now,
       col: 0, pieceId: Game.state.pieceId,
-      moved: false, done: false, fast: false, refY: e.clientY, peakY: e.clientY,
-      samples: [[e.clientX, e.clientY, now]],
+      moved: false, done: false, fast: false, refY: y, peakY: y,
+      samples: [[x, y, now]],
     };
   }
-  // A flick = a short, quick, mostly-downward stroke with the finger still
-  // moving fast when it lifts. All four must hold, so a slow swipe or a
-  // held finger (fast fall) never turns into an instant drop by accident.
+  // A flick = a short, quick stroke mostly along the fall direction with the
+  // finger still moving fast when it lifts. All four must hold, so a slow
+  // swipe or a held finger (fast fall) never turns into an instant drop.
   function isFlick(gest, x, y) {
     const cell = Render.cellSize();
     const dx = x - gest.x0, dy = y - gest.y0, dt = performance.now() - gest.t0;
@@ -1262,18 +1655,19 @@ const Input = (() => {
     if (!g || e.pointerId !== g.id) return;
     e.preventDefault();
     if (g.done || !playing()) return;
-    if (Game.state.pieceId !== g.pieceId) { g.done = true; return; } // a new animal arrived – finish this gesture
-    const dx = e.clientX - g.x0, dy = e.clientY - g.y0;
-    g.samples.push([e.clientX, e.clientY, performance.now()]);
+    if (Game.state.pieceId !== g.pieceId) { g.done = true; return; } // a new piece arrived – finish this gesture
+    const [x, y] = toLogical(e.clientX, e.clientY);
+    const dx = x - g.x0, dy = y - g.y0;
+    g.samples.push([x, y, performance.now()]);
     if (g.samples.length > 10) g.samples.shift();
     if (Math.abs(dx) > 10 || Math.abs(dy) > 10) g.moved = true;
     const cell = Render.cellSize();
-    if (mode() === 'drag') dragMove(dx, e.clientY, cell); else swipeMove(dx, dy, cell);
+    if (mode() === 'drag') dragMove(dx, y, cell); else swipeMove(dx, dy, cell);
   }
-  // Free drag: the animal follows the finger left/right cell by cell, relative
-  // to where the finger started, and stops flush against walls/animals.
-  // Moving the finger down turns on fast fall (the animal does not follow it
-  // down); moving back up or lifting the finger returns to normal speed.
+  // Free drag: the piece follows the finger across the fall direction cell by
+  // cell, relative to where the finger started, and stops flush against walls
+  // and other pieces. Moving the finger along the fall turns on fast fall (the
+  // piece does not follow it); moving back or lifting returns to normal speed.
   function dragMove(dx, y, cell) {
     const col = Math.round(dx / cell);
     for (let i = col - g.col; i > 0 && Game.move(1, 0); i--) act('move');
@@ -1281,15 +1675,15 @@ const Input = (() => {
     g.col = col;
     const th = Math.max(24, cell * .8);
     if (!g.fast) {
-      g.refY = Math.min(g.refY, y); // measure from the highest point since the last stop
+      g.refY = Math.min(g.refY, y); // measure from the farthest-back point since the last stop
       if (y - g.refY > th) { g.peakY = y; fastFall(true); }
     } else {
       g.peakY = Math.max(g.peakY, y);
       if (g.peakY - y > th * .6) { g.refY = y; fastFall(false); }
     }
   }
-  // Swipes: sideways moves one column right away; down = fast fall for as
-  // long as the finger stays on the screen.
+  // Swipes: across the fall moves one column right away; along the fall =
+  // fast fall for as long as the finger stays on the screen.
   function swipeMove(dx, dy, cell) {
     if (g.fast) return;
     const th = Math.max(24, cell * .8);
@@ -1302,9 +1696,10 @@ const Input = (() => {
     const gest = g; g = null;
     if (gest.fast) Game.setFastFall(false); // lifting the finger: back to normal speed
     if (gest.done || !playing() || Game.state.pieceId !== gest.pieceId) return;
-    gest.samples.push([e.clientX, e.clientY, performance.now()]);
+    const [x, y] = toLogical(e.clientX, e.clientY);
+    gest.samples.push([x, y, performance.now()]);
     if (!gest.moved && performance.now() - gest.t0 < 350) act('rotate', Game.rotate());
-    else if (isFlick(gest, e.clientX, e.clientY)) act('hard-drop', Game.hardDrop());
+    else if (isFlick(gest, x, y)) act('hard-drop', Game.hardDrop());
   }
   function onCancel(e) {
     if (!g || e.pointerId !== g.id) return;
@@ -1312,22 +1707,25 @@ const Input = (() => {
     g = null;
   }
 
+  // Arrows follow the board: across the fall = move, toward the fall = fast
+  // fall while held, against the fall = rotate. Space = instant drop.
+  const KEY_VEC = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
   function onKey(e) {
     if (UI.current !== 'game') return;
     if (e.key === 'Escape' || e.key === 'p' || e.key === 'P') { UI.togglePause(); e.preventDefault(); return; }
     if (!playing()) return;
-    switch (e.key) {
-      case 'ArrowLeft': Game.move(-1, 0); break;
-      case 'ArrowRight': Game.move(1, 0); break;
-      case 'ArrowDown': Game.setFastFall(true); break; // fast fall while held
-      case 'ArrowUp': case 'x': case 'X': Game.rotate(); break;
-      case ' ': if (!e.repeat) Game.hardDrop(); break; // holding space never drops twice
-      default: return;
-    }
+    if (KEY_VEC[e.key]) {
+      const [x, y] = toLogical(...KEY_VEC[e.key]);
+      if (x) Game.move(x, 0);
+      else if (y > 0) Game.setFastFall(true);
+      else Game.rotate();
+    } else if (e.key === 'x' || e.key === 'X') Game.rotate();
+    else if (e.key === ' ') { if (!e.repeat) Game.hardDrop(); } // holding space never drops twice
+    else return;
     e.preventDefault();
   }
   function onKeyUp(e) {
-    if (e.key === 'ArrowDown') Game.setFastFall(false);
+    if (KEY_VEC[e.key] && toLogical(...KEY_VEC[e.key])[1] > 0) Game.setFastFall(false);
   }
   function init() {
     const area = document.getElementById('game'); // the whole game screen is the touch area
@@ -1342,20 +1740,23 @@ const Input = (() => {
   return { init, setModeOverride: m => { modeOverride = m; } };
 })();
 
-/* ---------- 10. UI ---------- */
+/* ---------- 11. UI ---------- */
 const UI = (() => {
   const $ = id => document.getElementById(id);
   const STAR_PATH = 'M12 2.6l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.5l-5.9 3.1 1.2-6.5-4.8-4.6 6.6-.9z';
   const star = on => `<svg class="star${on ? ' on' : ''}" viewBox="0 0 24 24" aria-hidden="true"><path d="${STAR_PATH}"/><ellipse class="glint" cx="9.6" cy="9" rx="1.6" ry="1" transform="rotate(-35 9.6 9)"/></svg>`;
+  const LOCK = '<svg class="lock" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="3"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+  const KEY = '<svg class="key-ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M21 21 39 39M32 32l4-4M37 37l4-4" fill="none" stroke="#2E2152" stroke-width="9" stroke-linecap="round"/><path d="M21 21 39 39M32 32l4-4M37 37l4-4" fill="none" stroke="url(#keyGold)" stroke-width="4" stroke-linecap="round"/><circle cx="15" cy="15" r="10" fill="url(#keyGold)" stroke="#2E2152" stroke-width="3.5"/><circle cx="15" cy="15" r="3.6" fill="#2E2152"/><ellipse cx="12" cy="11" rx="3" ry="1.6" fill="#fff" opacity=".8" transform="rotate(-35 12 11)"/></svg>';
   const ui = { current: null };
 
   function show(name) {
     document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === name));
+    document.body.classList.toggle('in-game', name === 'game');
     ui.current = name;
     if (name === 'home') renderHome();
     if (name === 'map') renderMap();
     if (name === 'settings') renderSettings();
-    if (name === 'game') requestAnimationFrame(() => { Render.resize(); Render.draw(); });
+    if (name === 'game') requestAnimationFrame(() => { Scene.resize(); Render.resize(); Render.draw(); });
   }
 
   // ----- Home -----
@@ -1380,64 +1781,106 @@ const UI = (() => {
   }
 
   // ----- Map -----
+  // Five world sections, each with its own painted background and a banner.
+  // Painted backgrounds are kept and reused while the width stays the same.
+  const mapArt = new Map();
+  function worldCanvas(w, W, H) {
+    const k = `${w}@${W}x${H}`;
+    if (!mapArt.has(k)) {
+      const c = document.createElement('canvas');
+      c.width = W; c.height = H;
+      Scene.paint(c.getContext('2d'), w, W, H);
+      c.className = 'world-bg';
+      mapArt.set(k, c);
+    }
+    return mapArt.get(k);
+  }
   function renderMap() {
     const data = Store.get();
     $('mapStars').innerHTML = `${star(true)}<span>${Store.totalStars()}</span>`;
     const wrap = $('mapPath');
     wrap.innerHTML = '';
-    const N = CONFIG.levelCount, gap = 104, top = 70;
-    const W = wrap.clientWidth || 360;
-    const pts = [];
-    for (let i = 0; i < N; i++) pts.push([W / 2 + Math.sin(i * 1.15) * W * .27, top + i * gap]);
-    const H = top * 2 + (N - 1) * gap;
-    wrap.style.height = H + 'px';
+    const W = Math.round(wrap.clientWidth || 360), gap = 100, BANNER = 120, per = CONFIG.worldSize;
+    const secH = BANNER + per * gap;
+    wrap.style.height = WORLDS.length * secH + 'px';
 
+    WORLDS.forEach((wd, w) => {
+      const c = worldCanvas(w, W, secH);
+      c.style.top = w * secH + 'px';
+      wrap.appendChild(c);
+      if (!Levels.worldUnlocked(w)) { // a locked world is dimmed
+        const veil = document.createElement('div');
+        veil.className = 'world-veil';
+        veil.style.top = w * secH + 'px'; veil.style.height = secH + 'px';
+        wrap.appendChild(veil);
+      }
+    });
+
+    const pts = [];
+    for (let L = 1; L <= CONFIG.levelCount; L++) {
+      const w = Levels.world(L), i = (L - 1) % per;
+      pts.push([W / 2 + Math.sin(L * 1.15) * W * .27, w * secH + BANNER + i * gap + gap / 2]);
+    }
     let d = `M${pts[0][0]},${pts[0][1]}`;
-    for (let i = 1; i < N; i++) {
+    for (let i = 1; i < pts.length; i++) {
       const [x0, y0] = pts[i - 1], [x1, y1] = pts[i], my = (y0 + y1) / 2;
       d += ` C${x0},${my} ${x1},${my} ${x1},${y1}`;
     }
     wrap.insertAdjacentHTML('beforeend',
-      `<svg class="road" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
-        <path d="${d}" fill="none" stroke="rgba(46,33,82,.14)" stroke-width="26" stroke-linecap="round"/>
+      `<svg class="road" viewBox="0 0 ${W} ${WORLDS.length * secH}" preserveAspectRatio="none" aria-hidden="true">
+        <path d="${d}" fill="none" stroke="rgba(46,33,82,.25)" stroke-width="26" stroke-linecap="round"/>
         <path d="${d}" fill="none" stroke="#FFF7E3" stroke-width="9" stroke-dasharray="1 20" stroke-linecap="round"/>
       </svg>`);
 
-    let currentNode = null, scrollY = 0;
+    WORLDS.forEach((wd, w) => { // world banners: name and stars, or a lock with progress
+      const open = Levels.worldUnlocked(w);
+      const b = document.createElement('div');
+      b.className = 'world-banner' + (open ? '' : ' locked');
+      b.style.top = (w * secH + BANNER / 2) + 'px';
+      if (open) {
+        b.innerHTML = `<b>${wd.name}</b><span class="count">${star(true)}${Levels.worldStars(w)}/${per * 3}</span>`;
+        b.setAttribute('aria-label', `${wd.name}, ${Levels.worldStars(w)} stars`);
+      } else {
+        const p = Levels.unlockProgress(w);
+        b.innerHTML = `${LOCK}<b>${wd.name}</b><span class="count">${p.have}/${p.need}${star(true)}</span>`;
+        b.setAttribute('aria-label', `${wd.name}, locked. ${p.have} of ${p.need} stars from the world before`);
+      }
+      wrap.appendChild(b);
+    });
+
+    let current = 0, scrollY = 0;
+    for (let L = 1; L <= CONFIG.levelCount && !current; L++) if (Levels.unlocked(L) && !Levels.stars(L)) current = L;
     pts.forEach(([x, y], i) => {
-      const level = i + 1;
-      const got = data.stars[level] || 0;
-      const locked = level > data.unlocked;
-      const isCurrent = level === data.unlocked && !got;
+      const level = i + 1, got = data.stars[level] || 0;
+      const locked = !Levels.unlocked(level), key = Levels.isKey(level);
       const btn = document.createElement('button');
-      btn.className = 'node' + (locked ? ' locked' : '') + (isCurrent ? ' current' : '');
+      btn.className = 'node' + (key ? ' key' : '') + (locked ? ' locked' : '') + (level === current ? ' current' : '');
       btn.style.left = x + 'px'; btn.style.top = y + 'px';
+      const stars = got ? `<span class="mini">${star(got >= 1)}${star(got >= 2)}${star(got >= 3)}</span>` : '';
+      const kind = key ? 'Key level' : 'Level';
+      if (key) btn.innerHTML = KEY + `<span class="num">${level}</span>` + stars;
+      else btn.innerHTML = (locked ? LOCK : `<span>${level}</span>`) + stars;
       if (locked) {
-        btn.innerHTML = `<svg class="lock" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="3"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>`;
-        btn.setAttribute('aria-label', `Level ${level}, locked`);
+        btn.setAttribute('aria-label', `${kind} ${level}, locked`);
         btn.disabled = true;
       } else {
-        btn.innerHTML = `<span>${level}</span>` + (got ? `<span class="mini">${star(got >= 1)}${star(got >= 2)}${star(got >= 3)}</span>` : '');
-        btn.setAttribute('aria-label', `Level ${level}` + (got ? `, ${got} stars` : ''));
+        btn.setAttribute('aria-label', `${kind} ${level}` + (got ? `, ${got} stars` : ''));
         btn.addEventListener('click', () => startLevel(level));
       }
       wrap.appendChild(btn);
-      if (level === data.unlocked) currentNode = { btn, x, y };
       if (level === data.lastLevel) scrollY = y;
+      if (level === current) { // a little panda waits next to the level to play
+        const buddy = Art.pieceCanvas('O', 22);
+        buddy.className = 'map-buddy';
+        buddy.style.left = (x + (x > W / 2 ? -1 : 1) * 74) + 'px';
+        buddy.style.top = y + 'px';
+        wrap.appendChild(buddy);
+      }
     });
     requestAnimationFrame(() => { // open the map where the player last played
       const sc = $('mapScroll');
       sc.scrollTop = scrollY - sc.clientHeight / 2;
     });
-
-    if (currentNode) { // a little panda waits next to the level to play
-      const buddy = Art.pieceCanvas('O', 22);
-      buddy.className = 'map-buddy';
-      const side = currentNode.x > W / 2 ? -1 : 1;
-      buddy.style.left = (currentNode.x + side * 72) + 'px';
-      buddy.style.top = currentNode.y + 'px';
-      wrap.appendChild(buddy);
-    }
   }
 
   // ----- Settings -----
@@ -1450,18 +1893,41 @@ const UI = (() => {
   }
 
   // ----- Game -----
-  let lastLevel = 1;
+  let lastLevel = 1, introTimer = 0;
+  function applyWorld(w) {
+    const f = WORLDS[w].frame, game = $('game');
+    game.style.setProperty('--f1', f[0]); game.style.setProperty('--f2', f[1]); game.style.setProperty('--f3', f[2]);
+    Scene.setWorld(w);
+  }
   function startLevel(level) {
+    if (!Levels.unlocked(level)) return;
     lastLevel = level;
     Store.setLastLevel(level);
     ['pauseOverlay', 'winOverlay', 'overOverlay'].forEach(id => { $(id).hidden = true; });
     show('game');
+    applyWorld(Levels.world(level));
     Game.start(level);
+    Render.resize();
     updateHud();
+    showDirection();
+  }
+  // Key levels: a short arrow shows which way pieces fall; the game waits for it.
+  function showDirection() {
+    const S = Game.state, intro = $('dirIntro');
+    clearTimeout(introTimer);
+    if (!S.key) { intro.hidden = true; return; }
+    intro.className = 'dir-intro ' + S.gravity;
+    intro.hidden = false;
+    intro.firstElementChild.style.animation = 'none';
+    void intro.offsetWidth; // restart the CSS animation
+    intro.firstElementChild.style.animation = '';
+    Game.freeze(true);
+    introTimer = setTimeout(() => { intro.hidden = true; Game.freeze(false); }, 1400);
   }
   function updateHud() {
     const S = Game.state;
-    $('hudLevel').textContent = S.level;
+    $('hudLevel').innerHTML = (S.key ? KEY : '') + S.level;
+    $('hudLevelBox').classList.toggle('key', S.key);
     $('hudScore').textContent = S.score;
     const rows = $('rows');
     if (!rows.children.length) {
@@ -1472,20 +1938,30 @@ const UI = (() => {
       }
     }
     [...rows.children].forEach((pip, i) => pip.classList.toggle('on', i < S.lines));
-    rows.setAttribute('aria-label', `Rows: ${Math.min(S.lines, CONFIG.rowsPerLevel)} of ${CONFIG.rowsPerLevel}`);
+    const what = S.key ? 'Columns' : 'Rows';
+    rows.setAttribute('aria-label', `${what}: ${Math.min(S.lines, CONFIG.rowsPerLevel)} of ${CONFIG.rowsPerLevel}`);
   }
   function togglePause() {
     const S = Game.state;
     if (S.status === 'playing') { Game.pause(); $('pauseOverlay').hidden = false; }
     else if (S.status === 'paused') { Game.resume(); $('pauseOverlay').hidden = true; }
   }
-  function onLevelComplete({ level, score }) {
-    const got = Game.stars(score, level);
+  function onLevelComplete({ level, score, base }) {
+    const got = Game.stars(base);
     Store.recordLevel(level, got, score);
     updateHud();
     $('winStars').innerHTML = star(got >= 1) + star(got >= 2) + star(got >= 3);
     $('winScore').textContent = score;
-    $('nextLevelBtn').hidden = level >= CONFIG.levelCount;
+    const next = level + 1, nextOpen = next <= CONFIG.levelCount && Levels.unlocked(next);
+    $('nextLevelBtn').hidden = !nextOpen;
+    // At the end of a world whose next world is still locked: show the star progress.
+    const lockNote = $('winLock');
+    if (!nextOpen && next <= CONFIG.levelCount) {
+      const p = Levels.unlockProgress(Levels.world(next));
+      lockNote.innerHTML = `${LOCK}<span>${p.have}/${p.need}</span>${star(true)}`;
+      lockNote.setAttribute('aria-label', `Next world locked: ${p.have} of ${p.need} stars`);
+      lockNote.hidden = false;
+    } else lockNote.hidden = true;
     setTimeout(() => { $('winOverlay').hidden = false; }, 350);
   }
   function onGameOver({ score }) {
@@ -1524,7 +2000,7 @@ const UI = (() => {
       if (document.hidden && Game.state.status === 'playing') togglePause();
     });
     window.addEventListener('resize', () => {
-      if (ui.current === 'game') Render.resize();
+      if (ui.current === 'game') { Scene.resize(); Render.resize(); }
       else if (ui.current === 'map') renderMap();
       else if (ui.current === 'home') renderHome();
     });
@@ -1532,8 +2008,9 @@ const UI = (() => {
   return Object.assign(ui, { init, show, togglePause, startLevel });
 })();
 
-/* ---------- 11. Boot ---------- */
+/* ---------- 12. Boot ---------- */
 (function boot() {
+  Scene.init();
   Render.init();
   Input.init();
   UI.init();
@@ -1542,7 +2019,7 @@ const UI = (() => {
   function frame(now) {
     const dt = Math.min(100, now - last);
     last = now;
-    if (UI.current === 'game') { Game.update(dt); Effects.update(dt); Render.draw(); }
+    if (UI.current === 'game') { Game.update(dt); Effects.update(dt); Scene.update(dt); Scene.draw(); Render.draw(); }
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
