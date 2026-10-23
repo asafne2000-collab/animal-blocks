@@ -1,14 +1,14 @@
 <!doctype html>
-<html lang="he" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="בלוקי חיות">
+<meta name="apple-mobile-web-app-title" content="Animal Blocks">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#FFD84D">
-<title>בלוקי חיות</title>
+<title>Animal Blocks</title>
 <style>
 /* =========================================================
    DESIGN TOKENS
@@ -32,7 +32,7 @@
   /* depth: top highlight, bottom inner shade, solid ink base, soft drop shadow */
   --depth: inset 0 3px 0 rgba(255, 255, 255, .85), inset 0 -5px 0 rgba(46, 33, 82, .16), 0 6px 0 var(--ink), 0 12px 18px rgba(46, 33, 82, .28);
   --depth-pressed: inset 0 3px 0 rgba(255, 255, 255, .6), inset 0 -2px 0 rgba(46, 33, 82, .16), 0 2px 0 var(--ink), 0 4px 8px rgba(46, 33, 82, .25);
-  --font: "Rubik", "Varela Round", "Arial Rounded MT Bold", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  --font: ui-rounded, "SF Pro Rounded", "Nunito", "Rubik", "Varela Round", "Arial Rounded MT Bold", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
   --safe-t: env(safe-area-inset-top, 0px);
   --safe-b: env(safe-area-inset-bottom, 0px);
 }
@@ -124,7 +124,7 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
   text-shadow: 0 7px 0 var(--ink);
 }
 .title span:first-child { font-size: clamp(3.4rem, 19vw, 5.6rem); transform: rotate(-4deg); }
-.title span:last-child { font-size: clamp(4rem, 23vw, 6.6rem); color: var(--berry); transform: rotate(3deg); margin-top: -.08em; }
+.title span:last-child { font-size: clamp(3.6rem, 21vw, 6rem); color: var(--berry); transform: rotate(3deg); margin-top: -.08em; }
 .cast {
   display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end;
   gap: 14px 18px; max-width: 360px;
@@ -290,7 +290,7 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 </svg>
 
 <!-- Shown only when a phone is held sideways -->
-<div class="turn-phone" aria-label="סובבו את הטלפון">
+<div class="turn-phone" aria-label="Turn your phone upright">
   <svg viewBox="0 0 96 96" aria-hidden="true">
     <rect x="30" y="12" width="36" height="64" rx="8" fill="#FFF7E3" stroke="#2E2152" stroke-width="4"/>
     <circle cx="48" cy="66" r="3" fill="#2E2152"/>
@@ -300,24 +300,24 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 
 <!-- ============ HOME ============ -->
 <section class="screen" id="home">
-  <button class="icon-btn settings-btn" data-go="settings" aria-label="הגדרות">
+  <button class="icon-btn settings-btn" data-go="settings" aria-label="Settings">
     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M21.2 12h-2.6M5.4 12H2.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8M18.5 18.5l-1.8-1.8M7.3 7.3 5.5 5.5"/></svg>
   </button>
-  <h1 class="title"><span>בלוקי</span><span>חיות</span></h1>
+  <h1 class="title"><span>Animal</span><span>Blocks</span></h1>
   <div class="cast" id="cast"></div>
   <div class="home-foot">
     <p class="home-stars" id="homeStars"></p>
-    <button class="btn primary big" data-go="map">לשחק</button>
+    <button class="btn primary big" data-go="map">Play</button>
   </div>
 </section>
 
 <!-- ============ MAP ============ -->
 <section class="screen" id="map">
   <header class="bar">
-    <button class="icon-btn" data-go="home" aria-label="חזרה">
-      <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+    <button class="icon-btn" data-go="home" aria-label="Back">
+      <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
     </button>
-    <h2>מפת השלבים</h2>
+    <h2>Level map</h2>
     <span class="star-count" id="mapStars"></span>
   </header>
   <div class="map-scroll" id="mapScroll"><div class="map-path" id="mapPath"></div></div>
@@ -326,14 +326,14 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 <!-- ============ SETTINGS ============ -->
 <section class="screen" id="settings">
   <header class="bar">
-    <button class="icon-btn" data-go="home" aria-label="חזרה">
-      <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+    <button class="icon-btn" data-go="home" aria-label="Back">
+      <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
     </button>
-    <h2>הגדרות</h2>
+    <h2>Settings</h2>
   </header>
-  <div class="choice" role="radiogroup" aria-label="איך מזיזים את החיות">
+  <div class="choice" role="radiogroup" aria-label="How to move the animals">
     <!-- Mode 1: dragging hand -->
-    <button class="option" role="radio" data-control="drag" aria-label="גרירה חופשית">
+    <button class="option" role="radio" data-control="drag" aria-label="Free drag">
       <svg viewBox="0 0 96 96" aria-hidden="true">
         <rect x="3" y="3" width="90" height="90" rx="24" fill="#43C46E"/>
         <path d="M12 58h24M60 58h24" fill="none" stroke="#FFF7E3" stroke-width="5" stroke-dasharray="0.5 9" stroke-linecap="round"/>
@@ -345,7 +345,7 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
       <i class="tick" aria-hidden="true"></i>
     </button>
     <!-- Mode 2: swiping hand -->
-    <button class="option" role="radio" data-control="swipe" aria-label="החלקות">
+    <button class="option" role="radio" data-control="swipe" aria-label="Swipes">
       <svg viewBox="0 0 96 96" aria-hidden="true">
         <rect x="3" y="3" width="90" height="90" rx="24" fill="#4C8DF6"/>
         <path d="M36 26H14m7-7-7 7 7 7M60 26h22m-7-7 7 7-7 7" fill="none" stroke="#FFF7E3" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -357,45 +357,45 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
     </button>
   </div>
   <div class="settings-foot">
-    <button class="btn quiet" id="resetBtn">למחוק את כל ההתקדמות</button>
+    <button class="btn quiet" id="resetBtn">Erase all progress</button>
   </div>
 </section>
 
 <!-- ============ GAME ============ -->
 <section class="screen" id="game">
   <header class="hud">
-    <button class="icon-btn" id="pauseBtn" aria-label="הפסקה">
+    <button class="icon-btn" id="pauseBtn" aria-label="Pause">
       <svg viewBox="0 0 24 24"><path d="M9 6v12M15 6v12"/></svg>
     </button>
-    <div class="hud-box"><span class="hud-label">שלב</span><b id="hudLevel">1</b></div>
-    <div class="hud-box grow"><span class="hud-label">ניקוד</span><b id="hudScore">0</b></div>
-    <div class="hud-box next"><span class="hud-label">הבא</span><canvas id="next"></canvas></div>
+    <div class="hud-box"><span class="hud-label">Level</span><b id="hudLevel">1</b></div>
+    <div class="hud-box grow"><span class="hud-label">Score</span><b id="hudScore">0</b></div>
+    <div class="hud-box next"><span class="hud-label">Next</span><canvas id="next"></canvas></div>
   </header>
   <div class="play" id="play"><div class="frame" id="frame"><canvas id="board"></canvas></div></div>
-  <div class="rows" id="rows" role="img" aria-label="שורות שנוקו"></div>
+  <div class="rows" id="rows" role="img" aria-label="Rows cleared"></div>
 
   <div class="overlay" id="pauseOverlay" hidden>
     <div class="panel">
-      <h2>הפסקה</h2>
-      <button class="btn primary big icon-only" id="resumeBtn" aria-label="להמשיך">
+      <h2>Paused</h2>
+      <button class="btn primary big icon-only" id="resumeBtn" aria-label="Resume">
         <svg viewBox="0 0 24 24" class="ico fill"><path d="M8 5.5v13l10.5-6.5z"/></svg>
       </button>
       <div class="row">
-        <button class="btn icon-only" id="pauseRestart" aria-label="מההתחלה"><svg viewBox="0 0 24 24" class="ico"><use href="#i-retry"/></svg></button>
-        <button class="btn icon-only" id="pauseMap" aria-label="למפה"><svg viewBox="0 0 24 24" class="ico"><use href="#i-map"/></svg></button>
+        <button class="btn icon-only" id="pauseRestart" aria-label="Restart level"><svg viewBox="0 0 24 24" class="ico"><use href="#i-retry"/></svg></button>
+        <button class="btn icon-only" id="pauseMap" aria-label="Level map"><svg viewBox="0 0 24 24" class="ico"><use href="#i-map"/></svg></button>
       </div>
     </div>
   </div>
 
   <div class="overlay" id="winOverlay" hidden>
     <div class="panel">
-      <h2>כל הכבוד!</h2>
+      <h2>Well done!</h2>
       <div class="big-stars" id="winStars"></div>
       <p class="panel-score"><span id="winScore">0</span></p>
-      <button class="btn primary big" id="nextLevelBtn">לשלב הבא</button>
+      <button class="btn primary big" id="nextLevelBtn">Next level</button>
       <div class="row">
-        <button class="btn icon-only" id="winRetry" aria-label="לשחק שוב"><svg viewBox="0 0 24 24" class="ico"><use href="#i-retry"/></svg></button>
-        <button class="btn icon-only" id="winMap" aria-label="למפה"><svg viewBox="0 0 24 24" class="ico"><use href="#i-map"/></svg></button>
+        <button class="btn icon-only" id="winRetry" aria-label="Play again"><svg viewBox="0 0 24 24" class="ico"><use href="#i-retry"/></svg></button>
+        <button class="btn icon-only" id="winMap" aria-label="Level map"><svg viewBox="0 0 24 24" class="ico"><use href="#i-map"/></svg></button>
       </div>
     </div>
   </div>
@@ -403,9 +403,9 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
   <div class="overlay" id="overOverlay" hidden>
     <div class="panel">
       <div class="buddy" id="overBuddy"></div>
-      <h2>אופס! ננסה שוב?</h2>
-      <button class="btn primary big icon-only" id="overRetry" aria-label="ננסה שוב"><svg viewBox="0 0 24 24" class="ico"><use href="#i-retry"/></svg></button>
-      <button class="btn icon-only" id="overMap" aria-label="למפה"><svg viewBox="0 0 24 24" class="ico"><use href="#i-map"/></svg></button>
+      <h2>Oops! Try again?</h2>
+      <button class="btn primary big icon-only" id="overRetry" aria-label="Try again"><svg viewBox="0 0 24 24" class="ico"><use href="#i-retry"/></svg></button>
+      <button class="btn icon-only" id="overMap" aria-label="Level map"><svg viewBox="0 0 24 24" class="ico"><use href="#i-map"/></svg></button>
     </div>
   </div>
 </section>
@@ -505,13 +505,13 @@ const Store = (() => {
 /* ---------- 4. Pieces ---------- */
 // Cells are [x, y] inside an n×n box, in the base (spawn) orientation.
 const PIECES = {
-  I: { n: 4, cells: [[0, 1], [1, 1], [2, 1], [3, 1]], name: 'נחש', color: '#43C46E' },
-  O: { n: 2, cells: [[0, 0], [1, 0], [0, 1], [1, 1]], name: 'פנדה', color: '#FFD3E0' },
-  T: { n: 3, cells: [[1, 0], [0, 1], [1, 1], [2, 1]], name: 'צב', color: '#2CC7BE' },
-  L: { n: 3, cells: [[2, 0], [0, 1], [1, 1], [2, 1]], name: 'ג׳ירפה', color: '#FFB33C' },
-  J: { n: 3, cells: [[0, 0], [0, 1], [1, 1], [2, 1]], name: 'פיל', color: '#5B9BF8' },
-  S: { n: 3, cells: [[1, 0], [2, 0], [0, 1], [1, 1]], name: 'זחל', color: '#A8DE3C' },
-  Z: { n: 3, cells: [[0, 0], [1, 0], [1, 1], [2, 1]], name: 'סרטן', color: '#F7646A' },
+  I: { n: 4, cells: [[0, 1], [1, 1], [2, 1], [3, 1]], name: 'Snake', color: '#17CC5A' },
+  O: { n: 2, cells: [[0, 0], [1, 0], [0, 1], [1, 1]], name: 'Panda', color: '#FF9ECB' },
+  T: { n: 3, cells: [[1, 0], [0, 1], [1, 1], [2, 1]], name: 'Turtle', color: '#00CCDD' },
+  L: { n: 3, cells: [[2, 0], [0, 1], [1, 1], [2, 1]], name: 'Giraffe', color: '#FFB000' },
+  J: { n: 3, cells: [[0, 0], [0, 1], [1, 1], [2, 1]], name: 'Elephant', color: '#3B7BFF' },
+  S: { n: 3, cells: [[1, 0], [2, 0], [0, 1], [1, 1]], name: 'Caterpillar', color: '#A6E812' },
+  Z: { n: 3, cells: [[0, 0], [1, 0], [1, 1], [2, 1]], name: 'Crab', color: '#FF3B4E' },
 };
 const TYPES = Object.keys(PIECES);
 
@@ -590,9 +590,9 @@ const Art = (() => {
         circle(g, s * ex + .05 * k, ey - .025 * k, er * .25); fill(g, '#fff');
       }
     }
-    g.fillStyle = 'rgba(255, 92, 138, .55)';
-    ell(g, -.34 * k, .13 * k, .08 * k, .05 * k); g.fill();
-    ell(g, .34 * k, .13 * k, .08 * k, .05 * k); g.fill();
+    g.fillStyle = opt.cheek || 'rgba(255, 70, 140, .6)';
+    ell(g, -.34 * k, .13 * k, .085 * k, .055 * k); g.fill();
+    ell(g, .34 * k, .13 * k, .085 * k, .055 * k); g.fill();
     g.lineCap = 'round'; g.lineWidth = .045 * k; g.strokeStyle = INK;
     if (MOOD === 'happy') { // big open smile
       g.beginPath(); g.arc(0, .08 * k, .1 * k, 0, Math.PI); g.closePath(); fill(g, INK);
@@ -608,21 +608,34 @@ const Art = (() => {
     }
   }
 
+  // A lighter belly patch along the bottom of the given cells.
+  function belly(g, cells, color) {
+    for (const [x, y] of cells) { rr(g, x + .13, y + .62, .74, .26, .12); fill(g, color); }
+  }
+
   // One function per animal, drawn in its base orientation.
+  // Each has its own bright main color (PIECES[t].color) plus accents.
   const DRAW = {
-    I(g, base) { // Snake
-      tiles(g, base, 'I', '#43C46E');
+    I(g, base) { // Snake: emerald, yellow belly, yellow-orange diamonds, dark stripes
+      tiles(g, base, 'I', PIECES.I.color);
+      belly(g, [[0, 1], [1, 1], [2, 1]], '#D9FF6E');
       for (let i = 0; i < 3; i++) {
-        ell(g, i + .5, 1.5, .17, .17, Math.PI / 4); fill(g, '#FFE066');
-        circle(g, i + .2, 1.25, .05); fill(g, '#23884A');
-        circle(g, i + .8, 1.75, .05); fill(g, '#23884A');
+        g.lineWidth = .07; g.strokeStyle = '#0B8A3A'; g.lineCap = 'round';
+        g.beginPath(); g.moveTo(i + .1, 1.22); g.lineTo(i + .25, 1.36); g.moveTo(i + .75, 1.36); g.lineTo(i + .9, 1.22); g.stroke();
+        ell(g, i + .5, 1.42, .17, .17, Math.PI / 4); fill(g, '#FFD21F');
+        circle(g, i + .5, 1.42, .065); fill(g, '#FF7A1A');
       }
-      upright(g, base, 3.5, 1.47, () => face(g, .95, { tongue: true }));
+      upright(g, base, 3.5, 1.47, () => face(g, .95, { tongue: true, cheek: 'rgba(255, 120, 60, .75)' }));
     },
-    O(g, base) { // Panda (never rotates)
-      tiles(g, base, 'O', '#FFD3E0');
+    O(g, base) { // Panda: black & white on bright pink, magenta bow
+      tiles(g, base, 'O', PIECES.O.color);
+      ell(g, .3, 1.75, .16, .07, -.6); fill(g, '#36D45A'); // bamboo leaf peeking out
       circle(g, .42, .4, .24); fill(g, INK);
       circle(g, 1.58, .4, .24); fill(g, INK);
+      g.fillStyle = '#FF2E88'; // bow on the right ear
+      g.beginPath(); g.moveTo(1.62, .3); g.lineTo(1.4, .14); g.lineTo(1.44, .44); g.closePath(); g.fill();
+      g.beginPath(); g.moveTo(1.62, .3); g.lineTo(1.84, .14); g.lineTo(1.8, .44); g.closePath(); g.fill();
+      circle(g, 1.62, .3, .07); fill(g, '#FFD21F');
       ell(g, 1, 1.05, .8, .72); fill(g, '#fff'); g.lineWidth = .06; g.strokeStyle = INK; g.stroke();
       ell(g, .68, .98, .2, .25, .5); fill(g, INK);
       ell(g, 1.32, .98, .2, .25, -.5); fill(g, INK);
@@ -640,73 +653,91 @@ const Art = (() => {
       g.lineWidth = .05; g.lineCap = 'round'; g.beginPath();
       g.moveTo(1, 1.28); g.quadraticCurveTo(.93, 1.4, .86, 1.33);
       g.moveTo(1, 1.28); g.quadraticCurveTo(1.07, 1.4, 1.14, 1.33); g.stroke();
-      g.fillStyle = 'rgba(255, 92, 138, .5)';
-      ell(g, .48, 1.28, .1, .06); g.fill(); ell(g, 1.52, 1.28, .1, .06); g.fill();
+      g.fillStyle = 'rgba(255, 46, 136, .55)';
+      ell(g, .48, 1.28, .11, .065); g.fill(); ell(g, 1.52, 1.28, .11, .065); g.fill();
     },
-    T(g, base) { // Turtle
-      tiles(g, base, 'T', '#2CC7BE');
+    T(g, base) { // Turtle: turquoise skin, green shell with yellow rim and orange spots
+      tiles(g, base, 'T', PIECES.T.color);
       for (const [x, y, r] of [[.3, 1.24, -.5], [2.7, 1.24, .5], [.3, 1.78, .5], [2.7, 1.78, -.5]]) {
-        ell(g, x, y, .17, .11, r); fill(g, '#9BEDE5');
+        ell(g, x, y, .17, .11, r); fill(g, '#9DFBF6');
       }
-      ell(g, 1.5, 1.5, 1.02, .38); fill(g, '#8CCB4E'); g.lineWidth = .06; g.strokeStyle = '#3F7F22'; g.stroke();
-      for (const x of [.95, 1.5, 2.05]) { ell(g, x, 1.5, .19, .15); fill(g, '#B9E383'); }
-      upright(g, base, 1.5, .52, () => face(g, .9));
-    },
-    L(g, base) { // Giraffe
-      tiles(g, base, 'L', '#FFB33C');
-      g.fillStyle = '#A65E1C';
-      for (const [x, y, r] of [[.38, 1.32, .13], [.72, 1.7, .1], [1.28, 1.38, .15], [1.72, 1.72, .1], [2.3, 1.6, .13], [2.75, 1.28, .08], [2.28, .9, .07]]) {
-        ell(g, x, y, r, r * .85, .6); g.fill();
-      }
-      g.strokeStyle = '#A65E1C'; g.lineWidth = .06; g.lineCap = 'round';
-      g.beginPath(); g.moveTo(.15, 1.3); g.lineTo(.13, 1.56); g.stroke();
-      circle(g, .13, 1.62, .06); g.fill();
-      upright(g, base, 2.5, .56, () => {
-        g.strokeStyle = '#A65E1C'; g.lineWidth = .06; g.lineCap = 'round'; g.beginPath();
-        g.moveTo(-.13, -.24); g.lineTo(-.16, -.36); g.moveTo(.13, -.24); g.lineTo(.16, -.36); g.stroke();
-        g.fillStyle = '#A65E1C'; circle(g, -.16, -.37, .055); g.fill(); circle(g, .16, -.37, .055); g.fill();
-        face(g, .8);
+      ell(g, 1.5, 1.5, 1.02, .38); fill(g, '#3FCB2E'); g.lineWidth = .09; g.strokeStyle = '#FFD21F'; g.stroke();
+      ell(g, 1.5, 1.5, 1.08, .43); g.lineWidth = .04; g.strokeStyle = '#1F7A12'; g.stroke();
+      for (const x of [.95, 1.5, 2.05]) { ell(g, x, 1.5, .19, .15); fill(g, '#A8F25A'); circle(g, x, 1.5, .07); fill(g, '#FF8A1F'); }
+      upright(g, base, 1.5, .52, () => {
+        circle(g, -.3, -.32, .05); fill(g, '#9DFBF6'); circle(g, .32, -.28, .04); fill(g, '#9DFBF6');
+        face(g, .9, { cheek: 'rgba(255, 70, 140, .65)' });
       });
     },
-    J(g, base) { // Elephant
-      tiles(g, base, 'J', '#5B9BF8');
-      for (const x of [.5, 1.5, 2.5]) { ell(g, x, 1.87, .13, .06); fill(g, '#E9F2FF'); }
-      g.strokeStyle = '#2F6BD0'; g.lineWidth = .06; g.lineCap = 'round';
-      g.beginPath(); g.moveTo(2.86, 1.35); g.quadraticCurveTo(2.93, 1.5, 2.86, 1.62); g.stroke();
-      const trunk = () => { g.beginPath(); g.moveTo(.45, .7); g.quadraticCurveTo(.47, 1.25, .3, 1.42); g.quadraticCurveTo(.18, 1.53, .27, 1.63); };
-      g.lineWidth = .22; g.strokeStyle = '#2F6BD0'; trunk(); g.stroke();
-      g.lineWidth = .13; g.strokeStyle = '#5B9BF8'; trunk(); g.stroke();
-      ell(g, .8, .46, .16, .26); fill(g, '#A9CBFF'); g.lineWidth = .05; g.strokeStyle = '#2F6BD0'; g.stroke();
-      upright(g, base, .42, .42, () => face(g, .75));
+    L(g, base) { // Giraffe: amber, two-tone brown spots, cream belly, orange mane
+      tiles(g, base, 'L', PIECES.L.color);
+      belly(g, [[0, 1], [1, 1]], '#FFEDB8');
+      for (const [x, y, r] of [[.38, 1.3, .13], [1.28, 1.34, .15], [2.3, 1.62, .13], [2.75, 1.28, .08], [2.28, .9, .07], [1.75, 1.3, .08]]) {
+        ell(g, x, y, r, r * .85, .6); fill(g, '#8F3E0E');
+        ell(g, x - r * .15, y - r * .15, r * .5, r * .42, .6); fill(g, '#D9701C');
+      }
+      g.lineWidth = .08; g.strokeStyle = '#E8501A'; g.lineCap = 'round'; // mane down the neck
+      g.beginPath(); g.moveTo(2.12, .22); g.lineTo(2.12, .9); g.stroke();
+      g.strokeStyle = '#8F3E0E'; g.lineWidth = .06;
+      g.beginPath(); g.moveTo(.15, 1.3); g.lineTo(.13, 1.56); g.stroke();
+      circle(g, .13, 1.62, .07); fill(g, '#E8501A');
+      upright(g, base, 2.5, .56, () => {
+        g.strokeStyle = '#8F3E0E'; g.lineWidth = .06; g.lineCap = 'round'; g.beginPath();
+        g.moveTo(-.13, -.24); g.lineTo(-.16, -.36); g.moveTo(.13, -.24); g.lineTo(.16, -.36); g.stroke();
+        circle(g, -.16, -.37, .06); fill(g, '#E8501A'); circle(g, .16, -.37, .06); fill(g, '#E8501A');
+        face(g, .8, { cheek: 'rgba(255, 80, 60, .6)' });
+      });
     },
-    S(g, base) { // Caterpillar
-      tiles(g, base, 'S', '#A8DE3C');
+    J(g, base) { // Elephant: bright blue, pink inner ear, light belly, cream toenails
+      tiles(g, base, 'J', PIECES.J.color);
+      belly(g, [[1, 1], [2, 1]], '#A9CCFF');
+      for (const x of [.5, 1.5, 2.5]) { ell(g, x, 1.88, .14, .06); fill(g, '#FFF4D6'); }
+      g.strokeStyle = '#1E4FC7'; g.lineWidth = .06; g.lineCap = 'round';
+      g.beginPath(); g.moveTo(2.86, 1.3); g.quadraticCurveTo(2.93, 1.45, 2.86, 1.56); g.stroke();
+      circle(g, 2.86, 1.6, .055); fill(g, '#B57CFF'); // tail tuft
+      const trunk = () => { g.beginPath(); g.moveTo(.45, .7); g.quadraticCurveTo(.47, 1.25, .3, 1.42); g.quadraticCurveTo(.18, 1.53, .27, 1.63); };
+      g.lineWidth = .22; g.strokeStyle = '#1E4FC7'; trunk(); g.stroke();
+      g.lineWidth = .13; g.strokeStyle = PIECES.J.color; trunk(); g.stroke();
+      ell(g, .8, .46, .17, .27); fill(g, '#7FAEFF'); g.lineWidth = .05; g.strokeStyle = '#1E4FC7'; g.stroke();
+      ell(g, .81, .47, .1, .18); fill(g, '#FF9FC8');
+      upright(g, base, .42, .42, () => face(g, .75, { cheek: 'rgba(255, 70, 160, .65)' }));
+    },
+    S(g, base) { // Caterpillar: lime, yellow rings with orange centers, purple feet
+      tiles(g, base, 'S', PIECES.S.color);
+      belly(g, [[1, 0], [0, 1], [1, 1]], '#E9FFA6');
       for (const [x, y] of [[1, 0], [0, 1], [1, 1]]) {
-        circle(g, x + .5, y + .5, .26); fill(g, '#C9F07C');
-        circle(g, x + .5, y + .5, .08); fill(g, '#FF9F43');
-        circle(g, x + .3, y + .87, .045); fill(g, INK);
-        circle(g, x + .7, y + .87, .045); fill(g, INK);
+        circle(g, x + .5, y + .44, .24); fill(g, '#FFE14D');
+        circle(g, x + .5, y + .44, .16); fill(g, '#B8F23A');
+        circle(g, x + .5, y + .44, .08); fill(g, '#FF6B1A');
+        circle(g, x + .3, y + .88, .055); fill(g, '#8A4DFF');
+        circle(g, x + .7, y + .88, .055); fill(g, '#8A4DFF');
       }
       upright(g, base, 2.5, .57, () => {
-        g.strokeStyle = INK; g.lineWidth = .04; g.lineCap = 'round'; g.beginPath();
+        g.strokeStyle = '#8A4DFF'; g.lineWidth = .045; g.lineCap = 'round'; g.beginPath();
         g.moveTo(-.1, -.25); g.quadraticCurveTo(-.15, -.35, -.22, -.38);
         g.moveTo(.1, -.25); g.quadraticCurveTo(.15, -.35, .22, -.38); g.stroke();
-        circle(g, -.22, -.38, .05); fill(g, '#E8336D'); circle(g, .22, -.38, .05); fill(g, '#E8336D');
-        face(g, .8);
+        circle(g, -.22, -.38, .055); fill(g, '#FF2E88'); circle(g, .22, -.38, .055); fill(g, '#FF2E88');
+        face(g, .8, { cheek: 'rgba(255, 110, 40, .7)' });
       });
     },
-    Z(g, base) { // Crab
-      tiles(g, base, 'Z', '#F7646A');
+    Z(g, base) { // Crab: red, coral belly, two-tone claws, yellow spots
+      tiles(g, base, 'Z', PIECES.Z.color);
+      ell(g, 1.5, 1.55, .3, .24); fill(g, '#FFAE9A'); // belly
+      for (const [x, y] of [[1.28, 1.36], [1.72, 1.4], [1.5, 1.74]]) { circle(g, x, y, .055); fill(g, '#FFD21F'); }
       const claw = (x, y, a) => {
-        circle(g, x, y, .28); fill(g, '#D93C45');
-        g.beginPath(); g.moveTo(x, y); g.arc(x, y, .31, a - .5, a + .5); g.closePath(); fill(g, '#F7646A');
+        circle(g, x, y, .29); fill(g, '#C9102A');
+        circle(g, x + Math.cos(a) * .12, y - .1, .09); fill(g, '#FF8A94');
+        g.beginPath(); g.moveTo(x, y); g.arc(x, y, .32, a - .5, a + .5); g.closePath(); fill(g, PIECES.Z.color);
       };
       claw(.45, .5, Math.PI); claw(2.55, 1.5, 0);
-      for (const [x, y, r] of [[1.35, 1.4, .07], [1.65, 1.56, .06], [1.42, 1.72, .05]]) { circle(g, x, y, r); fill(g, '#FFA3A7'); }
+      g.strokeStyle = '#C9102A'; g.lineWidth = .05; g.lineCap = 'round'; g.beginPath(); // little legs
+      for (const y of [1.3, 1.55]) { g.moveTo(1.08, y); g.lineTo(1.18, y + .06); g.moveTo(1.92, y); g.lineTo(1.82, y + .06); }
+      g.stroke();
       upright(g, base, 1.5, .58, () => {
         g.strokeStyle = INK; g.lineWidth = .04; g.lineCap = 'round'; g.beginPath();
         g.moveTo(-.19, -.18); g.lineTo(-.2, -.32); g.moveTo(.19, -.18); g.lineTo(.2, -.32); g.stroke();
-        face(g, .85);
+        circle(g, -.2, -.33, .04); fill(g, '#FFD21F'); circle(g, .2, -.33, .04); fill(g, '#FFD21F');
+        face(g, .85, { cheek: 'rgba(255, 210, 60, .75)' });
       });
     },
   };
@@ -1344,7 +1375,7 @@ const UI = (() => {
     });
     const total = Store.totalStars(), high = Store.get().highScore;
     $('homeStars').innerHTML = total
-      ? `${star(true)}<span>${total}</span><svg class="trophy" viewBox="0 0 24 24" aria-label="שיא"><path d="M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3M12 14v4M8 20h8"/></svg><span>${high}</span>`
+      ? `${star(true)}<span>${total}</span><svg class="trophy" viewBox="0 0 24 24" aria-label="High score"><path d="M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3M12 14v4M8 20h8"/></svg><span>${high}</span>`
       : '';
   }
 
@@ -1383,11 +1414,11 @@ const UI = (() => {
       btn.style.left = x + 'px'; btn.style.top = y + 'px';
       if (locked) {
         btn.innerHTML = `<svg class="lock" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="3"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>`;
-        btn.setAttribute('aria-label', `שלב ${level} נעול`);
+        btn.setAttribute('aria-label', `Level ${level}, locked`);
         btn.disabled = true;
       } else {
         btn.innerHTML = `<span>${level}</span>` + (got ? `<span class="mini">${star(got >= 1)}${star(got >= 2)}${star(got >= 3)}</span>` : '');
-        btn.setAttribute('aria-label', `שלב ${level}` + (got ? `, ${got} כוכבים` : ''));
+        btn.setAttribute('aria-label', `Level ${level}` + (got ? `, ${got} stars` : ''));
         btn.addEventListener('click', () => startLevel(level));
       }
       wrap.appendChild(btn);
@@ -1415,7 +1446,7 @@ const UI = (() => {
     document.querySelectorAll('[data-control]').forEach(b => b.setAttribute('aria-checked', String(b.dataset.control === m)));
     const r = $('resetBtn');
     r.classList.remove('armed');
-    r.textContent = 'למחוק את כל ההתקדמות';
+    r.textContent = 'Erase all progress';
   }
 
   // ----- Game -----
@@ -1441,7 +1472,7 @@ const UI = (() => {
       }
     }
     [...rows.children].forEach((pip, i) => pip.classList.toggle('on', i < S.lines));
-    rows.setAttribute('aria-label', `שורות: ${Math.min(S.lines, CONFIG.rowsPerLevel)} מתוך ${CONFIG.rowsPerLevel}`);
+    rows.setAttribute('aria-label', `Rows: ${Math.min(S.lines, CONFIG.rowsPerLevel)} of ${CONFIG.rowsPerLevel}`);
   }
   function togglePause() {
     const S = Game.state;
@@ -1472,8 +1503,8 @@ const UI = (() => {
     }));
     $('resetBtn').addEventListener('click', e => {
       const btn = e.currentTarget;
-      if (btn.classList.contains('armed')) { Store.reset(); btn.classList.remove('armed'); btn.textContent = 'ההתקדמות נמחקה'; }
-      else { btn.classList.add('armed'); btn.textContent = 'בטוח? לחיצה נוספת תמחק'; }
+      if (btn.classList.contains('armed')) { Store.reset(); btn.classList.remove('armed'); btn.textContent = 'Progress erased'; }
+      else { btn.classList.add('armed'); btn.textContent = 'Sure? Tap again to erase'; }
     });
     $('pauseBtn').addEventListener('click', togglePause);
     $('resumeBtn').addEventListener('click', togglePause);
