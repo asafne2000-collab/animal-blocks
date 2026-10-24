@@ -116,8 +116,11 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 .star.on .glint { opacity: .85; }
 
 /* ---------- Home ---------- */
-#home { align-items: center; justify-content: space-between; text-align: center; }
+#home { align-items: center; text-align: center; }
 #home .settings-btn { align-self: flex-end; }
+#home .title { margin-top: 1vh; }
+#forest { position: fixed; inset: 0; width: 100%; height: 100%; display: none; }
+body.on-home #forest { display: block; }
 .title {
   display: flex; flex-direction: column; align-items: center;
   font-weight: 900; line-height: .9; letter-spacing: -.02em;
@@ -127,15 +130,13 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 }
 .title span:first-child { font-size: clamp(3.4rem, 19vw, 5.6rem); transform: rotate(-4deg); }
 .title span:last-child { font-size: clamp(3.6rem, 21vw, 6rem); color: var(--berry); transform: rotate(3deg); margin-top: -.08em; }
-.cast {
-  display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end;
-  gap: 14px 18px; max-width: 360px;
+.map-buddy, .buddy canvas { filter: drop-shadow(0 4px 2px rgba(46, 33, 82, .3)); }
+.home-foot { margin-top: auto; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.home-stars {
+  display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 1.05rem; min-height: 1.5em;
+  padding: 3px 14px; border-radius: 999px; background: rgba(255, 247, 227, .9); border: 3px solid var(--ink);
 }
-.cast figure { display: flex; flex-direction: column; align-items: center; gap: 6px; transform: rotate(var(--tilt, 0deg)); }
-.cast figcaption { font-weight: 800; font-size: .95rem; }
-.cast canvas, .map-buddy, .buddy canvas { filter: drop-shadow(0 4px 2px rgba(46, 33, 82, .3)); }
-.home-foot { display: flex; flex-direction: column; align-items: center; gap: 14px; }
-.home-stars { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 1.05rem; min-height: 1.5em; }
+.home-stars:empty { display: none; }
 .home-stars svg { width: 24px; height: 24px; }
 .home-stars .trophy { margin-inline-start: 14px; fill: var(--star); stroke: var(--ink); stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
 
@@ -190,17 +191,19 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 @keyframes hop { 0%, 100% { translate: 0 0; } 50% { translate: 0 -6px; } }
 
 /* ---------- Settings ---------- */
-.choice { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding: 6px 6px 0; }
+/* control mode: three compact tiles (64px – well over the 44px touch minimum) */
+.choice { display: flex; justify-content: center; gap: 22px; padding: 6px 0 2px; }
 .option {
-  position: relative; aspect-ratio: 1;
-  background: var(--gloss-cream); border: 4px solid var(--ink); border-radius: 30px;
-  padding: 12px; box-shadow: var(--depth);
+  position: relative; flex: none; width: 64px; height: 64px;
+  background: var(--gloss-cream); border: 3px solid var(--ink); border-radius: 20px;
+  padding: 4px; box-shadow: 0 4px 0 var(--ink);
 }
-.option[aria-checked="true"] { outline: 5px solid var(--berry); outline-offset: 4px; }
+.option:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--ink); }
+.option[aria-checked="true"] { outline: 4px solid var(--berry); outline-offset: 3px; }
 .option svg { width: 100%; height: 100%; display: block; }
-.option .tick { position: absolute; top: -12px; inset-inline-start: -12px; width: 36px; height: 36px; border-radius: 50%; border: 3px solid var(--ink); background: var(--cream); display: grid; place-items: center; }
-.option[aria-checked="true"] .tick { background: var(--berry); }
-.option[aria-checked="true"] .tick::after { content: ""; width: 12px; height: 7px; border: solid #fff; border-width: 0 0 4px 4px; transform: translateY(-2px) rotate(-45deg); }
+.option .tick { position: absolute; top: -10px; inset-inline-end: -10px; width: 24px; height: 24px; border-radius: 50%; border: 2.5px solid var(--ink); background: var(--cream); display: none; place-items: center; }
+.option[aria-checked="true"] .tick { display: grid; background: var(--berry); }
+.option[aria-checked="true"] .tick::after { content: ""; width: 8px; height: 5px; border: solid #fff; border-width: 0 0 3px 3px; transform: translateY(-1px) rotate(-45deg); }
 .hand-outline { fill: var(--ink); stroke: var(--ink); stroke-width: 5; stroke-linejoin: round; }
 .hand-fill { fill: var(--cream); }
 .settings-foot { margin-top: auto; display: flex; justify-content: center; padding-top: 4px; }
@@ -302,7 +305,23 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
   font-size: 1.65rem; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums;
   color: var(--ink); text-shadow: 0 2px 0 rgba(255, 255, 255, .9);
 }
-.hud-box.next { padding: 8px 8px 2px; }
+/* Next pieces: a glossy strip above the board – the very next piece big,
+   the two after it smaller and a bit faded, read left to right. */
+.queue {
+  flex: none; align-self: center; display: flex; align-items: center; gap: 6px;
+  margin-top: 10px; padding: 4px 12px 4px 4px; height: 60px;
+  background: rgba(255, 247, 227, .94); border: 4px solid var(--ink); border-radius: 22px;
+  box-shadow: inset 0 3px 0 #fff, 0 5px 0 var(--ink), 0 9px 14px rgba(46, 33, 82, .25);
+}
+.queue-label {
+  align-self: stretch; display: grid; place-items: center; padding: 0 9px; border-radius: 14px;
+  background: var(--gloss-plum); color: #fff; border: 2.5px solid var(--ink);
+  font-size: .8rem; font-weight: 900; text-shadow: 0 1px 0 rgba(46, 33, 82, .6);
+}
+.queue canvas { display: block; flex: none; }
+.queue .q0 { width: 80px; height: 44px; border-radius: 14px; background: #fff; box-shadow: inset 0 0 0 2.5px rgba(46, 33, 82, .25); }
+.queue .q1, .queue .q2 { width: 40px; height: 36px; opacity: .75; }
+.queue .q1 { margin-left: 2px; }
 .hud-box.key { background: linear-gradient(180deg, #FFF6C8, #FFD54A 55%, #F0A818); }
 .hud-box b .key-ico { width: 22px; height: 22px; vertical-align: -3px; margin-right: 2px; }
 /* World background behind the game screen */
@@ -322,7 +341,6 @@ body.in-game #scene { display: block; }
 .panel .world-lock { display: flex; align-items: center; gap: 6px; font-size: 1.4rem; font-weight: 900; }
 .world-lock svg { width: 30px; height: 30px; }
 .world-lock .lock { stroke: var(--ink); stroke-width: 3; fill: none; }
-#next { width: 56px; height: 36px; display: block; }
 .hud .icon-btn { height: 64px; width: 48px; }
 .play {
   flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center;
@@ -426,11 +444,12 @@ body.in-game #scene { display: block; }
    pad is 5 buttons wide, so it is capped to fit narrow phones. */
 .pad { display: none; }
 body.pad-mode #game.active {
-  display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto minmax(0, 1fr) auto auto;
-  grid-template-areas: "hud hud" "play boost" "rows rows" "pad pad";
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+  grid-template-areas: "hud hud" "queue queue" "play boost" "rows rows" "pad pad";
 }
-body.pad-mode.left-handed #game.active { grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "hud hud" "boost play" "rows rows" "pad pad"; }
+body.pad-mode.left-handed #game.active { grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "hud hud" "queue queue" "boost play" "rows rows" "pad pad"; }
 body.pad-mode .hud { grid-area: hud; }
+body.pad-mode .queue { grid-area: queue; justify-self: center; }
 body.pad-mode .play { grid-area: play; padding-bottom: 8px; }
 body.pad-mode .rows { grid-area: rows; }
 body.pad-mode .boosters, body.pad-mode.left-handed .boosters { grid-area: boost; flex-direction: column; justify-content: center; gap: 14px; padding: 0 2px 8px 8px; }
@@ -659,6 +678,8 @@ body.left-handed .boosters { flex-direction: row-reverse; }
 
 <!-- World background behind the game screen -->
 <canvas id="scene" aria-hidden="true"></canvas>
+<!-- The animated forest behind the home screen -->
+<canvas id="forest" aria-hidden="true"></canvas>
 
 <!-- Shown only when a phone is held sideways -->
 <div class="turn-phone" aria-label="Turn your phone upright">
@@ -675,7 +696,6 @@ body.left-handed .boosters { flex-direction: row-reverse; }
     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M21.2 12h-2.6M5.4 12H2.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8M18.5 18.5l-1.8-1.8M7.3 7.3 5.5 5.5"/></svg>
   </button>
   <h1 class="title"><span>Animal</span><span>Blocks</span></h1>
-  <div class="cast" id="cast"></div>
   <div class="home-foot">
     <p class="home-stars" id="homeStars"></p>
     <button class="btn primary big" data-go="map">Play</button>
@@ -876,8 +896,12 @@ body.left-handed .boosters { flex-direction: row-reverse; }
     </button>
     <div class="hud-box" id="hudLevelBox"><span class="hud-label">Level</span><b id="hudLevel">1</b></div>
     <div class="hud-box grow"><span class="hud-label">Score</span><b id="hudScore">0</b></div>
-    <div class="hud-box next"><span class="hud-label">Next</span><canvas id="next"></canvas></div>
   </header>
+  <!-- The next 3 pieces, in order: the very next one big, then two smaller -->
+  <div class="queue" id="queue" role="img" aria-label="Next animals">
+    <span class="queue-label" aria-hidden="true">Next</span>
+    <canvas class="q0"></canvas><canvas class="q1"></canvas><canvas class="q2"></canvas>
+  </div>
   <div class="play" id="play">
     <div class="frame" id="frame"><canvas id="board"></canvas></div>
     <div class="dir-intro" id="dirIntro" hidden aria-hidden="true"><svg viewBox="0 0 120 96"><path d="M10 34h58V14l44 34-44 34V62H10z" fill="url(#arrowGloss)" stroke="#2E2152" stroke-width="6" stroke-linejoin="round"/><path d="M18 40h56V30" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".7"/></svg></div>
@@ -964,6 +988,7 @@ body.left-handed .boosters { flex-direction: row-reverse; }
      7. Effects    – landing squash, dust, line flash, particles
     7b. Sound      – music & sound effects made in code, vibration
      8. Scene      – painted world backgrounds
+    8b. Forest     – the animated forest on the home screen
      9. Render     – draws the board (turned for sideways key levels)
     10. Input      – touch (drag / swipe) and keyboard
     11. UI         – screens, map, overlays, settings
@@ -1007,11 +1032,12 @@ const CONFIG = {
   // 2 stars = one double clear somewhere in the level (1100);
   // 3 stars = a few multi-line clears (1500).
   starThresholds: { two: 1100, three: 1500 },
-  // Coins, earned once per level (first completion only): 10% of the level's
-  // points, but the level number counts gently (×1 at level 1 rising 4% per
-  // level, ×3 at level 50) instead of ×50 – otherwise late levels would pay
-  // 50× more and the shop would stop mattering. Key levels keep their +20%.
-  coinRate: 0.1,
+  // Coins, earned once per level (first completion only): 1/30 of the level's
+  // base points (about 33–50 coins at level 1), but the level number counts
+  // gently (×1 at level 1 rising 4% per level, ×3 at level 50: about 100–150)
+  // instead of ×50 – otherwise late levels would pay 50× more and the shop
+  // would stop mattering.
+  coinRate: 1 / 30,
   coinLevelStep: 0.04,
   keyCoinMultiplier: 3,     // key levels: 3× coins on first completion...
   chestItems: 3,            // ...plus a treasure chest with this many boosters and a special animal
@@ -1157,16 +1183,17 @@ const Levels = {
 };
 
 /* ---------- 3c. Coins & boosters ---------- */
-// Coin shop prices. A level pays about 100–160 coins at level 1 and about
-// 300–450 at level 50 (about 11,000 for the whole game, once), so early on a
-// level buys one or two single boosters, later a bundle. Bundles save ~20%.
+// Coin shop prices. A level pays about 33–50 coins at level 1 and about
+// 100–150 at level 50 (about 5,300–8,000 for the whole game, once, key levels
+// included), so a player who never pays still buys a booster every level or
+// two early on and one or two per level late. Bundles save ~20%.
 const BOOSTERS = {
-  bomb:   { icon: '💣', name: 'Bomb', price: 60, bundle: [3, 150] },
-  swap:   { icon: '🔄', name: 'Swap', price: 30, bundle: [5, 120] },
-  slow:   { icon: '⏳', name: 'Slow-mo', price: 50, bundle: [3, 120] },
-  magic:  { icon: '⭐', name: 'Magic block', price: 40, bundle: [3, 100] },
-  sweep:  { icon: '🧹', name: 'Sweep', price: 40, bundle: [3, 100] },
-  chance: { icon: '❤️', name: 'Second chance', price: 120, bundle: [3, 300] },
+  bomb:   { icon: '💣', name: 'Bomb', price: 120, bundle: [3, 300] },
+  swap:   { icon: '🔄', name: 'Swap', price: 60, bundle: [5, 240] },
+  slow:   { icon: '⏳', name: 'Slow-mo', price: 100, bundle: [3, 240] },
+  magic:  { icon: '⭐', name: 'Magic block', price: 80, bundle: [3, 200] },
+  sweep:  { icon: '🧹', name: 'Sweep', price: 80, bundle: [3, 200] },
+  chance: { icon: '❤️', name: 'Second chance', price: 240, bundle: [3, 600] },
 };
 const IN_LEVEL_BOOSTERS = ['bomb', 'swap', 'slow', 'magic', 'sweep']; // the 6th is on the "Oops" screen
 const Economy = {
@@ -1191,12 +1218,15 @@ const Economy = {
    of the game only calls Payments.products() and Payments.purchase(id). */
 const Payments = (() => {
   const TEST_MODE = true;
-  const PRODUCTS = [ // prices are USD placeholders until Google Play provides them
-    { id: 'starter_pack', kind: 'starter', price: '$2.99', coins: 1000, items: { bomb: 2, swap: 2, slow: 2, magic: 2, sweep: 2, chance: 2 }, once: true },
-    { id: 'coins_small', kind: 'coins', size: 1, price: '$0.99', coins: 500 },
-    { id: 'coins_medium', kind: 'coins', size: 2, price: '$1.99', coins: 1200, bonus: '+20%' },
-    { id: 'coins_big', kind: 'coins', size: 3, price: '$4.99', coins: 3500, bonus: '+40%' },
-    { id: 'coins_huge', kind: 'coins', size: 4, price: '$9.99', coins: 8000, bonus: '+60%' },
+  // Prices are USD placeholders until Google Play provides them. Sized to the
+  // coin economy: the whole game pays about 5,300–8,000 coins, so even the
+  // biggest pack is about a third of that, and the small one is one Bomb.
+  const PRODUCTS = [
+    { id: 'starter_pack', kind: 'starter', price: '$2.99', coins: 300, items: { bomb: 1, swap: 1, slow: 1, magic: 1, sweep: 1, chance: 1 }, once: true },
+    { id: 'coins_small', kind: 'coins', size: 1, price: '$0.99', coins: 150 },
+    { id: 'coins_medium', kind: 'coins', size: 2, price: '$1.99', coins: 360, bonus: '+20%' },
+    { id: 'coins_big', kind: 'coins', size: 3, price: '$4.99', coins: 1050, bonus: '+40%' },
+    { id: 'coins_huge', kind: 'coins', size: 4, price: '$9.99', coins: 2400, bonus: '+60%' },
   ];
   async function purchase(id) {
     const product = PRODUCTS.find(p => p.id === id);
@@ -1815,7 +1845,7 @@ const Art = (() => {
 // stay the same, and full logical rows show up as full columns.
 const Game = (() => {
   const S = {
-    board: null, piece: null, next: null, bag: [], pieceId: 0,
+    board: null, piece: null, queue: [], bag: [], pieceId: 0, // queue: the next pieces, looks already picked
     cols: CONFIG.cols, rows: CONFIG.rows, gravity: 'down', key: false,
     level: 1, num: 1, world: 0, score: 0, base: 0, lines: 0, interval: 1000,
     fallT: 0, lockT: 0, lockResets: 0, status: 'idle', // idle | playing | paused | won | over
@@ -1848,17 +1878,27 @@ const Game = (() => {
     }
     return false;
   }
+  // The queue holds the next QUEUE_SIZE pieces with their looks (special
+  // animals included) already picked, so the preview shows exactly what comes.
+  const QUEUE_SIZE = 3;
+  function queued() { const t = fromBag(), look = Cast.pick(t, S.world); return { t, skin: look.skin, special: look.special }; }
+  // What the player will get next, in order: a queued magic block comes first.
+  function upcoming() {
+    const q = S.queue.slice(0, QUEUE_SIZE);
+    if (S.magicNext) { q.unshift({ t: 'M', skin: 'meadow.M', special: false }); q.length = QUEUE_SIZE; }
+    return q;
+  }
   function spawn() {
-    let t;
-    if (S.magicNext) { t = 'M'; S.magicNext = false; } // the queued piece waits until after the magic block
-    else { t = S.next; S.next = fromBag(); }
+    let look;
+    if (S.magicNext) { look = { t: 'M', skin: 'meadow.M', special: false }; S.magicNext = false; } // the queue waits until after the magic block
+    else { look = S.queue.shift(); S.queue.push(queued()); }
+    const t = look.t;
     const minY = Math.min(...SHAPES[t][0].map(c => c[1]));
-    const look = t === 'M' ? { skin: 'meadow.M', special: false } : Cast.pick(t, S.world);
     S.piece = { t, r: 0, x: Math.floor((S.cols - PIECES[t].n) / 2), y: -minY, skin: look.skin };
     S.pieceId++;
     S.fallT = 0; S.lockT = 0; S.lockResets = 0; S.fast = false; // each new piece starts at normal speed
     if (collides(t, 0, S.piece.x, S.piece.y)) { end('over'); return; }
-    Events.emit('spawn', { type: t, next: S.next, special: look.special });
+    Events.emit('spawn', { type: t, next: upcoming().map(p => p.t), special: look.special });
   }
   function start(level) {
     Object.assign(S, Levels.setup(level), { world: Levels.world(level), num: Levels.num(level),
@@ -1867,7 +1907,7 @@ const Game = (() => {
       slowT: 0, magicNext: false, chanceUsed: false,
     });
     S.board = emptyBoard();
-    S.next = fromBag();
+    S.queue = Array.from({ length: QUEUE_SIZE }, queued);
     Events.emit('start', { level, key: S.key, gravity: S.gravity });
     spawn();
   }
@@ -2050,7 +2090,7 @@ const Game = (() => {
     return true;
   }
   return {
-    state: S, start, move, rotate, setFastFall, hardDrop, freeze, ghostY, update, pause, resume, stars,
+    state: S, start, move, rotate, setFastFall, hardDrop, freeze, ghostY, update, pause, resume, stars, upcoming,
     bomb, swap, slowMo, magic, sweep, secondChance,
   };
 })();
@@ -3036,12 +3076,529 @@ const Scene = (() => {
   return { init, paint, setWorld, resize, update, draw };
 })();
 
+/* ---------- 8b. Forest (home screen) ---------- */
+// A storybook forest behind the home screen, painted in code. The still parts
+// (sky, three depths of trees, the stream, bushes, ferns, flowers, mushrooms,
+// the big near trees) are painted once per screen size into a back and a front
+// layer. Between and on top of them a few things move: sun rays, glints on
+// the stream, swaying grass, butterflies, birds, and woodland animals drawn in
+// their natural shapes. The animals take turns on fixed loops, so only a
+// handful move at once and older iPhones stay smooth.
+const Forest = (() => {
+  const TAU = Math.PI * 2;
+  const reduced = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const seeded = seed => () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const lerp = (a, b, q) => a + (b - a) * q;
+  const ease = q => q * q * (3 - 2 * q);
+  let canvas, ctx, back, front, W = 0, H = 0, dpr = 1, u = 1, t = 6, rayFill = null;
+  let L = {}, grass = [];
+
+  // ----- drawing helpers -----
+  function vgrad(g, y0, y1, stops) {
+    const gr = g.createLinearGradient(0, y0, 0, y1);
+    stops.forEach(([o, c]) => gr.addColorStop(o, c));
+    return gr;
+  }
+  const ell = (g, x, y, rx, ry, rot = 0) => { g.beginPath(); g.ellipse(x, y, rx, ry, rot, 0, TAU); g.fill(); };
+  const dot = (g, x, y, r) => { g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill(); };
+  // A round leafy crown: dark clumps, then lighter ones up and to the left
+  // where the sun hits, then small bright leaf clusters.
+  function crown(g, x, y, r, dark, mid, light, R) {
+    g.fillStyle = dark;
+    for (let i = 0; i < 9; i++) { const a = R() * TAU, d = R() * r * .55; dot(g, x + Math.cos(a) * d, y + Math.sin(a) * d * .8 + r * .1, r * (.38 + R() * .2)); }
+    g.fillStyle = mid;
+    for (let i = 0; i < 7; i++) { const a = R() * TAU, d = R() * r * .45; dot(g, x + Math.cos(a) * d - r * .12, y + Math.sin(a) * d * .7 - r * .12, r * (.28 + R() * .15)); }
+    g.fillStyle = light;
+    for (let i = 0; i < 6; i++) { const a = R() * TAU, d = R() * r * .35; dot(g, x + Math.cos(a) * d - r * .25, y + Math.sin(a) * d * .6 - r * .3, r * (.13 + R() * .1)); }
+  }
+  // A fir: stacked tiers, the sunny left side a little lighter.
+  function pine(g, x, base, h, w, dark, light) {
+    g.fillStyle = dark; g.fillRect(x - w * .05, base - h * .2, w * .1, h * .2);
+    for (let k = 0; k < 4; k++) {
+      const top = base - h + k * h * .2, bot = top + h * .34, half = w * (.28 + k * .2);
+      g.fillStyle = dark;
+      g.beginPath(); g.moveTo(x, top); g.lineTo(x + half, bot); g.quadraticCurveTo(x, bot - h * .05, x - half, bot); g.closePath(); g.fill();
+      g.fillStyle = light;
+      g.beginPath(); g.moveTo(x, top); g.lineTo(x - half * .9, bot - h * .015); g.quadraticCurveTo(x - half * .4, bot - h * .05, x - half * .05, bot - h * .03); g.closePath(); g.fill();
+    }
+  }
+  function fern(g, x, y, s, color, R) {
+    g.strokeStyle = color; g.fillStyle = color; g.lineCap = 'round';
+    for (let i = 0; i < 6; i++) {
+      const a = -Math.PI / 2 + (i / 5 - .5) * 2.3, len = s * (.75 + R() * .35);
+      const ex = x + Math.cos(a) * len, ey = y + Math.sin(a) * len * .75 + len * .2;
+      const mx = x + Math.cos(a) * len * .5, my = y + Math.sin(a) * len * .7 - len * .1;
+      g.lineWidth = Math.max(1, s * .035);
+      g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(mx, my, ex, ey); g.stroke();
+      for (let k = 1; k < 10; k++) { // leaflets on both sides, smaller toward the tip
+        const q = k / 10, iq = 1 - q;
+        const px = iq * iq * x + 2 * iq * q * mx + q * q * ex, py = iq * iq * y + 2 * iq * q * my + q * q * ey;
+        const tx = 2 * iq * (mx - x) + 2 * q * (ex - mx), ty = 2 * iq * (my - y) + 2 * q * (ey - my), ta = Math.atan2(ty, tx);
+        const l = s * .1 * (1 - q * .75);
+        ell(g, px + Math.cos(ta - 1.2) * l, py + Math.sin(ta - 1.2) * l, l, l * .35, ta - 1.2);
+        ell(g, px + Math.cos(ta + 1.2) * l, py + Math.sin(ta + 1.2) * l, l, l * .35, ta + 1.2);
+      }
+    }
+  }
+  function flower(g, x, y, r, petal) {
+    g.strokeStyle = '#3C8A36'; g.lineWidth = Math.max(1, r * .35);
+    g.beginPath(); g.moveTo(x, y + r * 3.2); g.quadraticCurveTo(x - r * .6, y + r * 1.6, x, y); g.stroke();
+    g.fillStyle = petal;
+    for (let i = 0; i < 5; i++) { const a = i * TAU / 5 - Math.PI / 2; ell(g, x + Math.cos(a) * r * .9, y + Math.sin(a) * r * .9, r * .75, r * .55, a); }
+    g.fillStyle = '#FFC42E'; dot(g, x, y, r * .5);
+  }
+  function mushroom(g, x, y, s) {
+    g.fillStyle = vgrad(g, y - s, y, [[0, '#FFF6E6'], [1, '#E2CBA8']]);
+    g.beginPath(); g.moveTo(x - s * .22, y); g.quadraticCurveTo(x - s * .16, y - s * .5, x - s * .14, y - s * .8); g.lineTo(x + s * .14, y - s * .8); g.quadraticCurveTo(x + s * .16, y - s * .5, x + s * .22, y); g.closePath(); g.fill();
+    g.fillStyle = vgrad(g, y - s * 1.35, y - s * .7, [[0, '#FF6A52'], [1, '#C8261E']]);
+    g.beginPath(); g.ellipse(x, y - s * .78, s * .62, s * .55, 0, Math.PI, 0); g.closePath(); g.fill();
+    g.fillStyle = 'rgba(255, 255, 255, .92)';
+    for (const [dx, dy, r] of [[-.3, -1.02, .09], [.08, -1.18, .1], [.34, -.95, .08], [-.05, -.9, .06]]) dot(g, x + dx * s, y + dy * s, r * s);
+  }
+  function trunk(g, cx, w, top, bottom) {
+    const gr = g.createLinearGradient(cx - w / 2, 0, cx + w / 2, 0);
+    gr.addColorStop(0, '#2A190E'); gr.addColorStop(.32, '#6E4728'); gr.addColorStop(.58, '#573720'); gr.addColorStop(1, '#22140B');
+    g.fillStyle = gr;
+    g.beginPath(); g.moveTo(cx - w * .42, top); g.lineTo(cx + w * .42, top);
+    g.bezierCurveTo(cx + w * .5, bottom - w * .9, cx + w * .55, bottom - w * .3, cx + w * 1.1, bottom);
+    g.lineTo(cx - w * 1.1, bottom);
+    g.bezierCurveTo(cx - w * .55, bottom - w * .3, cx - w * .5, bottom - w * .9, cx - w * .42, top);
+    g.fill();
+    g.lineCap = 'round';
+    for (let i = 0; i < 7; i++) { // bark: wavy grooves and lighter ridges
+      const x0 = cx + (i / 6 - .5) * w * .72;
+      g.strokeStyle = i % 2 ? 'rgba(18, 9, 3, .45)' : 'rgba(170, 120, 80, .22)'; g.lineWidth = i % 2 ? 2.2 : 1.4;
+      g.beginPath(); g.moveTo(x0, top);
+      for (let y = top; y < bottom - w * .5; y += 16) g.lineTo(x0 + Math.sin(y * .045 + i * 1.7) * w * .045, y);
+      g.stroke();
+    }
+    g.fillStyle = 'rgba(110, 160, 70, .55)'; // moss on the roots
+    ell(g, cx - w * .6, bottom - w * .12, w * .45, w * .14); ell(g, cx + w * .55, bottom - w * .1, w * .4, w * .12);
+  }
+
+  // ----- the still picture -----
+  function paintBack(g, R) {
+    g.fillStyle = vgrad(g, 0, L.horizon, [[0, '#94D3F2'], [.55, '#CFEDE4'], [1, '#F3F5D2']]);
+    g.fillRect(0, 0, W, L.horizon + 4);
+    const sx = W * .78, sy = H * .04, glow = g.createRadialGradient(sx, sy, 0, sx, sy, Math.max(W, H) * .6);
+    glow.addColorStop(0, 'rgba(255, 250, 210, 1)'); glow.addColorStop(.2, 'rgba(255, 242, 185, .5)'); glow.addColorStop(1, 'rgba(255, 242, 185, 0)');
+    g.fillStyle = glow; g.fillRect(0, 0, W, L.horizon + 4);
+    // Three rows of trees, far to near: farther rows lighter, bluer and hazier.
+    const rows = [
+      { base: L.horizon, h: H * .19, n: Math.ceil(W / 30), c: ['#9FC8B6', '#B0D4C0', '#C4E1CD'], trunk: '#A0B8A6', haze: .5 },
+      { base: L.horizon + H * .006, h: H * .25, n: Math.ceil(W / 44), c: ['#6CA283', '#80B591', '#99CA9E'], trunk: '#7F927A', haze: .32 },
+      { base: L.horizon + H * .014, h: H * .31, n: Math.ceil(W / 66), c: ['#3A744A', '#4F8A55', '#72AB64'], trunk: '#4E3B2A', haze: 0 },
+    ];
+    for (const row of rows) {
+      for (let i = 0; i < row.n; i++) {
+        const x = (i + .5 + (R() - .5) * .8) * W / row.n, s = row.h * (.7 + R() * .5);
+        if (R() < .5) pine(g, x, row.base, s, s * .42, row.c[0], row.c[2]);
+        else {
+          g.fillStyle = row.trunk; g.fillRect(x - s * .025, row.base - s * .5, s * .05, s * .5);
+          crown(g, x, row.base - s * .66, s * .3, row.c[0], row.c[1], row.c[2], R);
+        }
+      }
+      if (row.haze) {
+        const top = row.base - row.h * 1.25;
+        g.fillStyle = vgrad(g, top, row.base, [[0, 'rgba(232, 244, 232, 0)'], [1, `rgba(232, 244, 232, ${row.haze})`]]);
+        g.fillRect(0, top, W, row.base - top);
+      }
+    }
+    // the forest floor
+    g.fillStyle = vgrad(g, L.horizon, H, [[0, '#86BE5C'], [.3, '#6CAE4A'], [1, '#3D8636']]);
+    g.fillRect(0, L.horizon, W, H - L.horizon);
+    g.fillStyle = vgrad(g, L.horizon, L.horizon + H * .03, [[0, 'rgba(30, 60, 30, .35)'], [1, 'rgba(30, 60, 30, 0)']]);
+    g.fillRect(0, L.horizon, W, H * .03);
+    g.fillStyle = 'rgba(255, 246, 170, .17)'; // sunny patches
+    for (let i = 0; i < 6; i++) ell(g, R() * W, lerp(L.creekBot(W / 2), H, .1 + R() * .6), W * (.12 + R() * .15), H * (.015 + R() * .02));
+    // bushes along the far bank
+    for (let i = 0; i < Math.ceil(W / 60); i++) {
+      g.save(); g.translate((i + R()) * 60, L.horizon + H * .012); g.scale(1, .7);
+      crown(g, 0, 0, H * (.025 + R() * .015), '#3B7438', '#4E8E43', '#79B259', R);
+      g.restore();
+    }
+    // the stream: soft bank shadow, water, light ripples, pebbles
+    const creek = dy => {
+      g.beginPath();
+      for (let x = 0; x <= W + 8; x += 8) g.lineTo(x, L.creekTop(x) + dy);
+      for (let x = W + 8; x >= -8; x -= 8) g.lineTo(x, L.creekBot(x) + dy);
+      g.closePath();
+    };
+    creek(3); g.fillStyle = 'rgba(70, 60, 30, .35)'; g.fill();
+    creek(0); g.fillStyle = vgrad(g, L.creek - H * .03, L.creek + H * .03, [[0, '#C9F1FF'], [.5, '#7ACCEB'], [1, '#3E9ECF']]); g.fill();
+    g.strokeStyle = 'rgba(255, 255, 255, .55)'; g.lineWidth = 1.5; g.lineCap = 'round';
+    for (let i = 0; i < 9; i++) {
+      const x = R() * W, y = lerp(L.creekTop(x), L.creekBot(x), .3 + R() * .4), l = 8 + R() * 16;
+      g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + l / 2, y - 1.5, x + l, y); g.stroke();
+    }
+    for (let i = 0; i < Math.ceil(W / 22); i++) {
+      const x = R() * W, y = L.creekBot(x) + 1;
+      g.fillStyle = ['#A9A49A', '#8E8A80', '#C2BDB2'][i % 3]; ell(g, x, y, 3 + R() * 4, 2 + R() * 1.5);
+    }
+    // ferns, flowers and mushrooms on the near side
+    for (let i = 0; i < 5; i++) fern(g, W * (.08 + i * .22 + R() * .08), lerp(L.deerY, H * .92, R()), 26 * u * (.8 + R() * .4), ['#3E8A3A', '#4C9A41', '#357C32'][i % 3], R);
+    const petals = ['#FFFFFF', '#FF8FC2', '#FFD84D', '#B98CFF', '#FF9E5A'];
+    for (let i = 0; i < 14 + W / 20; i++) flower(g, R() * W, lerp(L.creekBot(W / 2) + 10, H * .95, R()), (2.2 + R() * 2) * u, petals[i % petals.length]);
+    mushroom(g, L.trunkL.x + L.trunkL.w * 1.25, H * .9, 20 * u);
+    mushroom(g, L.trunkL.x + L.trunkL.w * 1.65, H * .905, 13 * u);
+    mushroom(g, W * .78, L.foxY + H * .02, 14 * u);
+  }
+  function paintFront(g, R) {
+    const { trunkL: a, trunkR: b } = L;
+    // the owl's branch, then the two big near trees
+    const bx0 = a.x + a.w * .3, bx1 = L.owlX + 34 * u, by = L.owlY + 3 * u;
+    g.fillStyle = '#4A2D18';
+    g.beginPath(); g.moveTo(bx0, by - 10 * u); g.quadraticCurveTo((bx0 + bx1) / 2, by - 8 * u, bx1, by - 1.5 * u);
+    g.lineTo(bx1, by + 1.5 * u); g.quadraticCurveTo((bx0 + bx1) / 2, by + 6 * u, bx0, by + 8 * u); g.fill();
+    g.strokeStyle = 'rgba(160, 110, 70, .5)'; g.lineWidth = 1.5;
+    g.beginPath(); g.moveTo(bx0, by - 8 * u); g.quadraticCurveTo((bx0 + bx1) / 2, by - 6.5 * u, bx1 - 4, by - 1.5 * u); g.stroke();
+    g.save(); g.translate(bx1 + 6 * u, by - 4 * u); g.scale(1, .8);
+    crown(g, 0, 0, 16 * u, '#2B5E2F', '#3C7A3A', '#5E9E4A', R);
+    g.restore();
+    trunk(g, a.x, a.w, -10, H * .95);
+    trunk(g, b.x, b.w, -10, H * .93);
+    // the canopy along the top: big dark leaves at the corners, lighter fringe
+    for (let x = -W * .1; x <= W * 1.1; x += W * .14) {
+      const edge = Math.abs(x / W - .5) * 2, r = W * (.07 + .14 * edge * edge) + 16;
+      crown(g, x, -r * .15 + R() * 10, r, '#1F4A28', '#2D6332', '#4A8A3D', R);
+    }
+    // dark foreground plants in the bottom corners
+    fern(g, W * .02, H * 1.01, 70 * u, '#2B6A2A', R);
+    fern(g, W * 1.0, H * 1.0, 60 * u, '#2F712C', R);
+    g.save(); g.translate(W * .97, H * .985); g.scale(1, .75);
+    crown(g, 0, 0, 34 * u, '#245A27', '#2F6F2F', '#4E8F42', R);
+    g.restore();
+  }
+
+  // ----- animals, each in its natural shape -----
+  // Coordinates are "animal units" with the origin on the ground, facing right.
+  // A two-part leg: `a` swings it forward (from straight down), `bend` folds the lower part back.
+  function leg(g, x, y, l1, l2, a, bend, w, color, hoof, lower = color) {
+    const kx = x + Math.sin(a) * l1, ky = y + Math.cos(a) * l1;
+    const fx = kx + Math.sin(a - bend) * l2, fy = ky + Math.cos(a - bend) * l2;
+    g.lineCap = 'round'; g.lineJoin = 'round';
+    g.strokeStyle = lower; g.lineWidth = w * .55; g.beginPath(); g.moveTo(kx, ky); g.lineTo(fx, fy); g.stroke();
+    g.strokeStyle = color; g.lineWidth = w; g.beginPath(); g.moveTo(x, y); g.lineTo(kx, ky); g.stroke();
+    if (hoof) { g.fillStyle = hoof; ell(g, fx + .8, fy - .4, w * .42, w * .32); }
+  }
+  // Deer (a young stag): about 100 units tall. p: walk phase (0 = standing),
+  // head: 0 up … 1 grazing, tt: time for ear and tail flicks.
+  function deer(g, p, head, tt) {
+    const fur = '#A8683A', dark = '#7A4626', light = '#D49C66', cream = '#F3E3C6', hoof = '#2A1A10';
+    const legAt = (hx, hy, off, color, hind) => {
+      const s = Math.sin(p + off), c = Math.cos(p + off), a = p ? s * .32 : 0, bend = p ? Math.max(0, c) * .8 : 0;
+      if (hind) leg(g, hx, hy, 24, 32, a + .3, .6 + bend * .5, 9, color, hoof);
+      else leg(g, hx, hy, 24, 30, a, bend, 7, color, hoof);
+    };
+    legAt(-20, -54, 0, dark, true); legAt(20, -54, Math.PI / 2, dark, false); // far side (in shade)
+    const flick = Math.sin(tt * 1.1) > .85 ? Math.sin(tt * 18) * .35 : 0;
+    g.fillStyle = cream; ell(g, -34, -62, 3.5, 7, .45 + flick);
+    // body: rounded rump, a gently dipped back, deep chest, tucked belly
+    g.fillStyle = vgrad(g, -78, -46, [[0, light], [.45, fur], [1, dark]]);
+    g.beginPath(); g.moveTo(-35, -64);
+    g.bezierCurveTo(-31, -77, -10, -74, 4, -73);
+    g.bezierCurveTo(14, -73, 20, -78, 27, -72);
+    g.bezierCurveTo(35, -66, 34, -54, 27, -50);
+    g.bezierCurveTo(12, -46, -8, -48, -18, -50);
+    g.bezierCurveTo(-30, -51, -38, -55, -35, -64);
+    g.closePath(); g.fill();
+    g.fillStyle = 'rgba(80, 42, 18, .2)'; ell(g, -4, -72, 24, 2.6); // darker back
+    g.fillStyle = vgrad(g, -72, -46, [[0, 'rgba(230, 180, 128, .55)'], [1, 'rgba(160, 96, 52, 0)']]);
+    ell(g, -21, -60, 13, 12); ell(g, 20, -60, 9, 11); // haunch and shoulder
+    g.fillStyle = 'rgba(243, 227, 198, .9)'; ell(g, 4, -49.5, 15, 3);
+    // neck and head (lowered while grazing)
+    const hx = lerp(42, 40, head), hy = lerp(-98, -24, head), ang = lerp(.25, 1.45, head);
+    g.fillStyle = vgrad(g, -100, -50, [[0, light], [1, fur]]);
+    g.beginPath(); g.moveTo(11, -74); g.quadraticCurveTo(26, -84, hx - 7, hy - 3); g.lineTo(hx + 5, hy + 7); g.quadraticCurveTo(37, -62, 31, -53); g.closePath(); g.fill();
+    g.fillStyle = 'rgba(243, 227, 198, .7)'; ell(g, hx + 1, hy + 9, 2.6, 4, ang - .3); // pale throat
+    g.save(); g.translate(hx, hy); g.rotate(ang);
+    const ear = Math.sin(tt * .9 + 1) > .9 ? Math.sin(tt * 20) * .25 : 0;
+    g.fillStyle = dark; ell(g, -6, -9, 3, 8, -1.05 + ear);
+    g.fillStyle = vgrad(g, -9, 8, [[0, light], [1, fur]]);
+    g.beginPath(); g.moveTo(-7, -5); g.quadraticCurveTo(5, -10, 14, -4); g.quadraticCurveTo(22, -1, 22, 3); g.quadraticCurveTo(20, 7, 12, 6); g.quadraticCurveTo(0, 9, -7, 5); g.closePath(); g.fill();
+    g.fillStyle = cream; ell(g, 15, 4.5, 6, 2.4);
+    g.fillStyle = hoof; ell(g, 21, 1.6, 2.3, 1.9);
+    g.fillStyle = '#1C110A'; ell(g, 5, -2.4, 2.3, 2.1);
+    g.fillStyle = '#fff'; dot(g, 5.8, -3.1, .75);
+    g.strokeStyle = '#EAD9B4'; g.lineWidth = 2.2; g.lineCap = 'round';
+    g.beginPath(); g.moveTo(-1, -7); g.quadraticCurveTo(-5, -16, -2, -25); g.moveTo(-3, -14); g.lineTo(-10, -18); g.moveTo(-3, -20); g.lineTo(3, -26); g.stroke();
+    g.fillStyle = fur; ell(g, -2, -9, 3.4, 8.5, -.8 + ear);
+    g.fillStyle = '#EBC8A6'; ell(g, -2, -9, 1.7, 5.5, -.8 + ear);
+    g.restore();
+    legAt(-23, -55, Math.PI, fur, true); legAt(18, -55, Math.PI * 1.5, fur, false); // near side
+  }
+  // Fox: trotting (diagonal legs together), a long bushy white-tipped tail.
+  function fox(g, p) {
+    const orange = '#E9782B', deep = '#B54F17', light = '#F8A65E', white = '#FFF5E8', sock = '#33201A';
+    g.translate(0, -Math.abs(Math.sin(p)) * 1.8);
+    const legAt = (hx, off, color, hind) => {
+      const s = Math.sin(p + off), c = Math.cos(p + off);
+      leg(g, hx, -24, 12, 13, s * .5 + (hind ? .25 : 0), Math.max(0, c) * .9 + (hind ? .45 : 0), hind ? 8 : 6.5, color, null, sock);
+    };
+    legAt(-17, Math.PI, deep, true); legAt(17, 0, deep, false);
+    g.save(); g.translate(-22, -29); g.rotate(-.18 + Math.sin(p * .5) * .1);
+    g.fillStyle = vgrad(g, -14, 8, [[0, light], [1, deep]]);
+    g.beginPath(); g.moveTo(2, -4); g.bezierCurveTo(-12, -15, -34, -14, -46, -3); g.bezierCurveTo(-36, 6, -14, 8, 2, 4); g.closePath(); g.fill();
+    g.fillStyle = white; ell(g, -42, -2.5, 6.5, 5, .2);
+    g.restore();
+    g.fillStyle = vgrad(g, -40, -18, [[0, light], [.5, orange], [1, deep]]); ell(g, 0, -29, 24, 9.5);
+    g.fillStyle = white; ell(g, 6, -21.5, 13, 3.2);
+    g.fillStyle = orange; ell(g, 20, -33, 8.5, 9, -.4);
+    g.fillStyle = white; ell(g, 24, -27, 5.5, 6.5, -.3);
+    g.save(); g.translate(28, -42);
+    g.fillStyle = orange; g.beginPath(); g.moveTo(-4, -6); g.lineTo(-1, -17); g.lineTo(4, -6); g.fill();
+    g.fillStyle = sock; g.beginPath(); g.moveTo(-2.6, -12); g.lineTo(-1, -17); g.lineTo(.6, -12); g.fill();
+    g.fillStyle = vgrad(g, -7, 7, [[0, light], [1, orange]]); ell(g, 0, 0, 8, 7);
+    g.beginPath(); g.moveTo(3, -4); g.quadraticCurveTo(12, -1.5, 17, 1); g.quadraticCurveTo(12, 5, 3, 5); g.fill();
+    g.fillStyle = white; g.beginPath(); g.moveTo(-3, 3); g.quadraticCurveTo(6, 8, 15, 3); g.quadraticCurveTo(8, 2, 2, -.5); g.fill();
+    g.fillStyle = sock; dot(g, 16.6, 1, 1.9);
+    g.fillStyle = '#1C110A'; ell(g, 5, -2.6, 1.9, 1.3, .25);
+    g.fillStyle = orange; g.beginPath(); g.moveTo(1, -6); g.lineTo(5, -16); g.lineTo(8, -4); g.fill();
+    g.fillStyle = white; g.beginPath(); g.moveTo(3, -6.5); g.lineTo(5, -12.5); g.lineTo(6.6, -6); g.fill();
+    g.restore();
+    legAt(-15, 0, orange, true); legAt(19, Math.PI, orange, false);
+  }
+  // Rabbit: hop goes 0 → 1 through one jump (0 = sitting); sniff ≥ 0 while it sits.
+  function rabbit(g, hop, sniff) {
+    const fur = '#9F8771', light = '#C8B39B', belly = '#EEE3D3', s = Math.sin(hop * Math.PI);
+    g.translate(0, -s * 16); g.rotate(-s * .22 + (hop > .5 ? (hop - .5) * .3 : 0));
+    g.fillStyle = '#8A735E'; ell(g, -5, -3 + s * 3, 9 + s * 4, 3.4, s * .5);
+    g.fillStyle = vgrad(g, -22, 0, [[0, light], [1, fur]]); ell(g, -5, -11, 11, 10); ell(g, 4, -14, 11, 8.5, -.25);
+    g.fillStyle = belly; ell(g, 9, -10, 5, 6, -.3);
+    g.fillStyle = fur; ell(g, 10 + s * 7, -2.5 + s * 2, 3.2, 2.2);
+    g.fillStyle = '#FFFFFF'; dot(g, -15, -13, 4.6);
+    const tw = sniff >= 0 ? Math.sin(sniff * 30) * .6 : 0;
+    g.fillStyle = vgrad(g, -30, -15, [[0, light], [1, fur]]); ell(g, 14, -22, 7.5, 6.3, .15);
+    const ea = -.4 - s * .55;
+    g.fillStyle = fur; ell(g, 6, -33, 2.8, 10, ea - .15); ell(g, 9, -33, 3, 10.5, ea);
+    g.fillStyle = '#F2B8C4'; ell(g, 9, -33, 1.5, 7.5, ea);
+    g.fillStyle = '#1C110A'; dot(g, 16.4, -23, 1.7);
+    g.fillStyle = '#fff'; dot(g, 16.9, -23.5, .5);
+    g.fillStyle = '#E58A9E'; dot(g, 21 + tw * .3, -20.5 + tw * .2, 1.3);
+  }
+  // Squirrel, drawn as if running along the ground; turned upright to climb.
+  function squirrel(g, p, tail) {
+    const fur = '#B5582A', light = '#DE8A50', belly = '#F3D4B2';
+    g.save(); g.translate(-9, -8); g.rotate(tail);
+    g.fillStyle = vgrad(g, -30, 4, [[0, light], [1, fur]]);
+    g.beginPath(); g.moveTo(2, 0); g.bezierCurveTo(-14, 4, -22, -10, -14, -20); g.bezierCurveTo(-8, -28, 4, -30, 2, -38);
+    g.bezierCurveTo(12, -30, 8, -18, -2, -14); g.bezierCurveTo(-8, -10, -4, -4, 4, -4); g.closePath(); g.fill();
+    g.restore();
+    const r = Math.sin(p);
+    g.fillStyle = fur; ell(g, -6 - r * 3, -2, 5, 2.4); ell(g, 9 + r * 3, -2, 3.4, 1.8);
+    g.fillStyle = vgrad(g, -16, 0, [[0, light], [1, fur]]); ell(g, 0, -8, 11, 6, -.1);
+    g.fillStyle = belly; ell(g, 3, -4, 7, 2.4);
+    g.fillStyle = fur; dot(g, 11, -12, 5.6);
+    g.beginPath(); g.moveTo(8, -16); g.lineTo(9, -22); g.lineTo(12, -16.5); g.fill();
+    g.fillStyle = belly; ell(g, 14, -10, 3, 2.2);
+    g.fillStyle = '#1C110A'; dot(g, 13, -13.2, 1.4); dot(g, 16.4, -11, .9);
+  }
+  // Owl on a branch: blink 0 … 1 closes the eyes; look turns the face a little.
+  function owl(g, blink, look) {
+    const brown = '#8B5B35', light = '#C49060', disc = '#EBCFA6', deep = '#5E3A20';
+    g.fillStyle = vgrad(g, -32, 0, [[0, light], [1, brown]]); ell(g, 0, -15, 12, 16);
+    g.fillStyle = '#E9D2AE'; ell(g, 0, -12, 7.5, 11);
+    g.strokeStyle = 'rgba(110, 70, 40, .7)'; g.lineWidth = 1;
+    for (let r = 0; r < 4; r++) for (let c = -1; c <= 1; c++) { const x = c * 4 + (r % 2) * 2 - 1, y = -18 + r * 4.5; g.beginPath(); g.arc(x, y, 1.6, .2, Math.PI - .2); g.stroke(); }
+    g.fillStyle = deep; ell(g, -10, -14, 5, 11.5, .15); ell(g, 10, -14, 5, 11.5, -.15);
+    g.fillStyle = vgrad(g, -46, -24, [[0, light], [1, brown]]); dot(g, look * .4, -34, 11.5);
+    g.beginPath(); g.moveTo(-10 + look * .4, -40); g.lineTo(-9 + look * .4, -49); g.lineTo(-4 + look * .4, -43); g.fill();
+    g.beginPath(); g.moveTo(10 + look * .4, -40); g.lineTo(9 + look * .4, -49); g.lineTo(4 + look * .4, -43); g.fill();
+    for (const ex of [-4.7, 4.7]) {
+      const x = ex + look;
+      g.fillStyle = disc; dot(g, x, -34, 5.8);
+      g.fillStyle = '#FFB21E'; dot(g, x, -34, 3.7);
+      g.fillStyle = '#1C110A'; dot(g, x + look * .25, -34, 2);
+      g.fillStyle = '#fff'; dot(g, x + .9, -35, .7);
+      if (blink > 0) { g.save(); g.beginPath(); g.arc(x, -34, 4, 0, TAU); g.clip(); g.fillStyle = brown; g.fillRect(x - 4.5, -38.5, 9, 8.6 * blink); g.restore(); }
+    }
+    g.fillStyle = '#E2A23A'; g.beginPath(); g.moveTo(look - 1.8, -31.5); g.lineTo(look + 1.8, -31.5); g.lineTo(look, -27.5); g.fill();
+    g.strokeStyle = '#D9952E'; g.lineWidth = 1.6; g.lineCap = 'round';
+    g.beginPath(); for (const fx of [-5, -3, 3, 5]) { g.moveTo(fx, -1); g.lineTo(fx + (fx < 0 ? -.6 : .6), 1.5); } g.stroke();
+  }
+  // Bear peeking out from behind a tree; its paw is drawn over the bark separately.
+  function bearHead(g, blink, tilt) {
+    const fur = '#6D472B', light = '#93673F', muzzle = '#C9A27A';
+    g.rotate(tilt);
+    g.fillStyle = fur; dot(g, -14, -17, 7.5); dot(g, 13, -18, 7.5);
+    g.fillStyle = '#A97C52'; dot(g, -13.5, -16.5, 4); dot(g, 12.5, -17.5, 4);
+    g.fillStyle = vgrad(g, -22, 22, [[0, light], [1, fur]]); dot(g, 0, 0, 22);
+    g.fillStyle = muzzle; ell(g, 6, 8, 11, 8);
+    g.fillStyle = '#1C110A'; ell(g, 10, 4, 4.6, 3.2);
+    g.fillStyle = 'rgba(255, 255, 255, .6)'; ell(g, 9, 2.8, 1.6, .9);
+    g.strokeStyle = '#1C110A'; g.lineWidth = 1.4; g.beginPath(); g.moveTo(10, 7); g.quadraticCurveTo(9, 11, 5, 11.5); g.stroke();
+    g.fillStyle = '#1C110A';
+    for (const ex of [-3, 11]) ell(g, ex, -6, 2.4, Math.max(.3, 2.6 * (1 - blink)));
+  }
+  function bearPaw(g) {
+    g.fillStyle = '#6D472B'; ell(g, 0, 0, 7, 9, .2);
+    g.strokeStyle = '#2A1A10'; g.lineWidth = 1.3; g.lineCap = 'round';
+    g.beginPath(); for (const y of [-5, -1, 3]) { g.moveTo(-3, y); g.lineTo(-7, y + 1); } g.stroke();
+  }
+  function bird(g, flap, color) {
+    const w = Math.sin(flap);
+    g.fillStyle = color;
+    ell(g, 0, 0, 6, 2.6); dot(g, 5.5, -1, 2.3);
+    g.beginPath(); g.moveTo(-5, 0); g.lineTo(-10, -2); g.lineTo(-10, 2.2); g.fill();
+    g.fillStyle = '#F2A33A'; g.beginPath(); g.moveTo(7.5, -1.5); g.lineTo(10, -.6); g.lineTo(7.5, .2); g.fill();
+    g.fillStyle = color;
+    g.beginPath(); g.moveTo(-3, 0); g.quadraticCurveTo(-4, -10 * w, -11, -9 * w); g.quadraticCurveTo(-3, -3 * w, 3, 0); g.fill();
+  }
+  function butterfly(g, flap, c1, c2) {
+    const k = .2 + .8 * Math.abs(Math.cos(flap));
+    g.save(); g.scale(k, 1);
+    for (const s of [-1, 1]) {
+      g.fillStyle = c1; ell(g, s * 5, -3, 5.2, 4.4, s * .5);
+      g.fillStyle = c2; ell(g, s * 4, 3.2, 3.4, 3, -s * .4);
+      g.fillStyle = 'rgba(255, 255, 255, .85)'; dot(g, s * 6.5, -4, 1);
+    }
+    g.restore();
+    g.fillStyle = '#2A1A22'; ell(g, 0, 0, 1.1, 5);
+    g.strokeStyle = '#2A1A22'; g.lineWidth = .8;
+    g.beginPath(); g.moveTo(0, -4.5); g.quadraticCurveTo(-2, -8, -3, -9); g.moveTo(0, -4.5); g.quadraticCurveTo(2, -8, 3, -9); g.stroke();
+  }
+
+  // ----- what moves, on fixed loops (seconds) -----
+  function place(x, y, k, dir, fn) { ctx.save(); ctx.translate(x, y); ctx.scale(k * dir, k); fn(); ctx.restore(); }
+  function crossing(P, start, len) { // q: seconds into a crossing, dir: which way (alternates), or null
+    const s = t - start + P * 1000, q = s % P;
+    return q < len ? { q, dir: Math.floor(s / P) % 2 ? -1 : 1 } : null;
+  }
+  function deerNow() { // walks in, grazes in the middle, lifts its head, walks on
+    const c = crossing(30, 0, 26);
+    if (!c) return;
+    const k = u * .85, far = W / 2 + 70 * k, q = c.q;
+    let d, head = 0, walk = true;
+    if (q < 10) d = -far * (1 - q / 10);
+    else if (q < 16) { // lower the head, graze (looking up once), lift it again
+      d = 0; walk = false;
+      const z = q - 10, look = z > 2.4 && z < 3.8 ? ease(Math.min(1, (z - 2.4) / .35, (3.8 - z) / .35)) : 0;
+      head = z < 1.2 ? ease(z / 1.2) : z < 4.6 ? 1 - look * .75 : 1 - ease(Math.min(1, (z - 4.6) / 1.2));
+    }
+    else d = far * ((q - 16) / 10);
+    const p = walk ? (d + far) / (52 * k) * TAU + .001 : 0;
+    place(W / 2 + d * c.dir, L.deerY, k, c.dir, () => deer(ctx, p, head, t));
+  }
+  function foxNow() {
+    const c = crossing(19, 4, 7);
+    if (!c) return;
+    const k = u * .95, far = W / 2 + 80 * k, d = -far + 2 * far * (c.q / 7);
+    place(W / 2 - d * c.dir, L.foxY, k, -c.dir, () => fox(ctx, (d + far) / (34 * k) * TAU));
+  }
+  function rabbitNow() { // three hops, a little sit and sniff, again
+    const k = u * 1.05, hd = 20 * k, P = L.rabbitP, c = crossing(P, 2, P - 3);
+    if (!c) return;
+    const n = Math.floor(c.q / 2.4), r = c.q % 2.4;
+    const hops = n * 3 + (r < 1.2 ? r / .4 : 3), hop = r < 1.2 ? (r % .4) / .4 : 0;
+    const x = c.dir > 0 ? -30 * k + hops * hd : W + 30 * k - hops * hd;
+    if (x < -40 * k || x > W + 40 * k) return;
+    place(x, L.rabbitY, k, c.dir, () => rabbit(ctx, hop, r >= 1.2 ? r - 1.2 : -1));
+  }
+  function bearNow() { // peeks out from behind the left tree, blinks, hides again
+    const q = (t + 9) % 17, out = q < 1 ? ease(q) : q < 4 ? 1 : q < 5 ? ease(5 - q) : 0;
+    if (out <= 0) return { out };
+    const k = u, a = L.trunkL;
+    const blink = q > 2.4 && q < 2.65 ? Math.sin((q - 2.4) / .25 * Math.PI) : 0;
+    place(a.x + (a.w * .5 + 4 * k) * out, L.bearY, k, 1, () => bearHead(ctx, blink, Math.sin(q * 1.4) * .12));
+    return { out, k };
+  }
+  function squirrelNow() { // runs up the right tree in three dashes, then is gone into the leaves
+    const q = (t + 1) % 13;
+    if (q > 6) return;
+    const n = Math.min(2, Math.floor(q / 1.8)), r = q - n * 1.8, moving = q < 5.4 && r < .9;
+    const prog = q >= 5.4 ? 1 : (n + Math.min(1, r / .9)) / 3;
+    const y = lerp(H * .86, H * .3, ease(prog)), k = u * .9;
+    ctx.globalAlpha = q > 5.4 ? Math.max(0, 1 - (q - 5.4) / .6) : 1;
+    place(L.trunkR.x - L.trunkR.w * .12, y, k, 1, () => { ctx.rotate(-Math.PI / 2); squirrel(ctx, moving ? q * 22 : 0, moving ? .1 : Math.sin(q * 9) * .15); });
+    ctx.globalAlpha = 1;
+  }
+  function draw() {
+    if (!back) resize(); // the window had no size yet when the home screen opened
+    if (!back) return;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.drawImage(back, 0, 0);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    for (let i = 0; i < 10; i++) { // light glinting on the stream
+      const x = ((i * W / 10 + t * 16 * u) % (W + 20)) - 10, y = lerp(L.creekTop(x), L.creekBot(x), .3 + (i * 37 % 10) / 25);
+      ctx.fillStyle = `rgba(255, 255, 255, ${(.35 + .35 * Math.sin(t * 2.6 + i * 1.7)).toFixed(2)})`;
+      ell(ctx, x, y, 5 * u, 1.1 * u);
+    }
+    const birds = crossing(15, 0, 8);
+    if (birds) for (let i = 0; i < 3; i++) {
+      const x = lerp(-40, W + 40, birds.q / 8) - i * 26 * u, y = H * (.15 + i * .025) + Math.sin(t * 1.3 + i) * 6;
+      place(birds.dir > 0 ? x : W - x, y, u * .8, birds.dir, () => bird(ctx, t * 9 + i * 1.3, ['#5A4A7A', '#6B5A3A', '#4A5A7A'][i]));
+    }
+    deerNow(); foxNow(); rabbitNow();
+    const bear = bearNow();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.drawImage(front, 0, 0);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (bear && bear.out > .7) place(L.trunkL.x + L.trunkL.w * .46, L.bearY + 24 * bear.k, bear.k, 1, () => bearPaw(ctx));
+    const blinkQ = t % 4.3;
+    place(L.owlX, L.owlY, u, 1, () => owl(ctx, blinkQ < .28 ? Math.sin(blinkQ / .28 * Math.PI) : 0, Math.sin(t * .35) * 2.2));
+    squirrelNow();
+    for (let c = 0; c < 3; c++) { // grass swaying in the wind, with slow gusts
+      ctx.strokeStyle = ['#3B8A34', '#4FA23E', '#2E7229'][c]; ctx.lineWidth = 2.6 * u; ctx.lineCap = 'round';
+      ctx.beginPath();
+      for (const b of grass) if (b.c === c) {
+        const sway = (Math.sin(t * 1.7 + b.x * .015 + b.ph) * .7 + Math.sin(t * .6 + b.x * .004) * .6) * b.len * .25;
+        ctx.moveTo(b.x, b.y); ctx.quadraticCurveTo(b.x + sway * .3, b.y - b.len * .55, b.x + sway, b.y - b.len);
+      }
+      ctx.stroke();
+    }
+    place(W * .3 + Math.sin(t * .37) * W * .22 + Math.sin(t * 1.3) * 10, H * .72 + Math.sin(t * .53) * H * .05 + Math.sin(t * 2.1) * 5, u, 1, () => butterfly(ctx, t * 13, '#FF9A2E', '#E8601C'));
+    place(W * .7 + Math.sin(t * .31 + 2) * W * .2, H * .64 + Math.sin(t * .47 + 1) * H * .05 + Math.sin(t * 2.4) * 5, u * .85, 1, () => butterfly(ctx, t * 15 + 1, '#6CC4FF', '#3A7FE0'));
+    ctx.fillStyle = rayFill; // sun rays through the branches, slowly breathing
+    for (let i = 0; i < 4; i++) {
+      ctx.globalAlpha = .3 + .3 * (.5 + .5 * Math.sin(t * .45 + i * 1.9));
+      const x0 = W * (.6 + i * .1), spread = W * (.06 + i * .015);
+      ctx.beginPath(); ctx.moveTo(x0, -10); ctx.lineTo(x0 + W * .05, -10); ctx.lineTo(x0 - W * .3 + spread, H * .8); ctx.lineTo(x0 - W * .3 - spread, H * .8); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function init() { canvas = document.getElementById('forest'); ctx = canvas.getContext('2d'); }
+  function resize() {
+    const w = window.innerWidth, h = window.innerHeight;
+    if (!w || !h || (back && w === W && h === H)) return; // not laid out yet, or same size: keep the painted layers
+    W = w; H = h; dpr = Math.min(window.devicePixelRatio || 1, 2);
+    u = Math.max(.75, Math.min(W / 390, H / 740));
+    canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+    const creek = H * .6;
+    L = {
+      horizon: H * .56, creek,
+      creekTop: x => creek - H * .016 + Math.sin(x * .012 + 1) * H * .007,
+      creekBot: x => creek + H * .016 + Math.sin(x * .01 + 2.2) * H * .009 + (x / W) * H * .008,
+      deerY: H * .7, foxY: H * .77, rabbitY: H * .83, bearY: H * .7,
+      trunkL: { x: W * .065, w: Math.max(40, W * .13) }, trunkR: { x: W * .94, w: Math.max(34, W * .11) },
+      owlX: W * .07 + Math.max(40, W * .13) * .5 + 30 * u, owlY: H * .42,
+    };
+    L.rabbitP = Math.ceil((W + 60 * u) / (3 * 20 * u * 1.05)) * 2.4 + 6;
+    const layer = paint => {
+      const c = document.createElement('canvas');
+      c.width = canvas.width; c.height = canvas.height;
+      const g = c.getContext('2d'); g.scale(dpr, dpr);
+      paint(g, seeded(Math.round(W) * 31 + 7));
+      return c;
+    };
+    back = layer(paintBack); front = layer(paintFront);
+    rayFill = vgrad(ctx, 0, H * .8, [[0, 'rgba(255, 250, 215, .42)'], [1, 'rgba(255, 250, 215, 0)']]);
+    const R = seeded(99);
+    grass = [];
+    const n = Math.round(W / 5);
+    for (let i = 0; i < n; i++) grass.push({ x: (i + R()) * W / n, y: H + 2 - R() * H * .06, len: (12 + R() * 18) * u, c: i % 3, ph: R() * TAU });
+    draw();
+  }
+  function update(dt) { if (!reduced) t += dt / 1000; }
+  return { init, resize, update, draw };
+})();
+
 /* ---------- 9. Render ---------- */
 const Render = (() => {
-  let board, ctx, next, nctx, frame, bg = null, cell = 24, dpr = 1, shook = false;
+  let board, ctx, frame, bg = null, cell = 24, dpr = 1, shook = false, slots = [], queueSig = '';
   // Logical → screen mapping in cells: sx = a·x + c·y + e, sy = b·x + d·y + f.
   let view = { a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 };
-  const NEXT_W = 56, NEXT_H = 36;
+  const SLOTS = [{ w: 80, h: 44, max: 19 }, { w: 40, h: 36, max: 10 }, { w: 40, h: 36, max: 10 }]; // CSS sizes of .queue canvases
   const CHROME = 34, FRAME_SHADOW = 12; // frame padding + borders, frame drop shadow
 
   function viewFor(S) {
@@ -3051,7 +3608,7 @@ const Render = (() => {
   }
   function init() {
     board = document.getElementById('board'); ctx = board.getContext('2d');
-    next = document.getElementById('next'); nctx = next.getContext('2d');
+    slots = [...document.querySelectorAll('#queue canvas')].map((el, i) => ({ ...SLOTS[i], el, ctx: el.getContext('2d') }));
     frame = document.getElementById('frame');
   }
   function resize() {
@@ -3068,7 +3625,8 @@ const Render = (() => {
     const W = cell * sc, H = cell * sr;
     board.style.width = W + 'px'; board.style.height = H + 'px';
     board.width = Math.round(W * dpr); board.height = Math.round(H * dpr);
-    next.width = Math.round(NEXT_W * dpr); next.height = Math.round(NEXT_H * dpr);
+    for (const s of slots) { s.el.width = Math.round(s.w * dpr); s.el.height = Math.round(s.h * dpr); }
+    queueSig = ''; // redraw the queue at the new size
     Art.clear();
     // Pre-draw the empty board in the world's colors: gradient, soft checker,
     // dots, and an inner shadow on the side the pieces come from.
@@ -3124,19 +3682,30 @@ const Render = (() => {
     for (const [lx, ly] of cells) tile({ t: p.t, r: p.r, lx, ly, skin: p.skin }, p.x + lx, y + ly);
     ctx.globalAlpha = 1;
   }
-  function drawNext(S) {
-    nctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    nctx.clearRect(0, 0, NEXT_W, NEXT_H);
-    const nt = S.magicNext ? 'M' : S.next; // a queued magic block comes first
-    if (!nt) return;
-    if (!S.key) { Art.drawCentered(nctx, Cast.regular(nt, S.world), nt === 'I' ? 13 : 16, NEXT_W, NEXT_H); return; }
-    // Gems, turned the way the piece will appear on the sideways board.
-    const pts = SHAPES[nt][0].map(([x, y]) => [view.a * x + view.c * y, view.b * x + view.d * y]);
-    const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
-    const w = Math.max(...xs) - Math.min(...xs) + 1, h = Math.max(...ys) - Math.min(...ys) + 1;
-    const s = Math.min(14, NEXT_W / w, NEXT_H / h);
-    const ox = (NEXT_W - w * s) / 2, oy = (NEXT_H - h * s) / 2;
-    for (const [x, y] of pts) nctx.drawImage(Art.gem(nt, s), ox + (x - Math.min(...xs)) * s, oy + (y - Math.min(...ys)) * s, s, s);
+  // The next pieces strip. Each slot shows its piece as big as fits; on
+  // sideways key levels the gems are turned the way the piece will appear.
+  // Redrawn only when the queue changes.
+  function drawSlot(slot, p, S) {
+    const g = slot.ctx, W = slot.w, H = slot.h;
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.clearRect(0, 0, W, H);
+    if (!p) return;
+    const pts = SHAPES[p.t][0].map(([x, y]) => [view.a * x + view.c * y, view.b * x + view.d * y]);
+    const xs = pts.map(q => q[0]), ys = pts.map(q => q[1]), x0 = Math.min(...xs), y0 = Math.min(...ys);
+    const w = Math.max(...xs) - x0 + 1, h = Math.max(...ys) - y0 + 1;
+    const s = Math.floor(Math.min(slot.max, (W - 6) / w, (H - 6) / h));
+    if (!S.key) { Art.drawCentered(g, p.skin, s, W, H); return; }
+    const ox = (W - w * s) / 2, oy = (H - h * s) / 2;
+    for (const [x, y] of pts) g.drawImage(Art.gem(p.t, s), ox + (x - x0) * s, oy + (y - y0) * s, s, s);
+  }
+  function drawQueue(S) {
+    const list = Game.upcoming();
+    const sig = list.map(p => p && p.skin).join() + S.key + S.gravity;
+    if (sig === queueSig) return;
+    queueSig = sig;
+    slots.forEach((slot, i) => drawSlot(slot, list[i], S));
+    const names = list.map(p => (S.key ? GEMS[p.t].shape : SKINS[p.skin].name)).join(', then ');
+    document.getElementById('queue').setAttribute('aria-label', `Next: ${names}`);
   }
   function draw() {
     const S = Game.state;
@@ -3186,7 +3755,7 @@ const Render = (() => {
       ctx.fillRect(0, 0, S.cols * cell, S.rows * cell);
     }
     Effects.draw(ctx, cell);
-    drawNext(S);
+    drawQueue(S);
   }
   // The logical board cell under a screen point (for aiming the Bomb), or null.
   function cellAt(clientX, clientY) {
@@ -3417,6 +3986,7 @@ const UI = (() => {
   function show(name) {
     document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === name));
     document.body.classList.toggle('in-game', name === 'game');
+    document.body.classList.toggle('on-home', name === 'home');
     ui.current = name;
     if (name === 'home') renderHome();
     if (name === 'map') renderMap();
@@ -3427,19 +3997,7 @@ const UI = (() => {
 
   // ----- Home -----
   function renderHome() {
-    const cast = $('cast');
-    cast.innerHTML = '';
-    const size = Math.max(18, Math.min(30, Math.floor(window.innerWidth / 15)));
-    const tilts = [-6, 4, -3, 6, -5, 3, -2];
-    TYPES.forEach((t, i) => {
-      const fig = document.createElement('figure');
-      fig.style.setProperty('--tilt', tilts[i] + 'deg');
-      fig.appendChild(Art.pieceCanvas(t, size));
-      const cap = document.createElement('figcaption');
-      cap.textContent = PIECES[t].name;
-      fig.appendChild(cap);
-      cast.appendChild(fig);
-    });
+    Forest.resize(); // repaints only when the screen size changed
     const total = Store.totalStars(), high = Store.get().highScore;
     $('homeStars').innerHTML = total
       ? `${star(true)}<span>${total}</span><svg class="trophy" viewBox="0 0 24 24" aria-label="High score"><path d="M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3M12 14v4M8 20h8"/></svg><span>${high}</span>`
@@ -4077,6 +4635,7 @@ const Shop = (() => {
 /* ---------- 12. Boot ---------- */
 (function boot() {
   Scene.init();
+  Forest.init();
   Render.init();
   Input.init();
   UI.init();
@@ -4088,6 +4647,7 @@ const Shop = (() => {
     const dt = Math.min(100, now - last);
     last = now;
     if (UI.current === 'game') { Game.update(dt); Effects.update(dt); Scene.update(dt); Scene.draw(); Render.draw(); Effects.drawScreen(); UI.tick(); }
+    else if (UI.current === 'home') { Forest.update(dt); Forest.draw(); }
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
