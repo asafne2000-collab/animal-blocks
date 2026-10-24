@@ -190,7 +190,7 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 @keyframes hop { 0%, 100% { translate: 0 0; } 50% { translate: 0 -6px; } }
 
 /* ---------- Settings ---------- */
-.choice { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 6px 6px 0; }
+.choice { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding: 6px 6px 0; }
 .option {
   position: relative; aspect-ratio: 1;
   background: var(--gloss-cream); border: 4px solid var(--ink); border-radius: 30px;
@@ -266,6 +266,19 @@ button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 .btn.soon:disabled:active { transform: none; box-shadow: var(--depth); }
 .btn .tag { margin-left: 6px; padding: 2px 8px; border-radius: 999px; font-size: .75rem; color: #fff; background: var(--gloss-plum); vertical-align: middle; }
 .erase-ico { font-size: 3rem; line-height: 1; }
+/* button size: three dots, small to large */
+.seg { flex: 1; display: flex; gap: 10px; }
+.seg button {
+  flex: 1; height: 52px; display: grid; place-items: center;
+  background: #fff; border: 3px solid var(--ink); border-radius: 16px; box-shadow: 0 3px 0 var(--ink);
+}
+.seg button i { display: block; border-radius: 50%; background: var(--gloss-cream); border: 3px solid var(--ink); }
+.seg button:nth-child(1) i { width: 18px; height: 18px; }
+.seg button:nth-child(2) i { width: 26px; height: 26px; }
+.seg button:nth-child(3) i { width: 34px; height: 34px; }
+.seg button[aria-checked="true"] { background: #FFF3B0; outline: 4px solid var(--berry); outline-offset: 1px; }
+.seg button[aria-checked="true"] i { background: var(--gloss-berry); }
+#padSizeRow[hidden] { display: none; }
 
 /* ---------- Game ---------- */
 #game { padding-left: 10px; padding-right: 10px; touch-action: none; }
@@ -397,6 +410,55 @@ body.in-game #scene { display: block; }
 .map-settings { position: absolute; right: 16px; bottom: calc(var(--safe-b) + 16px); z-index: 4; border-radius: 50%; width: 58px; height: 58px; }
 .pop { animation: pop .35s ease-out; }
 @keyframes pop { 40% { transform: scale(1.3); } }
+
+/* ---------- Control pad ("Buttons" mode) ----------
+   The game screen becomes a grid: the board with the boosters in a column
+   beside it (on the thumb's side), the row pips, then the pad at the bottom.
+   The board shrinks to fit (Render measures #play). --b = button size; the
+   pad is 5 buttons wide, so it is capped to fit narrow phones. */
+.pad { display: none; }
+body.pad-mode #game.active {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto minmax(0, 1fr) auto auto;
+  grid-template-areas: "hud hud" "play boost" "rows rows" "pad pad";
+}
+body.pad-mode.left-handed #game.active { grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "hud hud" "boost play" "rows rows" "pad pad"; }
+body.pad-mode .hud { grid-area: hud; }
+body.pad-mode .play { grid-area: play; padding-bottom: 8px; }
+body.pad-mode .rows { grid-area: rows; }
+body.pad-mode .boosters, body.pad-mode.left-handed .boosters { grid-area: boost; flex-direction: column; justify-content: center; gap: 14px; padding: 0 2px 8px 8px; }
+body.pad-mode.left-handed .boosters { padding: 0 8px 8px 2px; }
+body.pad-mode .booster { width: 50px; height: 50px; font-size: 1.45rem; }
+body.pad-mode .pad {
+  grid-area: pad; display: flex; justify-content: space-between; align-items: flex-end;
+  --b: min(56px, calc((100vw - 64px) / 5)); padding: 6px 4px 14px; touch-action: none;
+}
+body.pad-small .pad { --b: min(48px, calc((100vw - 64px) / 5)); }
+body.pad-large .pad { --b: min(70px, calc((100vw - 64px) / 5)); }
+body.left-handed .pad { flex-direction: row-reverse; }
+.pad-side { position: relative; flex: none; height: calc(var(--b) * 1.35); }
+.pad-side.move { width: calc(var(--b) * 3 + 12px); }
+.pad-side.act { width: calc(var(--b) * 2 + 8px); }
+.pad-btn {
+  position: absolute; top: 0; width: var(--b); height: var(--b); padding: 0; border-radius: 50%;
+  display: grid; place-items: center; overflow: hidden; isolation: isolate; touch-action: none;
+  background: var(--gloss-cream); border: 4px solid var(--ink); box-shadow: var(--depth);
+  transition: transform .06s, box-shadow .06s, filter .06s;
+}
+.pad-btn::before { /* glossy shine */
+  content: ""; position: absolute; left: 18%; right: 18%; top: 5%; height: 34%; border-radius: 999px; z-index: -1;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .9), rgba(255, 255, 255, 0));
+}
+.pad-btn svg { width: 54%; height: 54%; fill: none; stroke: var(--ink); stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; transform: rotate(var(--rot, 0deg)); transition: transform .2s; }
+.pad-btn.pressed { transform: translateY(5px); box-shadow: var(--depth-pressed); filter: brightness(.95); }
+.pad-side.move [data-pad="a"] { left: 0; }
+.pad-side.move [data-pad="speed"] { left: calc(var(--b) + 6px); top: calc(var(--b) * .35); }
+.pad-side.move [data-pad="b"] { left: calc(var(--b) * 2 + 12px); }
+.pad-side.act .drop { left: 0; top: calc(var(--b) * .35); background: var(--gloss-plum); }
+.pad-side.act .turn { left: calc(var(--b) + 8px); background: var(--gloss-berry); }
+.pad-btn.drop svg, .pad-btn.turn svg { stroke: #fff; filter: drop-shadow(0 2px 0 rgba(46, 33, 82, .5)); }
+.pad-btn.drop::before, .pad-btn.turn::before { background: linear-gradient(180deg, rgba(255, 255, 255, .55), rgba(255, 255, 255, 0)); }
+body.left-handed .pad-side.act .drop { left: auto; right: 0; }
+body.left-handed .pad-side.act .turn { left: 0; }
 
 /* ---------- Boosters in a level ---------- */
 /* boosters sit on the thumb's side: right, or left with "Left hand" on (mirrored) */
@@ -549,6 +611,7 @@ body.left-handed .boosters { flex-direction: row-reverse; }
 
 @media (prefers-reduced-motion: reduce) {
   .booster.aiming, .pop, .nope, .key-row.waiting kbd { animation: none; }
+  .pad-btn, .pad-btn svg { transition: none; }
   .cheer.go, .big-stars svg.on, .key-prize.play .chest, .key-prize.play .chest-lid, .key-prize.play .prize-items span, .key-prize.play .new-friend { animation: none; }
   .node.current { animation: none; }
   .dir-intro svg { animation: none; }
@@ -577,6 +640,11 @@ body.left-handed .boosters { flex-direction: row-reverse; }
     <stop offset="0" stop-color="#FF9DBE"/><stop offset=".5" stop-color="#F2477C"/><stop offset="1" stop-color="#C91D57"/>
   </linearGradient>
   <symbol id="i-retry" viewBox="0 0 24 24"><path d="M5 12a7 7 0 1 0 2.2-5.1M5 4v4h4"/></symbol>
+  <!-- control pad icons: all drawn pointing right, turned with CSS -->
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4.5 12h14M12.5 5.5 19 12l-6.5 6.5"/></symbol>
+  <symbol id="i-fast" viewBox="0 0 24 24"><path d="M5 6l6 6-6 6M12 6l6 6-6 6"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path d="M3 12h12M10 6l6 6-6 6M20.5 4.5v15"/></symbol>
+  <symbol id="i-turn" viewBox="0 0 24 24"><path d="M18.5 9A7.2 7.2 0 1 0 19 15"/><path d="M19.5 3.5V9H14"/></symbol>
   <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M21.2 12h-2.6M5.4 12H2.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8M18.5 18.5l-1.8-1.8M7.3 7.3 5.5 5.5"/></symbol>
   <symbol id="i-map" viewBox="0 0 24 24"><path d="M3.5 6.5 9 4l6 2.5L20.5 4v13.5L15 20l-6-2.5-5.5 2.5zM9 4v13.5M15 6.5V20"/></symbol>
 </svg>
@@ -679,6 +747,25 @@ body.left-handed .boosters { flex-direction: row-reverse; }
           </svg>
           <i class="tick" aria-hidden="true"></i>
         </button>
+        <!-- Mode 3: on-screen buttons (a little gamepad) -->
+        <button class="option" role="radio" data-control="buttons" aria-label="Buttons">
+          <svg viewBox="0 0 96 96" aria-hidden="true">
+            <rect x="3" y="3" width="90" height="90" rx="24" fill="#FF8A3D"/>
+            <path d="M29 33h38a17 17 0 0 1 17 17v8a12 12 0 0 1-21.5 7.4L57 59H39l-5.5 6.4A12 12 0 0 1 12 58v-8a17 17 0 0 1 17-17z" fill="#FFF7E3" stroke="#2E2152" stroke-width="4" stroke-linejoin="round"/>
+            <path d="M30 42v14M23 49h14" stroke="#2E2152" stroke-width="5.5" stroke-linecap="round"/>
+            <circle cx="63" cy="45" r="5" fill="#F2477C" stroke="#2E2152" stroke-width="2.5"/>
+            <circle cx="72" cy="54" r="5" fill="#6D55C4" stroke="#2E2152" stroke-width="2.5"/>
+          </svg>
+          <i class="tick" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="set-row" id="padSizeRow">
+        <span class="set-ico" aria-hidden="true">🎮</span>
+        <div class="seg" role="radiogroup" aria-label="Button size">
+          <button role="radio" data-padsize="small" aria-label="Small buttons"><i></i></button>
+          <button role="radio" data-padsize="medium" aria-label="Medium buttons"><i></i></button>
+          <button role="radio" data-padsize="large" aria-label="Large buttons"><i></i></button>
+        </div>
       </div>
       <div class="set-row">
         <span class="set-ico small" aria-hidden="true" title="Big moves">🐢</span>
@@ -690,7 +777,7 @@ body.left-handed .boosters { flex-direction: row-reverse; }
           <svg viewBox="0 0 40 48"><use href="#hand" class="hand-outline"/><use href="#hand" class="hand-fill"/></svg>
         </span>
         <span class="set-label">Left hand</span>
-        <button class="switch" role="switch" data-switch="leftHanded" aria-label="Left-handed: boosters on the left"><i></i></button>
+        <button class="switch" role="switch" data-switch="leftHanded" aria-label="Left-handed: boosters and buttons swap sides"><i></i></button>
       </div>
     </div>
 
@@ -791,6 +878,18 @@ body.left-handed .boosters { flex-direction: row-reverse; }
   <div class="boosters" id="boosters" hidden></div>
   <canvas id="fx" aria-hidden="true"></canvas>
   <div class="rows" id="rows" role="img" aria-label="Rows cleared"></div>
+  <!-- On-screen control pad ("Buttons" mode): moves on one side, turn and drop on the other -->
+  <div class="pad" id="pad">
+    <div class="pad-side move">
+      <button class="pad-btn" data-pad="a" aria-label="Move left"><svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+      <button class="pad-btn" data-pad="speed" aria-label="Faster (hold)"><svg aria-hidden="true"><use href="#i-fast"/></svg></button>
+      <button class="pad-btn" data-pad="b" aria-label="Move right"><svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+    </div>
+    <div class="pad-side act">
+      <button class="pad-btn drop" data-pad="drop" aria-label="Instant drop"><svg aria-hidden="true"><use href="#i-drop"/></svg></button>
+      <button class="pad-btn turn" data-pad="rotate" aria-label="Turn"><svg aria-hidden="true"><use href="#i-turn"/></svg></button>
+    </div>
+  </div>
 
   <div class="overlay" id="pauseOverlay" hidden>
     <div class="panel">
@@ -891,6 +990,7 @@ const CONFIG = {
   // Instant drop by touch: a quick flick down. Strict on purpose so a slow
   // swipe or a held finger never drops an animal by accident.
   flick: { maxTime: 300, minCells: 2.5, minPx: 60, minSpeed: 0.8 }, // ms, cells, px, px per ms
+  padRepeat: { delay: 200, every: 75 }, // holding ⬅️/➡️ on the pad: first repeat after 200 ms, then every 75 ms
   clearDelay: 180,          // ms full rows flash before they disappear
   lockDelay: 500,           // ms a landed animal waits before locking
   maxLockResets: 15,
@@ -925,7 +1025,8 @@ const Store = (() => {
   // Keyboard keys are KeyboardEvent.code values, so they work on any layout.
   const DEFAULT_KEYS = { left: 'ArrowLeft', right: 'ArrowRight', rotate: 'ArrowUp', speed: 'ArrowDown', drop: 'Space', pause: 'Escape' };
   const defaultSettings = () => ({
-    control: 'drag',
+    control: 'drag',          // 'drag' | 'swipe' | 'buttons'
+    padSize: 'medium',        // on-screen buttons: 'small' | 'medium' | 'large'
     music: true, musicVol: .6, sfx: true, sfxVol: .8, // volumes 0–1
     sensitivity: .5,          // 0 = needs big finger moves, 1 = tiny moves count
     leftHanded: false, vibrate: true,
@@ -2716,6 +2817,7 @@ const Sound = (() => {
       tone(t + .24, hz(64), .3, { type: 'triangle', hold: true, attack: .02, release: .25, gain: .1, to: hz(62), glide: .45, vib: [5, 4] });
     },
     tap() { tone(now(), 620, .05, { to: 900, gain: .055, attack: .003 }); },
+    pad() { tone(now(), 380, .04, { type: 'triangle', to: 520, gain: .07, attack: .002 }); }, // a pad button goes down
   };
   const now = () => ctx.currentTime + .005;
   function play(name, data = {}) {
@@ -2738,8 +2840,8 @@ const Sound = (() => {
   Events.on('fx', ({ name, ...data }) => { play(name, data); buzz(name); });
   Events.on('move', ({ dx }) => { if (dx) play('move'); });
   Events.on('rotate', () => play('rotate'));
-  // A soft pop for every button (boosters have their own sounds).
-  document.addEventListener('click', e => { const b = e.target.closest('button'); if (b && !b.classList.contains('booster')) play('tap'); }, true);
+  // A soft pop for every button (boosters and the pad have their own sounds).
+  document.addEventListener('click', e => { const b = e.target.closest('button'); if (b && !b.closest('.booster, .pad-btn')) play('tap'); }, true);
   return { play, applyVolumes, unlock, state: () => (ctx ? ctx.state : 'off'), tune: () => (track ? track.name : null), TUNES };
 })();
 
@@ -3109,6 +3211,7 @@ const Input = (() => {
   function onDown(e) {
     if (e.target.closest('button, .overlay')) return; // HUD and booster buttons keep working
     if (UI.aiming) { e.preventDefault(); UI.aimAt(e.clientX, e.clientY); return; } // Bomb: tap a spot
+    if (mode() === 'buttons') return; // Buttons mode: the board ignores touches, the pad does it all
     if (!playing() || g) return;
     e.preventDefault();
     try { e.currentTarget.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
@@ -3220,7 +3323,66 @@ const Input = (() => {
     const action = actionOf(e.code);
     if (KEY_VEC[action] && toLogical(...KEY_VEC[action])[1] > 0) Game.setFastFall(false);
   }
+  // ----- On-screen pad ("Buttons" mode) -----
+  // Each button has a screen direction that turns with the board on key
+  // levels, like the arrow keys: the move buttons become up/down, speed and
+  // drop point the way pieces fall. Every finger is tracked on its own, so
+  // holding "faster" while tapping "turn" works.
+  const ANGLE = { '1,0': 0, '0,1': 90, '-1,0': 180, '0,-1': -90 };
+  let padVec = {};
+  const held = new Map(); // pointerId -> { btn, timer }
+  function orientPad() {
+    const fall = { down: [0, 1], right: [1, 0], left: [-1, 0] }[Game.state.gravity] || [0, 1];
+    const across = fall[1] ? [[-1, 0], [1, 0]] : [[0, -1], [0, 1]];
+    padVec = { a: across[0], b: across[1], speed: fall, drop: fall };
+    const names = { '-1,0': 'left', '1,0': 'right', '0,-1': 'up', '0,1': 'down' };
+    document.querySelectorAll('#pad .pad-btn').forEach(b => {
+      const v = padVec[b.dataset.pad];
+      if (!v) return;
+      b.style.setProperty('--rot', ANGLE[v] + 'deg');
+      if (b.dataset.pad === 'a' || b.dataset.pad === 'b') b.setAttribute('aria-label', 'Move ' + names[v]);
+    });
+  }
+  function padMove(kind) {
+    if (!playing() || UI.aiming) return;
+    const [x] = toLogical(...padVec[kind]);
+    act('move', Game.move(x, 0));
+  }
+  function padDown(e) {
+    const btn = e.target.closest('.pad-btn');
+    if (!btn) return;
+    e.preventDefault();
+    try { btn.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+    btn.classList.add('pressed');
+    Sound.play('pad');
+    const kind = btn.dataset.pad, hold = { btn, timer: 0 };
+    held.set(e.pointerId, hold);
+    if (!playing() || UI.aiming) return;
+    if (kind === 'a' || kind === 'b') { // one step now, then a steady repeat while held
+      padMove(kind);
+      const again = () => { padMove(kind); hold.timer = setTimeout(again, CONFIG.padRepeat.every); };
+      hold.timer = setTimeout(again, CONFIG.padRepeat.delay);
+    } else if (kind === 'speed') { Game.setFastFall(true); act('fast-fall'); }
+    else if (kind === 'rotate') act('rotate', Game.rotate());
+    else if (kind === 'drop') act('hard-drop', Game.hardDrop());
+  }
+  function padUp(e) {
+    const hold = held.get(e.pointerId);
+    if (!hold) return;
+    held.delete(e.pointerId);
+    clearTimeout(hold.timer);
+    hold.btn.classList.remove('pressed');
+    if (hold.btn.dataset.pad === 'speed' && ![...held.values()].some(h => h.btn === hold.btn)) Game.setFastFall(false);
+  }
+  function padRelease() { for (const id of [...held.keys()]) padUp({ pointerId: id }); } // e.g. the game was paused
+
   function init() {
+    const pad = document.getElementById('pad');
+    pad.addEventListener('pointerdown', padDown);
+    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => pad.addEventListener(ev, padUp));
+    pad.addEventListener('contextmenu', e => e.preventDefault()); // no long-press menu
+    Events.on('start', orientPad);
+    document.addEventListener('visibilitychange', padRelease);
     const area = document.getElementById('game'); // the whole game screen is the touch area
     area.addEventListener('pointerdown', onDown);
     area.addEventListener('pointermove', onMove);
@@ -3230,7 +3392,7 @@ const Input = (() => {
     window.addEventListener('keydown', onKey);
     window.addEventListener('keyup', onKeyUp);
   }
-  return { init, setModeOverride: m => { modeOverride = m; } };
+  return { init, padRelease, setModeOverride: m => { modeOverride = m; } };
 })();
 
 /* ---------- 11. UI ---------- */
@@ -3445,6 +3607,7 @@ const UI = (() => {
   ui.capturing = null; // the action waiting for a new key
   function openSettings() {
     settingsFrom = ui.current;
+    Input.padRelease();
     if (ui.current === 'game') { stopAim(); if (Game.pause()) $('pauseOverlay').hidden = false; }
     show('settings');
   }
@@ -3462,6 +3625,8 @@ const UI = (() => {
       r.disabled = !set[r.dataset.volume === 'musicVol' ? 'music' : 'sfx'];
     });
     $('sensitivity').value = Math.round(set.sensitivity * 100);
+    document.querySelectorAll('[data-padsize]').forEach(b => b.setAttribute('aria-checked', String(b.dataset.padsize === set.padSize)));
+    $('padSizeRow').hidden = set.control !== 'buttons'; // only matters with the pad
     renderKeys();
   }
   function renderKeys(note = '') {
@@ -3492,12 +3657,22 @@ const UI = (() => {
     ui.capturing = null;
     renderKeys();
   }
-  function applyLayout() { document.body.classList.toggle('left-handed', !!Store.setting('leftHanded')); }
+  // Body classes for the game layout: left-handed, and the control pad with its size.
+  function applyLayout() {
+    const b = document.body.classList, set = Store.get().settings;
+    b.toggle('left-handed', !!set.leftHanded);
+    b.toggle('pad-mode', set.control === 'buttons');
+    b.toggle('pad-small', set.padSize === 'small');
+    b.toggle('pad-large', set.padSize === 'large');
+  }
   function initSettings() {
     document.querySelectorAll('[data-settings]').forEach(b => b.addEventListener('click', openSettings));
     $('settingsBack').addEventListener('click', closeSettings);
     document.querySelectorAll('[data-control]').forEach(b => b.addEventListener('click', () => {
-      Store.setControl(b.dataset.control); renderSettings();
+      Store.setControl(b.dataset.control); applyLayout(); renderSettings();
+    }));
+    document.querySelectorAll('[data-padsize]').forEach(b => b.addEventListener('click', () => {
+      Store.set('padSize', b.dataset.padsize); applyLayout(); renderSettings();
     }));
     document.querySelectorAll('[data-switch]').forEach(b => b.addEventListener('click', () => {
       const name = b.dataset.switch;
